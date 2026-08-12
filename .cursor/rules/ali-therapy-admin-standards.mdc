@@ -1,0 +1,159 @@
+---
+description: Ali Therapy Admin coding standards — beginner-friendly, folder structure, complete work
+alwaysApply: true
+---
+
+# Ali Therapy Admin — Coding Rules
+
+## Must follow every time
+
+1. **Beginner-friendly code**
+   - Write simple, readable Dart/Flutter code.
+   - Add clear comments in **English only** (no Roman Urdu).
+   - Prefer short helpers and named constants over magic strings/numbers.
+
+2. **Follow existing folder structure (locked — do not invent a new one)**
+   - Shared code → `lib/core/` (`errors`, `network`, `routes`, `services`, `theme`, `utils`, `di`, `datasources`, `usecase`, `widgets`)
+   - Shared reusable UI (across features) → `lib/core/widgets/` (example: `AppTextField`, `AppFieldLabel`)
+   - Datasources → `lib/core/datasources/<feature_name>/` (contract + Dio impl)
+   - Feature code:
+     - Shared (both) → `lib/feature/<feature_name>/` — e.g. `auth`, `home`, `splash`, `reports`
+     - Employee only → `lib/feature/employee/<feature_name>/` — e.g. `all_employees`, `profile`
+     - Patient only → `lib/feature/patient/<feature_name>/` — e.g. `all_patients`, `patient_detail`, …
+   - **Clean architecture (auth is the template — copy this every time):**
+     ```
+     lib/feature/<area>/<feature_name>/
+       data/
+         <use_case>_data/
+           models/              # JSON → Dart (extends Entity)
+           repositories/        # impl — calls core/datasources
+       domain/
+         <use_case>_domain/
+           entities/            # pure business objects (no Dio/JSON)
+           repositories/        # abstract contract only
+           usecases/            # one class = one job
+       presentation/
+         bloc/
+           <use_case>_bloc/     # *_bloc.dart + event + state (part files)
+         pages/
+           <screen_name>/
+             <screen_name>_page.dart
+         widgets/
+           form/ | other/ | sections/
+     ```
+   - One API job / screen flow → its own `<use_case>_data` + `<use_case>_domain` + `<use_case>_bloc` (see auth: `login_*`, `forget_password_*`, `change_password_*`).
+   - Full beginner guide: `lib/feature/FEATURE_FOLDER_GUIDE.md`
+   - DI → `lib/injection.dart` + `lib/core/di/` (one module file each)
+   - **Do not register stub blocs/repos in DI** until the API is wired (UI-first stays sample data).
+
+3. **Presentation layout (locked — use for every new feature)**
+   Reference features: `auth`, `home`, `reports`, `edit_employee`, `patient_detail`, `profile`.
+   ```
+   lib/feature/<area>/<feature_name>/
+     presentation/
+       pages/                              # full screen only
+         <screen_name>/                    # one folder per screen (mandatory)
+           <screen_name>_page.dart         # Scaffold + AppBar + SafeArea + content
+           <screen_name>_detail_page.dart  # optional — keep detail with parent screen
+       widgets/
+         form/                             # shared form pieces (header, footer, date, file, row…)
+         other/                            # shared feature widgets (cards, menus, rows…)
+         sections/<section_name>/          # one folder per section (when needed)
+           <section>_section.dart
+           <section>_form_fields.dart
+   ```
+   - **Pages folders (mandatory for new screens):** never put `*_page.dart` flat under `pages/`. Always `pages/<screen_name>/<screen_name>_page.dart`.
+   - If a screen has a detail page, put both in the **same** folder (e.g. `pages/package_attendance/package_attendance_page.dart` + `package_attendance_detail_page.dart`).
+   - Separate screens get separate folders (e.g. `add_document/`, `add_education/` — not under `profile/`).
+   - Scaffold / screens ALWAYS in `pages/` — never in widgets.
+   - Put screen content **directly in the page** — never create a page-level `*_body.dart`.
+   - Keep smaller reusable pieces (cards, fields, sections) in `widgets/`.
+   - One widget = one file. Never pack multiple widgets in one file.
+   - NEVER create private `_MyWidget` classes inside a page file.
+   - **Expandable cards:** use `AppExpandableCard` **only** when card content is taller than the minimum collapsed height (long report / detail cards). Short normal cards stay plain — no See all / See less.
+   - When expandable is used: first tall card on a screen → `initiallyExpanded: true`; remaining stay collapsed.
+   - Do **not** invent a new folder layout for new features — copy auth / this pattern.
+
+4. **Never ship incomplete or messy work**
+   - No empty stubs that break the app.
+   - No half-wired routes, missing imports, or broken `main.dart`.
+   - Run / fix analyze issues for files you touch.
+
+5. **Always use Flutter ScreenUtil for UI**
+   - Import `package:flutter_screenutil/flutter_screenutil.dart` in every UI file.
+   - Use `.w` / `.h` / `.sp` / `.r` — never hardcode raw pixel sizes.
+
+6. **SafeArea + theme + shared inputs (strict)**
+   - Wrap every screen `body` with `SafeArea`.
+   - Text: always `AppTextStyles.*` — never inline `TextStyle(fontSize/fontWeight)`.
+   - Icons: always `AppSizes.iconSm/Md/Lg/Xl`.
+   - Text inputs: always `AppTextField` — never raw `TextField` / `TextFormField`.
+
+7. **All text must be copyable (mandatory)**
+   - App-wide copy is enabled via `SelectablePageShell` + `SelectionArea` in `AppRouter` (`ShellRoute`).
+   - Prefer normal `Text` / `Text.rich` — do **not** block selection.
+   - Do **not** wrap whole screens in `SelectionContainer.disabled` unless a control must ignore selection (rare).
+   - New screens / widgets must keep this behavior — never ship non-copyable body text.
+   - Never put `SelectionArea` in `MaterialApp.builder` (no Overlay → crash).
+
+8. **UI-only first when requested**
+   - Do not mix UI with logic / state management.
+   - Do not use `setState`, Cubit, Bloc, Provider, or GetX for new form screens unless the user asks.
+   - Wire actions later when requested.
+
+9. **UI ↔ Bloc separation (LOCKED — always)**
+   - UI may only: show widgets, dispatch **events**, listen to **states**.
+   - UI must NEVER call UseCase, Repository, DataSource, or Dio directly.
+   - Flow: `UI → Event → Bloc → UseCase → Repository → DataSource → State → UI`
+   - Loading / error / success = Bloc **states** (e.g. `AuthLoading`), not local `setState` + UseCase in the widget.
+   - Navigation helpers (`AppNavigation`) = route only — no auth/business logic.
+   - Example: logout button → `AuthLogoutRequested` → Bloc → `AuthUnauthenticated` → `goLogin`.
+
+10. **Shared loading UI (LOCKED)**
+   - Full-screen loading: always use `AppLoadingOverlay` or `AppLoadingDialog` from `lib/core/widgets/app_loading_dialog.dart`.
+   - Do NOT invent a new spinner dialog per screen — same teal card everywhere.
+   - Auth primary buttons have **no** button spinner — page overlay handles loading.
+
+11. **Shared confirm dialog (LOCKED)**
+   - Yes / No / Confirm / Continue / Delete prompts → `showAppConfirmDialog` (`lib/core/widgets/app_confirm_dialog.dart`).
+   - Pass custom `title`, `message`, `cancelLabel`, `confirmLabel`, colors per screen.
+   - Do NOT invent a new confirm dialog layout per feature.
+
+## Locked UI flow (keep this — future updates must follow)
+
+1. **List → detail**
+   - List screens open detail via `AppNavigation` + `extra` (never hardcode paths).
+   - Detail lives in the **same** `pages/<feature>/` folder as the list when it belongs to that feature
+     (e.g. `patient_dues/` + `patient_dues_history_page`, `package_attendance/` + detail,
+     `refer_by_report/` + `referred_patients_page`).
+   - Detail screens use `FormBackAppBar` (or shared report AppBar) — avoid custom black headers.
+
+2. **Shortcut grids (same height everywhere)**
+   - Reports menu, patient Records tab, employee Profile menu: **2-column grid**,
+     `childAspectRatio: 2.15`, spacing `6.w` / `6.h`, tile style like `ReportGridTile`
+     (icon chip + centered title). Match that size — do not invent a new grid height.
+
+3. **Cards**
+   - Short cards (profile header, progress event rows, total visit cards, etc.): **plain** —
+     no See all / See less.
+   - Tall / dense cards (reports billing cards, long patient/employee list cards, etc.):
+     `AppExpandableCard` only. First tall card → `initiallyExpanded: true`.
+
+4. **Reports**
+   - Open from home Quick Access → reports sheet; sheet stays open when pushing a report
+     (do not pop sheet before navigate).
+   - Shared pieces: `ReportSearchAppBar`, `report_filters_header`, filter field labels.
+
+5. **Navigation animation**
+   - Every route: `pageBuilder` + `AppPage.slide(state, child)`.
+
+6. **UI-first**
+   - Ship UI with sample data first; wire APIs / Cubit later when asked.
+
+When updating UI later: **copy an existing screen of the same type** — do not invent a new pattern.
+
+## Dependency Injection
+
+- Shared DI in `lib/core/di/` — **one file per module**.
+- Entry: `lib/injection.dart` → `setupCoreDi()`.
+- New feature DI → new module file, then register in `di_setup.dart`.
