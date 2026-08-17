@@ -3,6 +3,7 @@ import 'package:ali_therapy_admin/core/di/auth_module.dart';
 import 'package:ali_therapy_admin/core/di/di_module.dart';
 import 'package:ali_therapy_admin/core/di/external_module.dart';
 import 'package:ali_therapy_admin/core/di/network_module.dart';
+import 'package:ali_therapy_admin/core/di/profile_module.dart';
 import 'package:ali_therapy_admin/core/di/service_module.dart';
 // HomeModule: add when dashboard API + HomeBloc are wired (see home_data / home_domain).
 
@@ -26,6 +27,7 @@ final List<DiModule> coreModules = [
   NetworkModule(),
   AuthModule(),
   AllEmployeesModule(),
+  ProfileModule(),
 ];
 
 /// Registers all DI modules using a list + loop.

@@ -6,16 +6,22 @@ import '../repositories/profile_repository.dart';
 // ============================================================
 // GET PROFILE USE CASE
 // ------------------------------------------------------------
-// One job: fetch profile data.
+// One job: fetch profile for the given employee id.
 // ============================================================
 
-class GetProfileUseCase extends UseCase<ProfileEntity, NoParams> {
-  final ProfileRepository repository;
+class GetProfileParams {
+  const GetProfileParams({required this.employeeId});
 
+  final String employeeId;
+}
+
+class GetProfileUseCase extends UseCase<ProfileEntity, GetProfileParams> {
   GetProfileUseCase(this.repository);
 
+  final ProfileRepository repository;
+
   @override
-  ResultFuture<ProfileEntity> call(NoParams params) {
-    return repository.getProfile();
+  ResultFuture<ProfileEntity> call(GetProfileParams params) {
+    return repository.getProfile(employeeId: params.employeeId);
   }
 }

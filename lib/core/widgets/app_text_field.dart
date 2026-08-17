@@ -35,6 +35,7 @@ class AppTextField extends StatelessWidget {
     this.suffixIcon,
     this.onTap,
     this.onChanged,
+    this.onSubmitted,
     this.textInputAction,
   });
 
@@ -59,6 +60,7 @@ class AppTextField extends StatelessWidget {
   final Widget? suffixIcon;
   final VoidCallback? onTap;
   final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onSubmitted;
   final TextInputAction? textInputAction;
 
   /// Shared rounded InputDecoration for text / date / similar fields.
@@ -77,10 +79,7 @@ class AppTextField extends StatelessWidget {
       fillColor: AppColors.surface,
       prefixIcon: prefixIcon,
       suffixIcon: suffixIcon,
-      contentPadding: EdgeInsets.symmetric(
-        horizontal: 14.w,
-        vertical: 14.h,
-      ),
+      contentPadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12.r),
         borderSide: const BorderSide(color: AppColors.border),
@@ -120,6 +119,7 @@ class AppTextField extends StatelessWidget {
       enabled: enabled,
       onTap: onTap,
       onChanged: onChanged,
+      onFieldSubmitted: onSubmitted,
       textInputAction: textInputAction,
       style: AppTextStyles.body,
       decoration: decoration(

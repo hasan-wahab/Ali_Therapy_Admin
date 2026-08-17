@@ -35,10 +35,10 @@ class UserActivityReportFilters extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.fromLTRB(12.w, 10.h, 12.w, 10.h),
+      padding: EdgeInsets.fromLTRB(8.w, 6.h, 8.w, 6.h),
       decoration: BoxDecoration(
         color: AppColors.primaryLight,
-        borderRadius: BorderRadius.circular(12.r),
+        borderRadius: BorderRadius.circular(10.r),
         border: Border.all(color: AppColors.border),
       ),
       child: Column(
@@ -49,21 +49,25 @@ class UserActivityReportFilters extends StatelessWidget {
               AppSnackbar.info(context, 'Filters reset (UI only)');
             },
           ),
-          SizedBox(height: 10.h),
+          SizedBox(height: 6.h),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Expanded(
                 child: AppDropdownField(
+                  compact: true,
+                  enableSearch: true,
                   label: 'Clinic',
                   hintText: 'All Clinics',
                   items: _clinics,
                   value: 'All Clinics',
                 ),
               ),
-              SizedBox(width: 8.w),
+              SizedBox(width: 6.w),
               const Expanded(
                 child: AppDropdownField(
+                  compact: true,
+                  enableSearch: true,
                   label: 'Receptionist',
                   hintText: 'All Receptionists',
                   items: _receptionists,
@@ -72,7 +76,7 @@ class UserActivityReportFilters extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: 4.h),
           Row(
             children: [
               const Expanded(
@@ -81,7 +85,7 @@ class UserActivityReportFilters extends StatelessWidget {
                   valueText: '08/11/2026',
                 ),
               ),
-              SizedBox(width: 8.w),
+              SizedBox(width: 6.w),
               const Expanded(
                 child: ReportDateField(
                   label: 'To Date',

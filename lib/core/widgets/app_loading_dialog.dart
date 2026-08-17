@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
+import 'package:ali_therapy_admin/core/utils/app_keyboard.dart';
 
 // ============================================================
 // APP LOADING DIALOG (shared — whole app)
@@ -32,6 +33,9 @@ class AppLoadingDialog {
     String message = 'Please wait...',
     String? subtitle,
   }) {
+    // Keyboard first — then loading card.
+    AppKeyboard.dismiss();
+
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -149,7 +153,7 @@ class AppLoadingCard extends StatelessWidget {
 // Prefer this when the page already rebuilds on a loading state.
 // ============================================================
 
-class AppLoadingOverlay extends StatelessWidget {
+class AppLoadingOverlay extends StatefulWidget {
   const AppLoadingOverlay({
     super.key,
     required this.message,
@@ -160,14 +164,26 @@ class AppLoadingOverlay extends StatelessWidget {
   final String? subtitle;
 
   @override
+  State<AppLoadingOverlay> createState() => _AppLoadingOverlayState();
+}
+
+class _AppLoadingOverlayState extends State<AppLoadingOverlay> {
+  @override
+  void initState() {
+    super.initState();
+    // Ensure keyboard is closed when loading appears.
+    AppKeyboard.dismiss();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AbsorbPointer(
       child: ColoredBox(
         color: AppColors.textPrimary.withValues(alpha: 0.45),
         child: Center(
           child: AppLoadingCard(
-            message: message,
-            subtitle: subtitle,
+            message: widget.message,
+            subtitle: widget.subtitle,
           ),
         ),
       ),

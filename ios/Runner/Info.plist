@@ -70,5 +70,12 @@
 		<true/>
 		<key>UIViewControllerBasedStatusBarAppearance</key>
 		<false/>
+		<!-- Camera / gallery (image_picker — patient & employee photos) -->
+		<key>NSCameraUsageDescription</key>
+		<string>Ali Therapy Admin needs camera access to take patient and employee profile photos.</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>Ali Therapy Admin needs photo library access to select patient and employee profile photos.</string>
+		<key>NSPhotoLibraryAddUsageDescription</key>
+		<string>Ali Therapy Admin may save photos to your library when uploading documents or profile images.</string>
 	</dict>
 </plist>

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:ali_therapy_admin/feature/employee/profile/domain/profile_domain/entities/profile_entity.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/other/profile_info_row.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/other/profile_section_card.dart';
 
@@ -8,20 +9,22 @@ import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/
 // ============================================================
 
 class EmploymentDetailsSection extends StatelessWidget {
-  const EmploymentDetailsSection({super.key});
+  const EmploymentDetailsSection({super.key, required this.profile});
+
+  final ProfileEntity profile;
 
   @override
   Widget build(BuildContext context) {
-    return const ProfileSectionCard(
+    return ProfileSectionCard(
       title: 'Employment Details',
       child: Column(
         children: [
-          ProfileInfoRow(label: 'Department', value: 'Physiotherapy'),
-          ProfileInfoRow(label: 'Designation', value: 'Physiotherapist'),
-          ProfileInfoRow(label: 'Room', value: 'Clinic'),
-          ProfileInfoRow(label: 'Joining Date', value: '2024-06-03 00:00:00'),
-          ProfileInfoRow(label: 'Salary Type', value: 'commission'),
-          ProfileInfoRow(label: 'Salary', value: '25,000.00'),
+          ProfileInfoRow(label: 'Department', value: profile.department),
+          ProfileInfoRow(label: 'Designation', value: profile.designation),
+          ProfileInfoRow(label: 'Room', value: profile.room),
+          ProfileInfoRow(label: 'Joining Date', value: profile.joiningDate),
+          ProfileInfoRow(label: 'Salary Type', value: profile.salaryType),
+          ProfileInfoRow(label: 'Salary', value: profile.salary),
         ],
       ),
     );

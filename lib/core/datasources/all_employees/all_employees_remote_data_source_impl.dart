@@ -5,12 +5,13 @@ import 'package:ali_therapy_admin/core/errors/exceptions.dart';
 import 'package:ali_therapy_admin/core/network/api_constants.dart';
 import 'package:ali_therapy_admin/core/network/dio_client.dart';
 import 'package:ali_therapy_admin/feature/employee/all_employees/data/all_employees_data/models/employee_model.dart';
+import 'package:ali_therapy_admin/feature/employee/all_employees/data/all_employees_data/models/employees_page_model.dart';
 
 // ============================================================
 // ALLEMPLOYEES REMOTE DATA SOURCE (implementation)
 // ------------------------------------------------------------
-// GET .../api/admin/employees-list
-// Accepts either a raw JSON array OR { success, data: [...] }.
+// GET .../api/admin/employees-list?page=N
+// Supports Laravel paginate + older list shapes.
 // ============================================================
 
 class AllEmployeesRemoteDataSourceImpl implements AllEmployeesRemoteDataSource {
@@ -19,13 +20,14 @@ class AllEmployeesRemoteDataSourceImpl implements AllEmployeesRemoteDataSource {
   final DioClient dioClient;
 
   @override
-  Future<List<EmployeeModel>> getAllEmployees() async {
+  Future<EmployeesPageModel> getEmployeesPage({required int page}) async {
     try {
-      // Bearer token is attached automatically by ApiInterceptor.
-      final response = await dioClient.get(ApiConstants.employeesList);
+      final response = await dioClient.get(
+        ApiConstants.employeesList,
+        queryParameters: {'page': page},
+      );
 
-      final list = _extractEmployeeList(response.data);
-      return EmployeeModel.listFromJson(list);
+      return _parsePage(response.data, requestedPage: page);
     } on DioException catch (e) {
       if (e.error is AppException) {
         throw e.error as AppException;
@@ -49,12 +51,11 @@ class AllEmployeesRemoteDataSourceImpl implements AllEmployeesRemoteDataSource {
     }
   }
 
-  /// Supports:
-  /// - [ {...}, {...} ]
-  /// - { success, data: [ {...}, {...} ] }
-  /// - { data: [ {...}, {...} ] }
-  List<dynamic> _extractEmployeeList(dynamic raw) {
-    if (raw is List) return raw;
+  EmployeesPageModel _parsePage(dynamic raw, {required int requestedPage}) {
+    // Raw array → treat as single page.
+    if (raw is List) {
+      return EmployeesPageModel.fromList(EmployeeModel.listFromJson(raw));
+    }
 
     final body = _asStringKeyMap(raw);
     if (body == null) {
@@ -72,16 +73,32 @@ class AllEmployeesRemoteDataSourceImpl implements AllEmployeesRemoteDataSource {
       );
     }
 
+    // { success, data: { current_page, data: [...] } }
     final data = body['data'];
-    if (data is List) return data;
-
-    // Some APIs put the list at the root under another key.
-    if (body['employees'] is List) {
-      return body['employees'] as List;
+    final dataMap = _asStringKeyMap(data);
+    if (dataMap != null && dataMap['data'] is List) {
+      return EmployeesPageModel.fromJson(dataMap);
     }
 
-    throw const ServerException(
+    // Laravel paginate at root: { current_page, data: [...] }
+    if (body['data'] is List && body.containsKey('current_page')) {
+      return EmployeesPageModel.fromJson(body);
+    }
+
+    // { data: [ ... ] } without page meta
+    if (data is List) {
+      return EmployeesPageModel.fromList(EmployeeModel.listFromJson(data));
+    }
+
+    if (body['employees'] is List) {
+      return EmployeesPageModel.fromList(
+        EmployeeModel.listFromJson(body['employees']),
+      );
+    }
+
+    throw ServerException(
       message: 'Employees list is missing in the response.',
+      debugMessage: 'page=$requestedPage',
     );
   }
 

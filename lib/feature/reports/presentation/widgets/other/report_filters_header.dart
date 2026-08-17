@@ -8,7 +8,7 @@ import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
 // ============================================================
 // REPORT FILTERS HEADER
 // ------------------------------------------------------------
-// Shared "Filters" title row for all report filter cards.
+// Compact "Filters" title row for filter cards.
 // ============================================================
 
 class ReportFiltersHeader extends StatelessWidget {
@@ -30,11 +30,11 @@ class ReportFiltersHeader extends StatelessWidget {
           size: AppSizes.iconSm,
           color: AppColors.primary,
         ),
-        SizedBox(width: 6.w),
+        SizedBox(width: 4.w),
         Expanded(
           child: Text(
             title,
-            style: AppTextStyles.bodySmall.copyWith(
+            style: AppTextStyles.label.copyWith(
               fontWeight: FontWeight.w700,
               color: AppColors.primary,
             ),
@@ -45,13 +45,14 @@ class ReportFiltersHeader extends StatelessWidget {
             onPressed: onReset,
             style: TextButton.styleFrom(
               foregroundColor: AppColors.primary,
-              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-              minimumSize: Size.zero,
+              padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 0),
+              minimumSize: Size(0, 28.h),
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              visualDensity: VisualDensity.compact,
             ),
             child: Text(
               'Reset',
-              style: AppTextStyles.bodySmall.copyWith(
+              style: AppTextStyles.label.copyWith(
                 color: AppColors.primary,
                 fontWeight: FontWeight.w700,
               ),

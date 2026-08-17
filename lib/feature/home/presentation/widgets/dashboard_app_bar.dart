@@ -1,27 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/routes/navigation_helper.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_sizes.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
+import 'package:ali_therapy_admin/core/widgets/app_app_bar_underline.dart';
 import 'package:ali_therapy_admin/core/widgets/app_confirm_dialog.dart';
 import 'package:ali_therapy_admin/feature/auth/presentation/bloc/login_bloc/auth_bloc.dart';
 
 // ============================================================
 // DASHBOARD APP BAR
 // ------------------------------------------------------------
-// UI only:
-//   1) Confirm dialog (shared AppConfirmDialog)
-//   2) If Yes → AuthLogoutRequested
-//   3) Page shows AppLoadingOverlay from AuthLoading state
+// No back icon → title on leading (left) + thick underline.
 // ============================================================
 
 class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
   const DashboardAppBar({super.key});
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize =>
+      Size.fromHeight(kToolbarHeight + AppAppBarUnderline.preferredExtra);
 
   Future<void> _onLogoutPressed(BuildContext context) async {
     final confirmed = await showAppConfirmDialog(
@@ -38,7 +39,6 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     if (!confirmed || !context.mounted) return;
 
-    // UI → event only. Bloc runs LogoutUseCase.
     context.read<AuthBloc>().add(const AuthLogoutRequested());
   }
 
@@ -50,9 +50,30 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
 
         return AppBar(
           backgroundColor: AppColors.background,
+          surfaceTintColor: Colors.transparent,
           elevation: 0,
+          scrolledUnderElevation: 0,
           centerTitle: false,
-          title: Text('Dashboard', style: AppTextStyles.appBarTitle),
+          automaticallyImplyLeading: false,
+          systemOverlayStyle: const SystemUiOverlayStyle(
+            statusBarColor: Colors.transparent,
+            statusBarIconBrightness: Brightness.dark,
+            statusBarBrightness: Brightness.light,
+          ),
+          // No leading icon → title sits on the left (leading side).
+          leadingWidth: 200.w,
+          leading: Padding(
+            padding: EdgeInsets.only(left: 16.w),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Dashboard',
+                style: AppTextStyles.appBarTitle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
           actions: [
             IconButton(
               tooltip: 'Profile',
@@ -75,6 +96,7 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
             ),
           ],
+          bottom: AppAppBarUnderline.bar,
         );
       },
     );

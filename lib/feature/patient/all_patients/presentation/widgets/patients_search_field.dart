@@ -6,18 +6,30 @@ import 'package:ali_therapy_admin/core/widgets/app_text_field.dart';
 // ============================================================
 // PATIENTS SEARCH FIELD
 // ------------------------------------------------------------
-// Search box at the top of All Patients (UI only).
+// Main search box on All Patients (UI only until API wired).
 // ============================================================
 
 class PatientsSearchField extends StatelessWidget {
-  const PatientsSearchField({super.key});
+  const PatientsSearchField({
+    super.key,
+    this.controller,
+    this.onChanged,
+    this.onSubmitted,
+  });
+
+  final TextEditingController? controller;
+  final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onSubmitted;
 
   @override
   Widget build(BuildContext context) {
     return AppTextField(
+      controller: controller,
       hintText: 'Search patients...',
       prefixIcon: Icon(Icons.search, size: AppSizes.iconMd),
       textInputAction: TextInputAction.search,
+      onChanged: onChanged,
+      onSubmitted: onSubmitted,
     );
   }
 }

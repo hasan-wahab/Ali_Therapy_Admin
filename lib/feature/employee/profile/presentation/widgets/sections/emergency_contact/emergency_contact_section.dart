@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:ali_therapy_admin/feature/employee/profile/domain/profile_domain/entities/profile_entity.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/other/profile_info_row.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/other/profile_section_card.dart';
 
@@ -8,17 +9,22 @@ import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/
 // ============================================================
 
 class EmergencyContactSection extends StatelessWidget {
-  const EmergencyContactSection({super.key});
+  const EmergencyContactSection({super.key, required this.profile});
+
+  final ProfileEntity profile;
 
   @override
   Widget build(BuildContext context) {
-    return const ProfileSectionCard(
+    return ProfileSectionCard(
       title: 'Emergency Contact Information',
       child: Column(
         children: [
-          ProfileInfoRow(label: 'Name', value: 'Shah nam dar'),
-          ProfileInfoRow(label: 'Relationship', value: 'Father'),
-          ProfileInfoRow(label: 'Phone', value: '0312-2218307'),
+          ProfileInfoRow(label: 'Name', value: profile.emergencyName),
+          ProfileInfoRow(
+            label: 'Relationship',
+            value: profile.emergencyRelationship,
+          ),
+          ProfileInfoRow(label: 'Phone', value: profile.emergencyPhone),
         ],
       ),
     );

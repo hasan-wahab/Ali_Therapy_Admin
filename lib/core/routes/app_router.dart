@@ -10,8 +10,7 @@ import 'package:ali_therapy_admin/core/services/auth_local_storage.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_sizes.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
-import 'package:ali_therapy_admin/core/utils/app_constants.dart';
-import 'package:ali_therapy_admin/core/widgets/selectable_page_shell.dart';
+import 'package:ali_therapy_admin/core/widgets/app_back_app_bar.dart';
 import 'package:ali_therapy_admin/feature/patient/active_packages/presentation/pages/active_packages/active_packages_page.dart';
 import 'package:ali_therapy_admin/feature/employee/all_employees/presentation/pages/all_employees/all_employees_page.dart';
 import 'package:ali_therapy_admin/feature/employee/edit_employee/presentation/pages/edit_employee/edit_employee_page.dart';
@@ -25,6 +24,7 @@ import 'package:ali_therapy_admin/feature/patient/consultant_details/presentatio
 import 'package:ali_therapy_admin/feature/patient/invoices/presentation/pages/invoices/invoices_page.dart';
 import 'package:ali_therapy_admin/feature/patient/patient_detail/presentation/pages/patient_detail/patient_detail_page.dart';
 import 'package:ali_therapy_admin/feature/patient/patient_registration/presentation/pages/patient_registration/patient_registration_page.dart';
+import 'package:ali_therapy_admin/feature/employee/profile/domain/profile_domain/entities/profile_entity.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/presentation/pages/add_document/add_document_page.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/presentation/pages/add_education/add_education_page.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/presentation/pages/add_experience/add_experience_page.dart';
@@ -95,12 +95,6 @@ class AppRouter {
       return null;
     },
     routes: [
-      // SelectionArea must be under Navigator Overlay.
-      ShellRoute(
-        builder: (context, state, child) {
-          return SelectablePageShell(child: child);
-        },
-        routes: [
           GoRoute(
             path: AppRoutes.login,
             name: 'login',
@@ -136,9 +130,11 @@ class AppRouter {
             name: 'personalInfo',
             pageBuilder: (context, state) => AppPage.slide(
               state,
-              const ProfileDetailPage(
+              _profileDetailFromExtra(
+                state,
                 title: 'Personal Information',
-                child: PersonalInformationSection(),
+                sectionBuilder: (profile) =>
+                    PersonalInformationSection(profile: profile),
               ),
             ),
           ),
@@ -147,9 +143,11 @@ class AppRouter {
             name: 'emergencyContact',
             pageBuilder: (context, state) => AppPage.slide(
               state,
-              const ProfileDetailPage(
+              _profileDetailFromExtra(
+                state,
                 title: 'Emergency Contact',
-                child: EmergencyContactSection(),
+                sectionBuilder: (profile) =>
+                    EmergencyContactSection(profile: profile),
               ),
             ),
           ),
@@ -158,9 +156,11 @@ class AppRouter {
             name: 'employmentDetails',
             pageBuilder: (context, state) => AppPage.slide(
               state,
-              const ProfileDetailPage(
+              _profileDetailFromExtra(
+                state,
                 title: 'Employment Details',
-                child: EmploymentDetailsSection(),
+                sectionBuilder: (profile) =>
+                    EmploymentDetailsSection(profile: profile),
               ),
             ),
           ),
@@ -169,9 +169,11 @@ class AppRouter {
             name: 'addresses',
             pageBuilder: (context, state) => AppPage.slide(
               state,
-              const ProfileDetailPage(
+              _profileDetailFromExtra(
+                state,
                 title: 'Addresses',
-                child: AddressesSection(),
+                sectionBuilder: (profile) =>
+                    AddressesSection(profile: profile),
               ),
             ),
           ),
@@ -180,9 +182,11 @@ class AppRouter {
             name: 'biography',
             pageBuilder: (context, state) => AppPage.slide(
               state,
-              const ProfileDetailPage(
+              _profileDetailFromExtra(
+                state,
                 title: 'Biography',
-                child: BiographySection(),
+                sectionBuilder: (profile) =>
+                    BiographySection(profile: profile),
               ),
             ),
           ),
@@ -191,9 +195,11 @@ class AppRouter {
             name: 'bankDetails',
             pageBuilder: (context, state) => AppPage.slide(
               state,
-              const ProfileDetailPage(
+              _profileDetailFromExtra(
+                state,
                 title: 'Bank Details',
-                child: BankDetailsSection(),
+                sectionBuilder: (profile) =>
+                    BankDetailsSection(profile: profile),
               ),
             ),
           ),
@@ -202,9 +208,11 @@ class AppRouter {
             name: 'documents',
             pageBuilder: (context, state) => AppPage.slide(
               state,
-              const ProfileDetailPage(
+              _profileDetailFromExtra(
+                state,
                 title: 'Documents',
-                child: DocumentsSection(),
+                sectionBuilder: (profile) =>
+                    DocumentsSection(profile: profile),
               ),
             ),
           ),
@@ -213,9 +221,11 @@ class AppRouter {
             name: 'education',
             pageBuilder: (context, state) => AppPage.slide(
               state,
-              const ProfileDetailPage(
+              _profileDetailFromExtra(
+                state,
                 title: 'Education',
-                child: EducationSection(),
+                sectionBuilder: (profile) =>
+                    EducationSection(profile: profile),
               ),
             ),
           ),
@@ -224,9 +234,11 @@ class AppRouter {
             name: 'experience',
             pageBuilder: (context, state) => AppPage.slide(
               state,
-              const ProfileDetailPage(
+              _profileDetailFromExtra(
+                state,
                 title: 'Experience',
-                child: ExperienceSection(),
+                sectionBuilder: (profile) =>
+                    ExperienceSection(profile: profile),
               ),
             ),
           ),
@@ -235,7 +247,11 @@ class AppRouter {
             name: 'audit',
             pageBuilder: (context, state) => AppPage.slide(
               state,
-              const ProfileDetailPage(title: 'Audit', child: AuditSection()),
+              _profileDetailFromExtra(
+                state,
+                title: 'Audit',
+                sectionBuilder: (profile) => AuditSection(profile: profile),
+              ),
             ),
           ),
           GoRoute(
@@ -453,11 +469,42 @@ class AppRouter {
               );
             },
           ),
-        ],
-      ),
     ],
     errorBuilder: (context, state) =>
-        SelectablePageShell(child: _NotFoundPage(path: state.uri.toString())),
+        _NotFoundPage(path: state.uri.toString()),
+  );
+}
+
+/// Builds a profile section page from View's ProfileEntity (no API).
+Widget _profileDetailFromExtra(
+  GoRouterState state, {
+  required String title,
+  required Widget Function(ProfileEntity profile) sectionBuilder,
+}) {
+  final extra = state.extra;
+  if (extra is! ProfileEntity) {
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: AppBackAppBar(title: title),
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.w),
+            child: Text(
+              'Open this section from Profile after View.',
+              textAlign: TextAlign.center,
+              style: AppTextStyles.body,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  return ProfileDetailPage(
+    title: title,
+    profile: extra,
+    child: sectionBuilder(extra),
   );
 }
 
@@ -470,9 +517,7 @@ class _NotFoundPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: Text(AppConstants.appName, style: AppTextStyles.appBarTitle),
-      ),
+      appBar: const AppBackAppBar(title: 'Page not found'),
       body: SafeArea(
         child: Center(
           child: Padding(

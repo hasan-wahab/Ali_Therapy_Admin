@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:ali_therapy_admin/feature/employee/profile/domain/profile_domain/entities/profile_entity.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/other/profile_info_row.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/other/profile_section_card.dart';
 
@@ -8,16 +9,18 @@ import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/
 // ============================================================
 
 class AuditSection extends StatelessWidget {
-  const AuditSection({super.key});
+  const AuditSection({super.key, required this.profile});
+
+  final ProfileEntity profile;
 
   @override
   Widget build(BuildContext context) {
-    return const ProfileSectionCard(
+    return ProfileSectionCard(
       title: 'Audit',
       child: Column(
         children: [
-          ProfileInfoRow(label: 'Created By', value: 'Super Admin'),
-          ProfileInfoRow(label: 'Updated By', value: 'Super Admin'),
+          ProfileInfoRow(label: 'Created By', value: profile.createdBy),
+          ProfileInfoRow(label: 'Updated By', value: profile.updatedBy),
         ],
       ),
     );

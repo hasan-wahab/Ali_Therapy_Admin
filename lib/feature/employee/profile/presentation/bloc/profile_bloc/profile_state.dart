@@ -15,11 +15,24 @@ class ProfileLoading extends ProfileState {
   const ProfileLoading();
 }
 
-class ProfileError extends ProfileState {
-  final String message;
+class ProfileLoaded extends ProfileState {
+  const ProfileLoaded(this.profile);
 
-  const ProfileError(this.message);
+  final ProfileEntity profile;
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [profile];
+}
+
+class ProfileError extends ProfileState {
+  const ProfileError({
+    required this.title,
+    required this.message,
+  });
+
+  final String title;
+  final String message;
+
+  @override
+  List<Object?> get props => [title, message];
 }

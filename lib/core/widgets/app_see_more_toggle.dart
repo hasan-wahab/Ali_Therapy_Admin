@@ -8,7 +8,7 @@ import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
 // ============================================================
 // APP SEE MORE TOGGLE
 // ------------------------------------------------------------
-// Footer control attached inside expandable card border.
+// Soft footer control inside expandable cards (not a loud bar).
 // ============================================================
 
 class AppSeeMoreToggle extends StatelessWidget {
@@ -24,19 +24,28 @@ class AppSeeMoreToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.primary,
+      color: AppColors.primaryLight,
       child: InkWell(
         onTap: onTap,
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 6.h),
+        splashColor: AppColors.primary.withValues(alpha: 0.08),
+        highlightColor: AppColors.primary.withValues(alpha: 0.04),
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 7.h),
+          decoration: BoxDecoration(
+            border: Border(
+              top: BorderSide(
+                color: AppColors.primary.withValues(alpha: 0.18),
+              ),
+            ),
+          ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 expanded ? 'See less' : 'See all',
                 style: AppTextStyles.bodySmall.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               SizedBox(width: 2.w),
@@ -44,8 +53,8 @@ class AppSeeMoreToggle extends StatelessWidget {
                 expanded
                     ? Icons.keyboard_arrow_up_rounded
                     : Icons.keyboard_arrow_down_rounded,
-                size: AppSizes.iconMd,
-                color: Colors.white,
+                size: AppSizes.iconSm,
+                color: AppColors.primary,
               ),
             ],
           ),

@@ -12,7 +12,7 @@ import 'package:ali_therapy_admin/feature/patient/clinical_history/presentation/
 // CLINICAL HISTORY PAGE
 // ------------------------------------------------------------
 // History Taking Report — mobile layout, all API fields.
-// Uses SingleChildScrollView to avoid SelectionArea+ListView crash.
+// Uses SingleChildScrollView for the full report layout.
 // ============================================================
 
 class ClinicalHistoryPage extends StatelessWidget {

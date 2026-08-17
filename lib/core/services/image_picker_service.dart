@@ -14,9 +14,7 @@ class ImagePickerService {
 
   /// Open the phone gallery and pick one image.
   /// Returns null if the user cancels.
-  Future<XFile?> pickFromGallery({
-    int imageQuality = 80,
-  }) async {
+  Future<XFile?> pickFromGallery({int imageQuality = 80}) async {
     return _picker.pickImage(
       source: ImageSource.gallery,
       imageQuality: imageQuality,
@@ -25,9 +23,7 @@ class ImagePickerService {
 
   /// Open the camera and take one photo.
   /// Returns null if the user cancels.
-  Future<XFile?> pickFromCamera({
-    int imageQuality = 80,
-  }) async {
+  Future<XFile?> pickFromCamera({int imageQuality = 80}) async {
     return _picker.pickImage(
       source: ImageSource.camera,
       imageQuality: imageQuality,

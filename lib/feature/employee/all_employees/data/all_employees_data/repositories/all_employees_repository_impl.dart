@@ -5,7 +5,7 @@ import 'package:ali_therapy_admin/core/network/network_info.dart';
 import 'package:ali_therapy_admin/core/utils/app_error_logger.dart';
 import 'package:ali_therapy_admin/core/utils/error_mapper.dart';
 import 'package:ali_therapy_admin/core/utils/typedefs.dart';
-import '../../../domain/all_employees_domain/entities/employee_entity.dart';
+import '../../../domain/all_employees_domain/entities/employees_page_entity.dart';
 import '../../../domain/all_employees_domain/repositories/all_employees_repository.dart';
 
 // ============================================================
@@ -13,9 +13,8 @@ import '../../../domain/all_employees_domain/repositories/all_employees_reposito
 // ------------------------------------------------------------
 // Flow:
 //   1. Check internet
-//   2. Call remote data source (API)
-//   3. Map models → entities
-//   4. Return list (or Failure)
+//   2. Call remote data source (API page)
+//   3. Map model → entity
 // ============================================================
 
 class AllEmployeesRepositoryImpl implements AllEmployeesRepository {
@@ -28,42 +27,36 @@ class AllEmployeesRepositoryImpl implements AllEmployeesRepository {
   final NetworkInfo networkInfo;
 
   @override
-  ResultFuture<List<EmployeeEntity>> getAllEmployees() async {
+  ResultFuture<EmployeesPageEntity> getEmployeesPage({
+    required int page,
+  }) async {
     if (!await networkInfo.isConnected) {
       const failure = NetworkFailure(
         'No internet connection. Please try again.',
       );
       AppErrorLogger.logFailure(
         failure,
-        where: 'AllEmployeesRepository.getAllEmployees',
+        where: 'AllEmployeesRepository.getEmployeesPage',
       );
       return Result.failure(failure);
     }
 
     try {
-      final models = await remoteDataSource.getAllEmployees();
-      final employees = models.map((model) => model.toEntity()).toList();
-
-      // Descending by id — newest / last API items first on screen.
-      employees.sort((a, b) {
-        final idA = int.tryParse(a.id) ?? 0;
-        final idB = int.tryParse(b.id) ?? 0;
-        return idA.compareTo(idB);
-      });
-
-      return Result.success(employees);
+      final model = await remoteDataSource.getEmployeesPage(page: page);
+      // Keep API order as-is (no id sort, no reverse).
+      return Result.success(model.toEntity());
     } on AppException catch (e) {
       final failure = ErrorMapper.toFailure(e);
       AppErrorLogger.logFailure(
         failure,
-        where: 'AllEmployeesRepository.getAllEmployees',
+        where: 'AllEmployeesRepository.getEmployeesPage',
       );
       return Result.failure(failure);
     } catch (e) {
       final failure = ErrorMapper.fromUnknown(e);
       AppErrorLogger.logFailure(
         failure,
-        where: 'AllEmployeesRepository.getAllEmployees',
+        where: 'AllEmployeesRepository.getEmployeesPage',
       );
       return Result.failure(failure);
     }

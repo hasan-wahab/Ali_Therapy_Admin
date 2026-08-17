@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
-import 'package:ali_therapy_admin/core/theme/app_sizes.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
 
 // ============================================================
 // DASHBOARD STAT CARD
 // ------------------------------------------------------------
-// Small card that shows one number + label.
+// Colored header title + light body with big value (and optional
+// subtitle). Matches the web dashboard summary cards.
 // ============================================================
 
 class DashboardStatCard extends StatelessWidget {
@@ -16,43 +16,81 @@ class DashboardStatCard extends StatelessWidget {
     super.key,
     required this.title,
     required this.value,
-    required this.icon,
-    this.color = AppColors.primary,
+    required this.accentColor,
+    this.subtitle,
   });
 
   final String title;
   final String value;
-  final IconData icon;
-  final Color color;
+  final Color accentColor;
+  final String? subtitle;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(16.w),
+      width: double.infinity,
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12.r),
+        borderRadius: BorderRadius.circular(10.r),
         border: Border.all(color: AppColors.border),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 44.w,
-            height: 44.w,
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(10.r),
-            ),
-            child: Icon(icon, color: color, size: AppSizes.iconMd),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.textPrimary.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
-          SizedBox(width: 12.w),
-          Expanded(
+        ],
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Colored header
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
+            color: accentColor,
+            child: Text(
+              title,
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.textOnPrimary,
+                fontWeight: FontWeight.w700,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+
+          // Value body — subtitle line always reserved (equal card height)
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.fromLTRB(10.w, 12.h, 10.w, 12.h),
+            color: AppColors.softGray,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: AppTextStyles.bodySmall),
+                Text(
+                  value,
+                  style: AppTextStyles.heading3.copyWith(
+                    color: accentColor,
+                    fontWeight: FontWeight.w800,
+                    height: 1.1,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
                 SizedBox(height: 4.h),
-                Text(value, style: AppTextStyles.heading3),
+                Text(
+                  (subtitle != null && subtitle!.trim().isNotEmpty)
+                      ? subtitle!
+                      : ' ',
+                  style: AppTextStyles.label.copyWith(
+                    color: AppColors.textMuted,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ],
             ),
           ),

@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
-import 'package:ali_therapy_admin/core/theme/app_sizes.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
-import 'package:ali_therapy_admin/core/widgets/app_text_field.dart';
+import 'package:ali_therapy_admin/core/widgets/app_search_filter_section.dart';
 
 // ============================================================
 // REFERRED PATIENTS TOOLBAR
@@ -50,13 +49,8 @@ class ReferredPatientsToolbar extends StatelessWidget {
             ],
           ),
           SizedBox(height: 10.h),
-          AppTextField(
-            hintText: 'Search by name, CNIC, or phone...',
-            prefixIcon: Icon(
-              Icons.search,
-              size: AppSizes.iconMd,
-              color: AppColors.textMuted,
-            ),
+          const AppSearchFilterSection(
+            searchHint: 'Search by name, CNIC, or phone...',
           ),
         ],
       ),

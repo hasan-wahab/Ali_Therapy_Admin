@@ -25,6 +25,7 @@ import 'package:ali_therapy_admin/core/widgets/app_expandable_card.dart';
 class EmployeeCard extends StatelessWidget {
   const EmployeeCard({
     super.key,
+    required this.id,
     required this.name,
     required this.email,
     required this.phone,
@@ -42,6 +43,8 @@ class EmployeeCard extends StatelessWidget {
     this.initiallyExpanded = false,
   });
 
+  /// API row id — used for View → GET employees/{id}.
+  final String id;
   final String name;
   final String email;
   final String phone;
@@ -67,7 +70,7 @@ class EmployeeCard extends StatelessWidget {
     }
 
     if (type == EmployeeActionType.view) {
-      AppNavigation.openProfile(context);
+      AppNavigation.openProfile(context, employeeId: id);
       return;
     }
 

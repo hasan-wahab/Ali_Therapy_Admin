@@ -37,20 +37,30 @@ class AppTheme {
         onError: AppColors.textOnPrimary,
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.textOnPrimary,
+        backgroundColor: AppColors.background,
+        foregroundColor: AppColors.primary,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
+        scrolledUnderElevation: 0,
         centerTitle: true,
         systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
-          statusBarIconBrightness: Brightness.light,
+          statusBarIconBrightness: Brightness.dark,
+          statusBarBrightness: Brightness.light,
         ),
         titleTextStyle: TextStyle(
           fontSize: 18.sp,
-          fontWeight: FontWeight.w600,
-          color: AppColors.textOnPrimary,
+          fontWeight: FontWeight.w700,
+          color: AppColors.primary,
         ),
-        iconTheme: const IconThemeData(color: AppColors.iconOnPrimary),
+        iconTheme: IconThemeData(
+          color: AppColors.primary,
+          size: AppSizes.iconLg,
+        ),
+        actionsIconTheme: IconThemeData(
+          color: AppColors.primary,
+          size: AppSizes.iconLg,
+        ),
       ),
       cardTheme: CardThemeData(
         color: AppColors.surface,
@@ -173,8 +183,10 @@ class AppTheme {
       ),
       appBarTheme: AppBarTheme(
         backgroundColor: AppColors.surfaceDark,
-        foregroundColor: AppColors.textPrimaryDark,
+        foregroundColor: AppColors.primary,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
+        scrolledUnderElevation: 0,
         centerTitle: true,
         systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
@@ -182,8 +194,16 @@ class AppTheme {
         ),
         titleTextStyle: TextStyle(
           fontSize: 18.sp,
-          fontWeight: FontWeight.w600,
-          color: AppColors.textPrimaryDark,
+          fontWeight: FontWeight.w700,
+          color: AppColors.primary,
+        ),
+        iconTheme: IconThemeData(
+          color: AppColors.primary,
+          size: AppSizes.iconLg,
+        ),
+        actionsIconTheme: IconThemeData(
+          color: AppColors.primary,
+          size: AppSizes.iconLg,
         ),
       ),
       cardTheme: CardThemeData(

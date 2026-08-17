@@ -8,6 +8,6 @@ import '../entities/profile_entity.dart';
 // ============================================================
 
 abstract class ProfileRepository {
-  /// Load data for this feature. Replace with real methods later.
-  ResultFuture<ProfileEntity> getProfile();
+  /// Load full employee profile by id.
+  ResultFuture<ProfileEntity> getProfile({required String employeeId});
 }

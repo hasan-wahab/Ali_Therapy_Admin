@@ -5,6 +5,18 @@ alwaysApply: true
 
 # Ali Therapy Admin — Coding Rules
 
+## Before EVERY task (mandatory — do this first)
+
+Never invent a new pattern. Before writing or changing code:
+
+1. **Read the guide** — `lib/feature/FEATURE_FOLDER_GUIDE.md`
+2. **Match folder structure** — copy an existing feature of the same type (`auth` for clean architecture; `all_employees` / `profile` for list→view; `reports` for grids)
+3. **Match design / theme** — `AppColors`, `AppTextStyles`, `AppSizes`, `AppBackAppBar`, ScreenUtil (`.w` / `.h` / `.sp` / `.r`), shared widgets in `lib/core/widgets/`
+4. **Match code design & flow** — `UI → Event → Bloc → UseCase → Repository → DataSource → State → UI`; navigation via `AppNavigation` + `extra`; loading via `AppLoadingOverlay` / `AppLoadingDialog`
+5. **Copy, then adapt** — open a similar working screen/file and follow it; do not redesign folders, AppBars, cards, or API wiring style
+
+If unsure which file to copy, prefer the closest existing feature over creating something new.
+
 ## Must follow every time
 
 1. **Beginner-friendly code**
@@ -89,12 +101,12 @@ alwaysApply: true
    - Icons: always `AppSizes.iconSm/Md/Lg/Xl`.
    - Text inputs: always `AppTextField` — never raw `TextField` / `TextFormField`.
 
-7. **All text must be copyable (mandatory)**
-   - App-wide copy is enabled via `SelectablePageShell` + `SelectionArea` in `AppRouter` (`ShellRoute`).
-   - Prefer normal `Text` / `Text.rich` — do **not** block selection.
-   - Do **not** wrap whole screens in `SelectionContainer.disabled` unless a control must ignore selection (rare).
-   - New screens / widgets must keep this behavior — never ship non-copyable body text.
-   - Never put `SelectionArea` in `MaterialApp.builder` (no Overlay → crash).
+7. **Shared AppBar (LOCKED — same look everywhere)**
+   - Screens with back: always `AppBackAppBar` (`lib/core/widgets/app_back_app_bar.dart`) or `FormBackAppBar` alias.
+   - Light background, centered teal title (`AppTextStyles.appBarTitle`), teal back/actions icons, no elevation.
+   - Do NOT invent a custom AppBar per screen (no solid primary bar).
+   - Dashboard uses `DashboardAppBar` with the **same** colors/title style (no back).
+   - Report screens: `AppBackAppBar` + `AppSearchFilterSection` (search + filter button row; panel toggles below).
 
 8. **UI-only first when requested**
    - Do not mix UI with logic / state management.
@@ -142,7 +154,8 @@ alwaysApply: true
 4. **Reports**
    - Open from home Quick Access → reports sheet; sheet stays open when pushing a report
      (do not pop sheet before navigate).
-   - Shared pieces: `ReportSearchAppBar`, `report_filters_header`, filter field labels.
+   - Shared pieces: `AppSearchFilterSection`, `report_filters_header`, filter field labels.
+   - List/report search+filter layout (locked): one row = search field + filter button; filter panel opens below (same as All Employees / All Patients).
 
 5. **Navigation animation**
    - Every route: `pageBuilder` + `AppPage.slide(state, child)`.

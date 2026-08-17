@@ -5,9 +5,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ali_therapy_admin/core/di/service_locator.dart';
 import 'package:ali_therapy_admin/core/routes/navigation_helper.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
-import 'package:ali_therapy_admin/core/theme/app_sizes.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
 import 'package:ali_therapy_admin/core/utils/app_snackbar.dart';
+import 'package:ali_therapy_admin/core/widgets/app_back_app_bar.dart';
 import 'package:ali_therapy_admin/core/widgets/app_loading_dialog.dart';
 import 'package:ali_therapy_admin/feature/auth/presentation/bloc/change_password_bloc/change_password_bloc.dart';
 import 'package:ali_therapy_admin/feature/auth/presentation/widgets/change_password_form_card.dart';
@@ -29,18 +29,7 @@ class ChangePasswordPage extends StatelessWidget {
       create: (_) => sl<ChangePasswordBloc>(),
       child: Scaffold(
         backgroundColor: AppColors.background,
-        appBar: AppBar(
-          backgroundColor: AppColors.background,
-          elevation: 0,
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: AppColors.primary,
-              size: AppSizes.iconLg,
-            ),
-            onPressed: () => AppNavigation.back(context),
-          ),
-        ),
+        appBar: const AppBackAppBar(title: 'Change Password'),
         body: BlocConsumer<ChangePasswordBloc, ChangePasswordState>(
           listener: (context, state) {
             if (state is ChangePasswordSuccess) {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:ali_therapy_admin/core/routes/route_names.dart';
+import 'package:ali_therapy_admin/feature/employee/profile/domain/profile_domain/entities/profile_entity.dart';
 
 // ============================================================
 // NAVIGATION HELPER
@@ -28,13 +29,17 @@ class AppNavigation {
     context.push(AppRoutes.changePassword);
   }
 
+  /// Dashboard shortcut — profile View needs an employee id from the list.
   static void goProfile(BuildContext context) {
     context.go(AppRoutes.profile);
   }
 
-  /// Open profile hub (keeps previous screen in stack).
-  static void openProfile(BuildContext context) {
-    context.push(AppRoutes.profile);
+  /// All Employees → View: open hub and load GET employees/{employeeId}.
+  static void openProfile(
+    BuildContext context, {
+    required String employeeId,
+  }) {
+    context.push(AppRoutes.profile, extra: employeeId);
   }
 
   static void goHome(BuildContext context) {
@@ -45,9 +50,13 @@ class AppNavigation {
     context.push(AppRoutes.home);
   }
 
-  /// Open a profile section detail screen (keeps hub in stack).
-  static void openProfileSection(BuildContext context, String route) {
-    context.push(route);
+  /// Open a profile section — reuses View data (no second API call).
+  static void openProfileSection(
+    BuildContext context,
+    String route, {
+    required ProfileEntity profile,
+  }) {
+    context.push(route, extra: profile);
   }
 
   static void openAddDocument(BuildContext context) {

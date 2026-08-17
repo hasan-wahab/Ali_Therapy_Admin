@@ -4,24 +4,11 @@ import 'package:ali_therapy_admin/feature/employee/all_employees/domain/all_empl
 // ============================================================
 // EMPLOYEE CARD MAPPER
 // ------------------------------------------------------------
-// Maps API EmployeeEntity → fields the card needs.
-// Missing API fields stay hardcoded (do not remove from UI).
+// Maps API EmployeeEntity → fields the card shows.
 // ============================================================
 
 class EmployeeCardMapper {
   EmployeeCardMapper._();
-
-  /// Hardcoded — API has no roles list.
-  static const List<String> hardcodedRoles = ['Employee'];
-
-  /// Hardcoded — API has no tenure field.
-  static const String hardcodedTenure = '-';
-
-  /// Hardcoded — API only has created_by id, not a display name.
-  static const String hardcodedCreatedBy = 'System';
-
-  /// Hardcoded — API has is_login, not employment Active/Inactive.
-  static const bool hardcodedIsActive = true;
 
   static String name(EmployeeEntity e) => e.name;
 
@@ -31,39 +18,30 @@ class EmployeeCardMapper {
 
   static String cnic(EmployeeEntity e) => e.cnic;
 
-  /// Prefer username (DAT-xxx); fall back to id.
-  static String employeeId(EmployeeEntity e) {
-    if (e.username != '_') return e.username;
-    return e.id;
-  }
+  static String employeeId(EmployeeEntity e) => e.employeeId;
 
   static String joinedDate(EmployeeEntity e) {
-    final parsed = Helpers.tryParseDate(e.createdAt);
-    if (parsed == null) return e.createdAt;
+    final parsed = Helpers.tryParseDate(e.joinedDate);
+    if (parsed == null) return e.joinedDate;
     return Helpers.formatDate(parsed, pattern: 'MMM dd, yyyy');
   }
 
-  /// Clinic · Shift — same style as the old sample cards.
-  static String shift(EmployeeEntity e) {
-    final clinicName = _optionalName(e.clinic?.name);
-    final shiftName = _optionalName(e.shift?.name);
+  static String tenure(EmployeeEntity e) => e.tenure;
 
-    if (clinicName != null && shiftName != null) {
-      return '$clinicName · $shiftName';
-    }
-    if (shiftName != null) return shiftName;
-    if (clinicName != null) return clinicName;
-    return '_';
+  static List<String> roles(EmployeeEntity e) {
+    if (e.roles.isEmpty) return const ['_'];
+    return e.roles;
   }
+
+  static String shift(EmployeeEntity e) => e.shift;
+
+  static String createdBy(EmployeeEntity e) => e.createdBy;
+
+  static bool isActive(EmployeeEntity e) => e.isActive;
 
   /// Null when missing so avatar can show placeholder.
   static String? imageUrl(EmployeeEntity e) {
-    if (e.profilePicture == '_') return null;
-    return e.profilePicture;
-  }
-
-  static String? _optionalName(String? value) {
-    if (value == null || value == '_' || value.trim().isEmpty) return null;
-    return value;
+    if (e.imageUrl == '_') return null;
+    return e.imageUrl;
   }
 }

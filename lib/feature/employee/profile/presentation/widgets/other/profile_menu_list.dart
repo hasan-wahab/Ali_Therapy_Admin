@@ -3,16 +3,20 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/routes/navigation_helper.dart';
 import 'package:ali_therapy_admin/core/routes/route_names.dart';
+import 'package:ali_therapy_admin/feature/employee/profile/domain/profile_domain/entities/profile_entity.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/other/profile_menu_option.dart';
 
 // ============================================================
 // PROFILE MENU LIST
 // ------------------------------------------------------------
 // Same 2-column tile height as ReportsGrid.
+// Passes already-loaded profile to sections (no new API call).
 // ============================================================
 
 class ProfileMenuList extends StatelessWidget {
-  const ProfileMenuList({super.key});
+  const ProfileMenuList({super.key, required this.profile});
+
+  final ProfileEntity profile;
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +27,7 @@ class ProfileMenuList extends StatelessWidget {
         onTap: () => AppNavigation.openProfileSection(
           context,
           AppRoutes.personalInfo,
+          profile: profile,
         ),
       ),
       (
@@ -31,6 +36,7 @@ class ProfileMenuList extends StatelessWidget {
         onTap: () => AppNavigation.openProfileSection(
           context,
           AppRoutes.emergencyContact,
+          profile: profile,
         ),
       ),
       (
@@ -39,6 +45,7 @@ class ProfileMenuList extends StatelessWidget {
         onTap: () => AppNavigation.openProfileSection(
           context,
           AppRoutes.employmentDetails,
+          profile: profile,
         ),
       ),
       (
@@ -47,6 +54,7 @@ class ProfileMenuList extends StatelessWidget {
         onTap: () => AppNavigation.openProfileSection(
           context,
           AppRoutes.addresses,
+          profile: profile,
         ),
       ),
       (
@@ -55,6 +63,7 @@ class ProfileMenuList extends StatelessWidget {
         onTap: () => AppNavigation.openProfileSection(
           context,
           AppRoutes.biography,
+          profile: profile,
         ),
       ),
       (
@@ -63,6 +72,7 @@ class ProfileMenuList extends StatelessWidget {
         onTap: () => AppNavigation.openProfileSection(
           context,
           AppRoutes.bankDetails,
+          profile: profile,
         ),
       ),
       (
@@ -71,6 +81,7 @@ class ProfileMenuList extends StatelessWidget {
         onTap: () => AppNavigation.openProfileSection(
           context,
           AppRoutes.documents,
+          profile: profile,
         ),
       ),
       (
@@ -79,6 +90,7 @@ class ProfileMenuList extends StatelessWidget {
         onTap: () => AppNavigation.openProfileSection(
           context,
           AppRoutes.education,
+          profile: profile,
         ),
       ),
       (
@@ -87,6 +99,7 @@ class ProfileMenuList extends StatelessWidget {
         onTap: () => AppNavigation.openProfileSection(
           context,
           AppRoutes.experience,
+          profile: profile,
         ),
       ),
       (
@@ -95,6 +108,7 @@ class ProfileMenuList extends StatelessWidget {
         onTap: () => AppNavigation.openProfileSection(
           context,
           AppRoutes.audit,
+          profile: profile,
         ),
       ),
     ];

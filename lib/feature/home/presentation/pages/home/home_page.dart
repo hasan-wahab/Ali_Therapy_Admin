@@ -5,16 +5,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ali_therapy_admin/core/di/service_locator.dart';
 import 'package:ali_therapy_admin/core/routes/navigation_helper.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
-import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
-import 'package:ali_therapy_admin/core/utils/app_constants.dart';
 import 'package:ali_therapy_admin/core/utils/app_snackbar.dart';
 import 'package:ali_therapy_admin/core/widgets/app_loading_dialog.dart';
 import 'package:ali_therapy_admin/feature/auth/presentation/bloc/login_bloc/auth_bloc.dart';
 import 'package:ali_therapy_admin/feature/home/presentation/widgets/dashboard_app_bar.dart';
 import 'package:ali_therapy_admin/feature/home/presentation/widgets/dashboard_create_patient_button.dart';
 import 'package:ali_therapy_admin/feature/home/presentation/widgets/dashboard_menu_list.dart';
-import 'package:ali_therapy_admin/feature/home/presentation/widgets/dashboard_search_field.dart';
 import 'package:ali_therapy_admin/feature/home/presentation/widgets/dashboard_section_title.dart';
+import 'package:ali_therapy_admin/feature/home/presentation/widgets/dashboard_stats_grid.dart';
 
 // ============================================================
 // HOME PAGE (DASHBOARD)
@@ -59,20 +57,15 @@ class HomePage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text('Welcome', style: AppTextStyles.bodySmall),
-                        SizedBox(height: 2.h),
-                        Text(
-                          AppConstants.appName,
-                          style: AppTextStyles.heading2,
-                        ),
-                        SizedBox(height: 16.h),
-                        const DashboardSearchField(),
-                        SizedBox(height: 14.h),
-                        const DashboardCreatePatientButton(),
+                        const DashboardSectionTitle(title: 'Overview'),
+                        SizedBox(height: 10.h),
+                        const DashboardStatsGrid(),
                         SizedBox(height: 22.h),
                         const DashboardSectionTitle(title: 'Quick Access'),
                         SizedBox(height: 10.h),
                         const DashboardMenuList(),
+                        SizedBox(height: 22.h),
+                        const DashboardCreatePatientButton(),
                       ],
                     ),
                   ),

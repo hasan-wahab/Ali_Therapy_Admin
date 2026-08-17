@@ -10,8 +10,7 @@ import 'package:ali_therapy_admin/feature/employee/all_employees/presentation/wi
 // ============================================================
 // EMPLOYEE CARD LIST
 // ------------------------------------------------------------
-// Builds cards from API employees.
-// Missing fields (role, tenure, …) stay hardcoded via mapper.
+// Builds cards from API employees (card fields from API).
 // ============================================================
 
 class EmployeeCardList extends StatelessWidget {
@@ -41,18 +40,19 @@ class EmployeeCardList extends StatelessWidget {
 
         return EmployeeCard(
           initiallyExpanded: index == 0,
+          id: employee.id,
           name: EmployeeCardMapper.name(employee),
           email: EmployeeCardMapper.email(employee),
           phone: EmployeeCardMapper.phone(employee),
           cnic: EmployeeCardMapper.cnic(employee),
           employeeId: EmployeeCardMapper.employeeId(employee),
           joinedDate: EmployeeCardMapper.joinedDate(employee),
-          tenure: EmployeeCardMapper.hardcodedTenure,
-          roles: EmployeeCardMapper.hardcodedRoles,
+          tenure: EmployeeCardMapper.tenure(employee),
+          roles: EmployeeCardMapper.roles(employee),
           shift: EmployeeCardMapper.shift(employee),
-          createdBy: EmployeeCardMapper.hardcodedCreatedBy,
+          createdBy: EmployeeCardMapper.createdBy(employee),
           imageUrl: EmployeeCardMapper.imageUrl(employee),
-          isActive: EmployeeCardMapper.hardcodedIsActive,
+          isActive: EmployeeCardMapper.isActive(employee),
         );
       },
     );

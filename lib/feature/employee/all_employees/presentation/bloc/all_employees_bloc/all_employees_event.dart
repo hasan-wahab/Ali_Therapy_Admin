@@ -7,15 +7,22 @@ abstract class AllEmployeesEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-/// Page opened / first load.
+/// Page opened / first load (page 1).
 class AllEmployeesStarted extends AllEmployeesEvent {
   const AllEmployeesStarted();
 }
 
-/// Pull-to-refresh — keep old list on screen (no skeleton).
-/// [completer] finishes when API call ends (so UI can hide indicator).
+/// Pull-to-refresh — reload page 1 (list stays visible).
 class AllEmployeesRefreshed extends AllEmployeesEvent {
   const AllEmployeesRefreshed({required this.completer});
 
   final Completer<void> completer;
+
+  @override
+  List<Object?> get props => [completer];
+}
+
+/// Scroll near bottom — load next page and append.
+class AllEmployeesLoadMore extends AllEmployeesEvent {
+  const AllEmployeesLoadMore();
 }

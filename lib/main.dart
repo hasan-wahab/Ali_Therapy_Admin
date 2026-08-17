@@ -50,8 +50,6 @@ class AliTherapyAdminApp extends StatelessWidget {
           darkTheme: AppTheme.dark,
           themeMode: ThemeMode.light,
 
-          // Copyable text: SelectionArea is in AppRouter ShellRoute
-          // (must be under Navigator Overlay — not here).
           routerConfig: AppRouter.router,
         );
       },

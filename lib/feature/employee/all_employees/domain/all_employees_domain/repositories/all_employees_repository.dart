@@ -1,5 +1,6 @@
+import 'package:ali_therapy_admin/feature/employee/all_employees/domain/all_employees_domain/entities/employees_page_entity.dart';
+
 import 'package:ali_therapy_admin/core/utils/typedefs.dart';
-import '../entities/employee_entity.dart';
 
 // ============================================================
 // ALLEMPLOYEES REPOSITORY CONTRACT (Domain)
@@ -8,6 +9,6 @@ import '../entities/employee_entity.dart';
 // ============================================================
 
 abstract class AllEmployeesRepository {
-  /// Load all employees from API.
-  ResultFuture<List<EmployeeEntity>> getAllEmployees();
+  /// Load one page of employees (Laravel ?page=).
+  ResultFuture<EmployeesPageEntity> getEmployeesPage({required int page});
 }

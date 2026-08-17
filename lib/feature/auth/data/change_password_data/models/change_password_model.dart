@@ -24,4 +24,5 @@ class ChangePasswordModel extends ChangePasswordEntity {
   Map<String, dynamic> toJson() => {'message': message};
 
   ChangePasswordEntity toEntity() => ChangePasswordEntity(message: message);
+
 }
