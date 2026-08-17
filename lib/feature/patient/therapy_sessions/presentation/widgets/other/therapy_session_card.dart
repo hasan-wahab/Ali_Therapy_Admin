@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
+import 'package:ali_therapy_admin/core/widgets/app_tablet_fields_grid.dart';
 import 'package:ali_therapy_admin/feature/patient/therapy_sessions/presentation/widgets/other/therapy_session_meta_field.dart';
 import 'package:ali_therapy_admin/feature/patient/therapy_sessions/presentation/widgets/other/therapy_session_modality_chip.dart';
 import 'package:ali_therapy_admin/core/widgets/app_expandable_card.dart';
@@ -98,37 +99,25 @@ class TherapySessionCard extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 6.h),
-                Row(
+                AppTabletFieldsGrid(
+                  phoneColumns: 2,
+                  tabletColumns: 2,
                   children: [
-                    Expanded(
-                      child: TherapySessionMetaField(
-                        label: 'Name',
-                        value: patientName,
-                      ),
+                    TherapySessionMetaField(
+                      label: 'Name',
+                      value: patientName,
                     ),
-                    SizedBox(width: 8.w),
-                    Expanded(
-                      child: TherapySessionMetaField(
-                        label: 'CNIC',
-                        value: cnic,
-                      ),
+                    TherapySessionMetaField(
+                      label: 'CNIC',
+                      value: cnic,
                     ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TherapySessionMetaField(
-                        label: 'Age / Gender',
-                        value: ageGender,
-                      ),
+                    TherapySessionMetaField(
+                      label: 'Age / Gender',
+                      value: ageGender,
                     ),
-                    SizedBox(width: 8.w),
-                    Expanded(
-                      child: TherapySessionMetaField(
-                        label: 'Therapist',
-                        value: therapist,
-                      ),
+                    TherapySessionMetaField(
+                      label: 'Therapist',
+                      value: therapist,
                     ),
                   ],
                 ),
@@ -136,27 +125,21 @@ class TherapySessionCard extends StatelessWidget {
                 Divider(height: 16.h, color: AppColors.divider),
 
                 // Session times
-                Row(
+                AppTabletFieldsGrid(
+                  phoneColumns: 3,
+                  tabletColumns: 2,
                   children: [
-                    Expanded(
-                      child: TherapySessionMetaField(
-                        label: 'Duration',
-                        value: duration,
-                      ),
+                    TherapySessionMetaField(
+                      label: 'Duration',
+                      value: duration,
                     ),
-                    SizedBox(width: 8.w),
-                    Expanded(
-                      child: TherapySessionMetaField(
-                        label: 'Started',
-                        value: startedAt,
-                      ),
+                    TherapySessionMetaField(
+                      label: 'Started',
+                      value: startedAt,
                     ),
-                    SizedBox(width: 8.w),
-                    Expanded(
-                      child: TherapySessionMetaField(
-                        label: 'Ended',
-                        value: endedAt,
-                      ),
+                    TherapySessionMetaField(
+                      label: 'Ended',
+                      value: endedAt,
                     ),
                   ],
                 ),
@@ -188,18 +171,22 @@ class TherapySessionCard extends StatelessWidget {
                 ),
                 SizedBox(height: 6.h),
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                      child: TherapySessionMetaField(
-                        label: 'Date',
-                        value: nextDate,
-                      ),
-                    ),
-                    SizedBox(width: 8.w),
-                    Expanded(
-                      child: TherapySessionMetaField(
-                        label: 'Time',
-                        value: nextTimeSlot,
+                      child: AppTabletFieldsGrid(
+                        phoneColumns: 2,
+                        tabletColumns: 2,
+                        children: [
+                          TherapySessionMetaField(
+                            label: 'Date',
+                            value: nextDate,
+                          ),
+                          TherapySessionMetaField(
+                            label: 'Time',
+                            value: nextTimeSlot,
+                          ),
+                        ],
                       ),
                     ),
                     Container(

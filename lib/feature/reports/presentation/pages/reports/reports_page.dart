@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:ali_therapy_admin/core/routes/route_names.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/utils/app_snackbar.dart';
+import 'package:ali_therapy_admin/core/widgets/app_tablet_safe_area.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/form/form_back_app_bar.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/report_type.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/reports_grid.dart';
@@ -63,7 +64,7 @@ class ReportsPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: const FormBackAppBar(title: 'Reports'),
-      body: SafeArea(
+      body: AppTabletSafeArea(
         child: ListView(
           padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 24.h),
           children: [

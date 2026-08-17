@@ -163,6 +163,16 @@ If unsure which file to copy, prefer the closest existing feature over creating 
 6. **UI-first**
    - Ship UI with sample data first; wire APIs / Cubit later when asked.
 
+7. **Tablet UI (additive only — never change approved mobile)**
+   - Phone ScreenUtil design size stays `390×844` (`AppConstants`).
+   - Tablet design size: portrait `834×1194`, landscape `1194×834` (`AppDevice` + `main.dart`).
+   - Branch with `AppDevice.isTablet(context)` — keep the mobile widget tree identical.
+   - Put tablet layouts in separate widgets (e.g. `dashboard_tablet_body.dart`, `profile_tablet_overview.dart`).
+   - Fields / filters / detail rows that can sit side-by-side → `AppTabletFieldsGrid`
+     (`phoneColumns` = old layout, `tabletColumns` = 2 or 3).
+   - Page shells → `AppTabletSafeArea` (same as `SafeArea` on phone; centered max-width on tablet).
+   - Same colors / AppBar / typography — only spacing and composition change.
+
 When updating UI later: **copy an existing screen of the same type** — do not invent a new pattern.
 
 ## Dependency Injection

@@ -116,13 +116,14 @@ class NotFoundFailure extends Failure {
         );
 }
 
-/// API call took too long.
+/// API call took too long / unstable connection after retries.
 class TimeoutFailure extends Failure {
   const TimeoutFailure([
-    String message = 'Request timed out. Please try again.',
+    String message =
+        'Connection is unstable. Please check your internet and try again.',
     String? debugDetail,
   ]) : super(
-          title: 'Timeout',
+          title: 'Connection Issue',
           message: message,
           debugDetail: debugDetail,
         );

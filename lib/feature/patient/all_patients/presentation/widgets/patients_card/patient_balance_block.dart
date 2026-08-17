@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
+import 'package:ali_therapy_admin/core/widgets/app_tablet_fields_grid.dart';
 import 'package:ali_therapy_admin/feature/patient/all_patients/presentation/widgets/patients_card/patient_labeled_amount.dart';
 import 'package:ali_therapy_admin/feature/patient/all_patients/presentation/widgets/patients_card/patient_section_title.dart';
 
@@ -46,27 +47,33 @@ class PatientBalanceBlock extends StatelessWidget {
         children: [
           const PatientSectionTitle(title: 'Remaining Balance'),
           SizedBox(height: 6.h),
-          PatientLabeledAmount(label: 'Total Billed', amount: totalBilled),
-          PatientLabeledAmount(
-            label: 'Paid',
-            amount: paid,
-            amountColor: AppColors.success,
-          ),
-          PatientLabeledAmount(
-            label: 'Discount',
-            amount: discount,
-            amountColor: AppColors.primary,
-          ),
-          PatientLabeledAmount(
-            label: 'Insurance',
-            amount: insurance,
-            amountColor: AppColors.primary,
-          ),
-          PatientLabeledAmount(
-            label: 'Remaining',
-            amount: remaining,
-            amountColor: _hasRemaining ? AppColors.error : AppColors.success,
-            isBold: true,
+          AppTabletFieldsGrid(
+            phoneColumns: 1,
+            tabletColumns: 2,
+            children: [
+              PatientLabeledAmount(label: 'Total Billed', amount: totalBilled),
+              PatientLabeledAmount(
+                label: 'Paid',
+                amount: paid,
+                amountColor: AppColors.success,
+              ),
+              PatientLabeledAmount(
+                label: 'Discount',
+                amount: discount,
+                amountColor: AppColors.primary,
+              ),
+              PatientLabeledAmount(
+                label: 'Insurance',
+                amount: insurance,
+                amountColor: AppColors.primary,
+              ),
+              PatientLabeledAmount(
+                label: 'Remaining',
+                amount: remaining,
+                amountColor: _hasRemaining ? AppColors.error : AppColors.success,
+                isBold: true,
+              ),
+            ],
           ),
         ],
       ),

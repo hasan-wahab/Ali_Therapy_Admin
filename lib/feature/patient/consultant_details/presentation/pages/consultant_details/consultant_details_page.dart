@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
+import 'package:ali_therapy_admin/core/utils/app_device.dart';
+import 'package:ali_therapy_admin/core/widgets/app_tablet_fields_grid.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/form/form_back_app_bar.dart';
 import 'package:ali_therapy_admin/feature/patient/consultant_details/presentation/widgets/other/consultant_field.dart';
 import 'package:ali_therapy_admin/feature/patient/consultant_details/presentation/widgets/other/consultant_list_field.dart';
@@ -22,13 +24,12 @@ class ConsultantDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: const FormBackAppBar(title: 'Consultant Details'),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 24.h),
-          child: Column(
+    final isTablet = AppDevice.isTablet(context);
+    final hPad = isTablet
+        ? (AppDevice.isLandscape(context) ? 40.w : 48.w)
+        : 16.w;
+
+    final reportContent = Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // Header summary
@@ -280,8 +281,9 @@ class ConsultantDetailsPage extends StatelessWidget {
 
               const ConsultantSectionCard(
                 title: 'General Therapeutic Prescription',
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                child: AppTabletFieldsGrid(
+                  phoneColumns: 1,
+                  tabletColumns: 2,
                   children: [
                     ConsultantField(
                       label: 'Electrotherapy',
@@ -311,8 +313,28 @@ class ConsultantDetailsPage extends StatelessWidget {
                 ),
               ),
             ],
-          ),
-        ),
+    );
+
+    final scrollView = SingleChildScrollView(
+      padding: EdgeInsets.fromLTRB(hPad, 8.h, hPad, 24.h),
+      child: reportContent,
+    );
+
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: const FormBackAppBar(title: 'Consultant Details'),
+      body: SafeArea(
+        child: isTablet
+            ? Align(
+                alignment: Alignment.topCenter,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: AppDevice.contentMaxWidth(context),
+                  ),
+                  child: scrollView,
+                ),
+              )
+            : scrollView,
       ),
     );
   }

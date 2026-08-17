@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/routes/navigation_helper.dart';
+import 'package:ali_therapy_admin/core/widgets/app_tablet_safe_area.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/utils/app_snackbar.dart';
 import 'package:ali_therapy_admin/feature/employee/edit_employee/presentation/widgets/form/edit_employee_footer.dart';
@@ -70,7 +71,7 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: const FormBackAppBar(title: 'Edit Employee'),
-      body: SafeArea(
+      body: AppTabletSafeArea(
         child: Column(
           children: [
             Expanded(

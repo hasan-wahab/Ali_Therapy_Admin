@@ -75,17 +75,17 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
           ),
           actions: [
-            IconButton(
-              tooltip: 'Profile',
-              onPressed: isLoggingOut
-                  ? null
-                  : () => AppNavigation.goProfile(context),
-              icon: Icon(
-                Icons.person_outline_rounded,
-                color: AppColors.primary,
-                size: AppSizes.iconLg,
-              ),
-            ),
+            // IconButton(
+            //   tooltip: 'Profile',
+            //   onPressed: isLoggingOut
+            //       ? null
+            //       : () => AppNavigation.goProfile(context),
+            //   icon: Icon(
+            //     Icons.person_outline_rounded,
+            //     color: AppColors.primary,
+            //     size: AppSizes.iconLg,
+            //   ),
+            // ),
             IconButton(
               tooltip: 'Logout',
               onPressed: isLoggingOut ? null : () => _onLogoutPressed(context),

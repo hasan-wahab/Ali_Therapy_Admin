@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_sizes.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
+import 'package:ali_therapy_admin/core/widgets/app_tablet_fields_grid.dart';
 import 'package:ali_therapy_admin/feature/patient/total_visits/presentation/widgets/other/total_visit_info_row.dart';
 import 'package:ali_therapy_admin/feature/patient/total_visits/presentation/widgets/other/total_visit_type_field.dart';
 
@@ -80,44 +81,26 @@ class TotalVisitCard extends StatelessWidget {
                   ),
                   Padding(
                     padding: EdgeInsets.fromLTRB(14.w, 12.h, 14.w, 6.h),
-                    child: Column(
+                    child: AppTabletFieldsGrid(
+                      phoneColumns: 2,
+                      tabletColumns: 2,
                       children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: TotalVisitInfoRow(
-                                label: 'Doctor',
-                                value: doctor,
-                                icon: Icons.medical_services_outlined,
-                              ),
-                            ),
-                            SizedBox(width: 8.w),
-                            Expanded(
-                              child: TotalVisitInfoRow(
-                                label: 'Stage',
-                                value: stage,
-                                icon: Icons.timeline_outlined,
-                              ),
-                            ),
-                          ],
+                        TotalVisitInfoRow(
+                          label: 'Doctor',
+                          value: doctor,
+                          icon: Icons.medical_services_outlined,
                         ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: TotalVisitTypeField(type: type),
-                            ),
-                            SizedBox(width: 8.w),
-                            Expanded(
-                              child: TotalVisitInfoRow(
-                                label: 'Amount',
-                                value: amount,
-                                icon: Icons.payments_outlined,
-                                valueBold: true,
-                              ),
-                            ),
-                          ],
+                        TotalVisitInfoRow(
+                          label: 'Stage',
+                          value: stage,
+                          icon: Icons.timeline_outlined,
+                        ),
+                        TotalVisitTypeField(type: type),
+                        TotalVisitInfoRow(
+                          label: 'Amount',
+                          value: amount,
+                          icon: Icons.payments_outlined,
+                          valueBold: true,
                         ),
                       ],
                     ),

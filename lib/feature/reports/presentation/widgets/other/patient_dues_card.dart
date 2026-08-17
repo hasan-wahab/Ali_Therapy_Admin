@@ -8,6 +8,7 @@ import 'package:ali_therapy_admin/core/routes/navigation_helper.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/patient_dues_badge.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/patient_dues_money_line.dart';
 import 'package:ali_therapy_admin/core/widgets/app_expandable_card.dart';
+import 'package:ali_therapy_admin/core/widgets/app_tablet_fields_grid.dart';
 
 // ============================================================
 // PATIENT DUES CARD
@@ -172,20 +173,26 @@ class PatientDuesCard extends StatelessWidget {
             style: AppTextStyles.bodySmall.copyWith(fontWeight: FontWeight.w700),
           ),
           SizedBox(height: 6.h),
-          PatientDuesMoneyLine(
-            label: 'Gross Billed',
-            value: grossBilled,
-            bold: true,
-          ),
-          PatientDuesMoneyLine(
-            label: 'Consultation',
-            value: consultation,
-            icon: Icons.medical_services_outlined,
-          ),
-          PatientDuesMoneyLine(
-            label: 'Package Billed',
-            value: packageBilled,
-            icon: Icons.inventory_2_outlined,
+          AppTabletFieldsGrid(
+            phoneColumns: 1,
+            tabletColumns: 2,
+            children: [
+              PatientDuesMoneyLine(
+                label: 'Gross Billed',
+                value: grossBilled,
+                bold: true,
+              ),
+              PatientDuesMoneyLine(
+                label: 'Consultation',
+                value: consultation,
+                icon: Icons.medical_services_outlined,
+              ),
+              PatientDuesMoneyLine(
+                label: 'Package Billed',
+                value: packageBilled,
+                icon: Icons.inventory_2_outlined,
+              ),
+            ],
           ),
           SizedBox(height: 10.h),
           Text(
@@ -239,17 +246,23 @@ class PatientDuesCard extends StatelessWidget {
             ),
           ),
           SizedBox(height: 10.h),
-          PatientDuesMoneyLine(
-            label: 'Package Paid',
-            value: packagePaid,
-            icon: Icons.check_circle_outline_rounded,
-            iconColor: AppColors.success,
-          ),
-          PatientDuesMoneyLine(
-            label: 'Total Received',
-            value: totalReceived,
-            icon: Icons.payments_outlined,
-            iconColor: AppColors.success,
+          AppTabletFieldsGrid(
+            phoneColumns: 1,
+            tabletColumns: 2,
+            children: [
+              PatientDuesMoneyLine(
+                label: 'Package Paid',
+                value: packagePaid,
+                icon: Icons.check_circle_outline_rounded,
+                iconColor: AppColors.success,
+              ),
+              PatientDuesMoneyLine(
+                label: 'Total Received',
+                value: totalReceived,
+                icon: Icons.payments_outlined,
+                iconColor: AppColors.success,
+              ),
+            ],
           ),
         ],
       ),

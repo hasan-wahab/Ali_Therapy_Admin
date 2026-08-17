@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
 import 'package:ali_therapy_admin/core/widgets/app_expandable_card.dart';
+import 'package:ali_therapy_admin/core/widgets/app_tablet_fields_grid.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/patient_report_detail_row.dart';
 
 // ============================================================
@@ -101,25 +102,31 @@ class PatientReportCard extends StatelessWidget {
             SizedBox(height: 12.h),
             Divider(height: 1.h, color: AppColors.divider),
             SizedBox(height: 10.h),
-            PatientReportDetailRow(
-              icon: Icons.email_outlined,
-              label: 'Email',
-              value: email,
-            ),
-            PatientReportDetailRow(
-              icon: Icons.event_available_outlined,
-              label: 'Visits Count',
-              value: '$visitsCount',
-            ),
-            PatientReportDetailRow(
-              icon: Icons.calendar_today_outlined,
-              label: 'Created At',
-              value: createdAt,
-            ),
-            PatientReportDetailRow(
-              icon: Icons.person_outline_rounded,
-              label: 'Created By',
-              value: createdBy,
+            AppTabletFieldsGrid(
+              phoneColumns: 1,
+              tabletColumns: 2,
+              children: [
+                PatientReportDetailRow(
+                  icon: Icons.email_outlined,
+                  label: 'Email',
+                  value: email,
+                ),
+                PatientReportDetailRow(
+                  icon: Icons.event_available_outlined,
+                  label: 'Visits Count',
+                  value: '$visitsCount',
+                ),
+                PatientReportDetailRow(
+                  icon: Icons.calendar_today_outlined,
+                  label: 'Created At',
+                  value: createdAt,
+                ),
+                PatientReportDetailRow(
+                  icon: Icons.person_outline_rounded,
+                  label: 'Created By',
+                  value: createdBy,
+                ),
+              ],
             ),
           ],
         ),

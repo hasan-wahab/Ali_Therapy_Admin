@@ -5,30 +5,41 @@ import 'package:ali_therapy_admin/core/network/network_info.dart';
 /// ============================================================
 /// CONNECTIVITY SERVICE
 /// ------------------------------------------------------------
-/// A small wrapper around NetworkInfo + Connectivity stream.
+/// Wrapper around NetworkInfo + Connectivity stream.
 ///
-/// Use cases:
-///   - Check once:  await connectivityService.hasConnection
-///   - Listen live: connectivityService.onConnectivityChanged
+/// Use:
+///   - await connectivityService.hasConnection
+///   - await connectivityService.waitForConnection()
+///   - connectivityService.onConnectivityChanged
 /// ============================================================
 
 class ConnectivityService {
-  final NetworkInfo networkInfo;
-  final Connectivity connectivity;
-
   ConnectivityService({
     required this.networkInfo,
     required this.connectivity,
   });
 
-  /// One-time check: is the device online right now?
+  final NetworkInfo networkInfo;
+  final Connectivity connectivity;
+
+  /// One-time check: is a network interface available right now?
   Future<bool> get hasConnection => networkInfo.isConnected;
 
-  /// Stream that fires every time Wi‑Fi / mobile status changes.
-  /// Example:
-  ///   connectivityService.onConnectivityChanged.listen((results) {
-  ///     print(results);
-  ///   });
+  /// Wait until Wi‑Fi / mobile is back (or timeout).
+  Future<bool> waitForConnection({
+    Duration timeout = const Duration(seconds: 12),
+  }) {
+    return networkInfo.waitUntilConnected(timeout: timeout);
+  }
+
+  /// Connected now, or becomes connected within [timeout].
+  Future<bool> ensureConnection({
+    Duration timeout = const Duration(seconds: 12),
+  }) {
+    return networkInfo.ensureConnected(timeout: timeout);
+  }
+
+  /// Stream that fires when Wi‑Fi / mobile status changes.
   Stream<List<ConnectivityResult>> get onConnectivityChanged {
     return connectivity.onConnectivityChanged;
   }

@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
+import 'package:ali_therapy_admin/core/utils/app_device.dart';
+import 'package:ali_therapy_admin/core/widgets/app_tablet_fields_grid.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/form/form_back_app_bar.dart';
 import 'package:ali_therapy_admin/feature/patient/clinical_history/presentation/widgets/other/clinical_history_field.dart';
 import 'package:ali_therapy_admin/feature/patient/clinical_history/presentation/widgets/other/clinical_history_list_field.dart';
@@ -20,13 +22,12 @@ class ClinicalHistoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: const FormBackAppBar(title: 'Clinical History'),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 24.h),
-          child: Column(
+    final isTablet = AppDevice.isTablet(context);
+    final hPad = isTablet
+        ? (AppDevice.isLandscape(context) ? 40.w : 48.w)
+        : 16.w;
+
+    final reportContent = Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // Top summary
@@ -67,7 +68,9 @@ class ClinicalHistoryPage extends StatelessWidget {
 
               const ClinicalHistorySectionCard(
                 title: 'Patient Information',
-                child: Column(
+                child: AppTabletFieldsGrid(
+                  phoneColumns: 1,
+                  tabletColumns: 2,
                   children: [
                     ClinicalHistoryField(label: 'Name', value: 'Iqra Javed'),
                     ClinicalHistoryField(label: 'Age', value: '24 years'),
@@ -282,7 +285,9 @@ class ClinicalHistoryPage extends StatelessWidget {
 
               const ClinicalHistorySectionCard(
                 title: 'Face: Eye Involvement',
-                child: Column(
+                child: AppTabletFieldsGrid(
+                  phoneColumns: 1,
+                  tabletColumns: 2,
                   children: [
                     ClinicalHistoryField(label: 'Eye Closure Fully', value: ''),
                     ClinicalHistoryField(label: 'Eye Closure %', value: '0'),
@@ -323,7 +328,9 @@ class ClinicalHistoryPage extends StatelessWidget {
 
               const ClinicalHistorySectionCard(
                 title: 'For Women Only',
-                child: Column(
+                child: AppTabletFieldsGrid(
+                  phoneColumns: 1,
+                  tabletColumns: 2,
                   children: [
                     ClinicalHistoryField(label: 'Married since', value: ''),
                     ClinicalHistoryField(label: 'Has children', value: ''),
@@ -348,7 +355,9 @@ class ClinicalHistoryPage extends StatelessWidget {
 
               const ClinicalHistorySectionCard(
                 title: 'For Men Only',
-                child: Column(
+                child: AppTabletFieldsGrid(
+                  phoneColumns: 1,
+                  tabletColumns: 2,
                   children: [
                     ClinicalHistoryField(label: 'Urination pain', value: ''),
                     ClinicalHistoryField(label: 'Urine leakage', value: ''),
@@ -362,8 +371,28 @@ class ClinicalHistoryPage extends StatelessWidget {
                 ),
               ),
             ],
-          ),
-        ),
+    );
+
+    final scrollView = SingleChildScrollView(
+      padding: EdgeInsets.fromLTRB(hPad, 8.h, hPad, 24.h),
+      child: reportContent,
+    );
+
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: const FormBackAppBar(title: 'Clinical History'),
+      body: SafeArea(
+        child: isTablet
+            ? Align(
+                alignment: Alignment.topCenter,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: AppDevice.contentMaxWidth(context),
+                  ),
+                  child: scrollView,
+                ),
+              )
+            : scrollView,
       ),
     );
   }

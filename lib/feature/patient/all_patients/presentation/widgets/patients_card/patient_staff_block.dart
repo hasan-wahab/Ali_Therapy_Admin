@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
+import 'package:ali_therapy_admin/core/widgets/app_tablet_fields_grid.dart';
 import 'package:ali_therapy_admin/feature/patient/all_patients/presentation/widgets/patients_card/patient_section_title.dart';
 import 'package:ali_therapy_admin/feature/patient/all_patients/presentation/widgets/patients_card/patient_staff_cell.dart';
 
 // ============================================================
 // PATIENT STAFF BLOCK
 // ------------------------------------------------------------
-// Staff details in a compact labeled 2-column grid.
+// Staff details in a compact labeled grid (2 cols phone, 3 tablet).
 // ============================================================
 
 class PatientStaffBlock extends StatelessWidget {
@@ -43,56 +44,33 @@ class PatientStaffBlock extends StatelessWidget {
         children: [
           const PatientSectionTitle(title: 'Staff Details'),
           SizedBox(height: 6.h),
-          Row(
+          AppTabletFieldsGrid(
+            phoneColumns: 2,
+            tabletColumns: 3,
             children: [
-              Expanded(
-                child: PatientStaffCell(
-                  label: 'Created By',
-                  value: createdBy,
-                ),
+              PatientStaffCell(
+                label: 'Created By',
+                value: createdBy,
               ),
-              SizedBox(width: 8.w),
-              Expanded(
-                child: PatientStaffCell(
-                  label: 'Receptionist',
-                  value: receptionist,
-                ),
+              PatientStaffCell(
+                label: 'Receptionist',
+                value: receptionist,
               ),
-            ],
-          ),
-          SizedBox(height: 6.h),
-          Row(
-            children: [
-              Expanded(
-                child: PatientStaffCell(
-                  label: 'AM',
-                  value: assistantManager,
-                ),
+              PatientStaffCell(
+                label: 'AM',
+                value: assistantManager,
               ),
-              SizedBox(width: 8.w),
-              Expanded(
-                child: PatientStaffCell(
-                  label: 'History Taker',
-                  value: historyTaker,
-                ),
+              PatientStaffCell(
+                label: 'History Taker',
+                value: historyTaker,
               ),
-            ],
-          ),
-          SizedBox(height: 6.h),
-          Row(
-            children: [
-              Expanded(
-                child: PatientStaffCell(
-                  label: 'Consultant',
-                  value: consultant,
-                ),
+              PatientStaffCell(
+                label: 'Consultant',
+                value: consultant,
               ),
-              SizedBox(width: 8.w),
-              Expanded(
-                child: PatientStaffCell(
-                  label: 'Therapist',
-                  value: therapist,
-                ),
+              PatientStaffCell(
+                label: 'Therapist',
+                value: therapist,
               ),
             ],
           ),

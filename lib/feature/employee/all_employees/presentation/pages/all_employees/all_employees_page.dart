@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
+import 'package:ali_therapy_admin/core/utils/app_device.dart';
 import 'package:ali_therapy_admin/core/utils/app_snackbar.dart';
 import 'package:ali_therapy_admin/core/widgets/app_list_card_skeleton.dart';
 import 'package:ali_therapy_admin/core/widgets/app_pull_refresh.dart';
@@ -21,6 +22,7 @@ import 'package:ali_therapy_admin/injection.dart';
 // Search fixed. Cards scroll.
 // Pull refresh → page 1.
 // Prefetch: when ~2 cards left (e.g. 13 of 15), load next page.
+// Mobile layout locked. Tablet: centered content + Role/Shift row.
 // ============================================================
 
 class AllEmployeesPage extends StatelessWidget {
@@ -59,6 +61,57 @@ class AllEmployeesPage extends StatelessWidget {
     return false;
   }
 
+  Widget _listContent({
+    required BuildContext context,
+    required AllEmployeesState state,
+    required bool isFirstLoad,
+    required bool loadingMore,
+    required double hPad,
+  }) {
+    final listScroll = NotificationListener<ScrollNotification>(
+      onNotification: (notification) => _onScroll(context, notification),
+      child: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(
+          parent: ClampingScrollPhysics(),
+        ),
+        slivers: [
+          SliverPadding(
+            padding: EdgeInsets.fromLTRB(hPad, 0, hPad, 8.h),
+            sliver: isFirstLoad
+                ? const AppListCardSkeletonSliver(itemCount: 6)
+                : EmployeeCardList(employees: _employeesOf(state)),
+          ),
+          if (loadingMore)
+            const SliverToBoxAdapter(
+              child: EmployeeListLoadMoreFooter(),
+            ),
+          SliverToBoxAdapter(child: SizedBox(height: 16.h)),
+        ],
+      ),
+    );
+
+    final listBody =
+        isFirstLoad ? AppShimmer(child: listScroll) : listScroll;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: EdgeInsets.fromLTRB(hPad, 8.h, hPad, 12.h),
+          child: const EmployeesSearchFilterSection(),
+        ),
+        Expanded(
+          child: AppPullRefresh(
+            enabled: !isFirstLoad,
+            onRefresh: () =>
+                context.read<AllEmployeesBloc>().pullRefresh(),
+            child: listBody,
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -77,50 +130,31 @@ class AllEmployeesPage extends StatelessWidget {
               final isFirstLoad =
                   state is AllEmployeesLoading || state is AllEmployeesInitial;
               final loadingMore = _isLoadingMore(state);
+              final isTablet = AppDevice.isTablet(context);
 
-              final listScroll = NotificationListener<ScrollNotification>(
-                onNotification: (notification) =>
-                    _onScroll(context, notification),
-                child: CustomScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(
-                    parent: ClampingScrollPhysics(),
-                  ),
-                  slivers: [
-                    SliverPadding(
-                      padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 8.h),
-                      sliver: isFirstLoad
-                          ? const AppListCardSkeletonSliver(itemCount: 6)
-                          : EmployeeCardList(employees: _employeesOf(state)),
-                    ),
-                    if (loadingMore)
-                      const SliverToBoxAdapter(
-                        child: EmployeeListLoadMoreFooter(),
-                      ),
-                    SliverToBoxAdapter(child: SizedBox(height: 16.h)),
-                  ],
-                ),
+              // Mobile padding locked at 16.w.
+              final hPad = isTablet
+                  ? (AppDevice.isLandscape(context) ? 40.w : 48.w)
+                  : 16.w;
+
+              final content = _listContent(
+                context: context,
+                state: state,
+                isFirstLoad: isFirstLoad,
+                loadingMore: loadingMore,
+                hPad: hPad,
               );
 
-              final listBody = isFirstLoad
-                  ? AppShimmer(child: listScroll)
-                  : listScroll;
+              if (!isTablet) return content;
 
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 12.h),
-                    child: const EmployeesSearchFilterSection(),
+              return Align(
+                alignment: Alignment.topCenter,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: AppDevice.contentMaxWidth(context),
                   ),
-                  Expanded(
-                    child: AppPullRefresh(
-                      enabled: !isFirstLoad,
-                      onRefresh: () =>
-                          context.read<AllEmployeesBloc>().pullRefresh(),
-                      child: listBody,
-                    ),
-                  ),
-                ],
+                  child: content,
+                ),
               );
             },
           ),

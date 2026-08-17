@@ -5,6 +5,7 @@ import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
 import 'package:ali_therapy_admin/core/widgets/app_back_app_bar.dart';
 import 'package:ali_therapy_admin/core/widgets/app_search_filter_section.dart';
+import 'package:ali_therapy_admin/core/widgets/app_tablet_safe_area.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/package_attendance_card.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/package_attendance_filters.dart';
 
@@ -22,7 +23,7 @@ class PackageAttendancePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: const AppBackAppBar(title: 'Package Attendance'),
-      body: SafeArea(
+      body: AppTabletSafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

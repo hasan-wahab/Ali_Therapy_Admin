@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
+import 'package:ali_therapy_admin/core/widgets/app_tablet_fields_grid.dart';
 import 'package:ali_therapy_admin/feature/patient/invoices/presentation/widgets/other/invoice_meta_field.dart';
 
 // ============================================================
@@ -36,43 +37,23 @@ class InvoicePaymentRecord extends StatelessWidget {
         borderRadius: BorderRadius.circular(10.r),
         border: Border.all(color: AppColors.border),
       ),
-      child: Column(
+      child: AppTabletFieldsGrid(
+        phoneColumns: 2,
+        tabletColumns: 2,
+        gapH: 6.h,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: InvoiceMetaField(
-                  label: 'Payment ID',
-                  value: paymentId,
-                ),
-              ),
-              SizedBox(width: 8.w),
-              Expanded(
-                child: InvoiceMetaField(label: 'Date', value: date),
-              ),
-            ],
+          InvoiceMetaField(
+            label: 'Payment ID',
+            value: paymentId,
           ),
-          SizedBox(height: 6.h),
-          Row(
-            children: [
-              Expanded(
-                child: InvoiceMetaField(
-                  label: 'Amount',
-                  value: amount,
-                  valueColor: AppColors.primary,
-                ),
-              ),
-              SizedBox(width: 8.w),
-              Expanded(
-                child: InvoiceMetaField(label: 'Method', value: method),
-              ),
-            ],
+          InvoiceMetaField(label: 'Date', value: date),
+          InvoiceMetaField(
+            label: 'Amount',
+            value: amount,
+            valueColor: AppColors.primary,
           ),
-          SizedBox(height: 6.h),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: InvoiceMetaField(label: 'Type', value: type),
-          ),
+          InvoiceMetaField(label: 'Method', value: method),
+          InvoiceMetaField(label: 'Type', value: type),
         ],
       ),
     );

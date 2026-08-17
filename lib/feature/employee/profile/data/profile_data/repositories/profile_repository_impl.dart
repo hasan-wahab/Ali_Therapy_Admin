@@ -25,7 +25,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
 
   @override
   ResultFuture<ProfileEntity> getProfile({required String employeeId}) async {
-    if (!await networkInfo.isConnected) {
+    if (!await networkInfo.ensureConnected()) {
       const failure = NetworkFailure(
         'No internet connection. Please try again.',
       );

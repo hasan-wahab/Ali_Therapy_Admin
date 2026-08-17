@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
+import 'package:ali_therapy_admin/core/utils/app_device.dart';
 import 'package:ali_therapy_admin/core/utils/app_snackbar.dart';
 import 'package:ali_therapy_admin/core/widgets/app_dropdown_field.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/report_filters_header.dart';
@@ -66,11 +67,7 @@ class _EmployeesFiltersPanelState extends State<EmployeesFiltersPanel> {
     'Evening Shift (4PM - 12AM)',
   ];
 
-  static const _statuses = [
-    'All Statuses',
-    'Active',
-    'Inactive',
-  ];
+  static const _statuses = ['All Statuses', 'Active', 'Inactive'];
 
   late String _role;
   late String _designation;
@@ -120,118 +117,167 @@ class _EmployeesFiltersPanelState extends State<EmployeesFiltersPanel> {
         children: [
           ReportFiltersHeader(onReset: _onReset),
           SizedBox(height: 6.h),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: AppDropdownField(
-                  compact: true,
-                  key: ValueKey('role_$_resetToken'),
-                  label: 'Role',
-                  hintText: 'All Roles',
-                  enableSearch: true,
-                  items: _roles,
-                  value: _role,
-                  onChanged: (value) {
-                    if (value == null) return;
-                    setState(() => _role = value);
-                  },
-                ),
-              ),
-              SizedBox(width: 6.w),
-              Expanded(
-                child: AppDropdownField(
-                  compact: true,
-                  key: ValueKey('designation_$_resetToken'),
-                  label: 'Designation',
-                  hintText: 'All Designations',
-                  enableSearch: true,
-                  items: _designations,
-                  value: _designation,
-                  onChanged: (value) {
-                    if (value == null) return;
-                    setState(() => _designation = value);
-                  },
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 4.h),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: AppDropdownField(
-                  compact: true,
-                  key: ValueKey('clinic_$_resetToken'),
-                  label: 'Clinic',
-                  hintText: 'All Clinics',
-                  enableSearch: true,
-                  items: _clinics,
-                  value: _clinic,
-                  onChanged: (value) {
-                    if (value == null) return;
-                    setState(() => _clinic = value);
-                  },
-                ),
-              ),
-              SizedBox(width: 6.w),
-              Expanded(
-                child: AppDropdownField(
-                  compact: true,
-                  key: ValueKey('department_$_resetToken'),
-                  label: 'Department',
-                  hintText: 'All Departments',
-                  enableSearch: true,
-                  items: _departments,
-                  value: _department,
-                  onChanged: (value) {
-                    if (value == null) return;
-                    setState(() => _department = value);
-                  },
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 4.h),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: AppDropdownField(
-                  compact: true,
-                  key: ValueKey('shift_$_resetToken'),
-                  label: 'Shift',
-                  hintText: 'All Shifts',
-                  enableSearch: true,
-                  items: _shifts,
-                  value: _shift,
-                  onChanged: (value) {
-                    if (value == null) return;
-                    setState(() => _shift = value);
-                  },
-                ),
-              ),
-              SizedBox(width: 6.w),
-              Expanded(
-                child: AppDropdownField(
-                  compact: true,
-                  key: ValueKey('status_$_resetToken'),
-                  label: 'Status',
-                  hintText: 'All Statuses',
-                  enableSearch: true,
-                  items: _statuses,
-                  value: _status,
-                  onChanged: (value) {
-                    if (value == null) return;
-                    setState(() => _status = value);
-                  },
-                ),
-              ),
-            ],
-          ),
+          if (AppDevice.isTablet(context))
+            ..._tabletFilterRows()
+          else
+            ..._mobileFilterRows(),
         ],
       ),
+    );
+  }
+
+  /// Locked mobile: 2 fields per row.
+  List<Widget> _mobileFilterRows() {
+    return [
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(child: _roleField()),
+          SizedBox(width: 6.w),
+          Expanded(child: _designationField()),
+        ],
+      ),
+      SizedBox(height: 4.h),
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(child: _clinicField()),
+          SizedBox(width: 6.w),
+          Expanded(child: _departmentField()),
+        ],
+      ),
+      SizedBox(height: 4.h),
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(child: _shiftField()),
+          SizedBox(width: 6.w),
+          Expanded(child: _statusField()),
+        ],
+      ),
+    ];
+  }
+
+  /// Tablet Figma: 3 fields per row.
+  List<Widget> _tabletFilterRows() {
+    return [
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(child: _roleField()),
+          SizedBox(width: 6.w),
+          Expanded(child: _designationField()),
+          SizedBox(width: 6.w),
+          Expanded(child: _clinicField()),
+        ],
+      ),
+      SizedBox(height: 4.h),
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(child: _departmentField()),
+          SizedBox(width: 6.w),
+          Expanded(child: _shiftField()),
+          SizedBox(width: 6.w),
+          Expanded(child: _statusField()),
+        ],
+      ),
+    ];
+  }
+
+  Widget _roleField() {
+    return AppDropdownField(
+      compact: true,
+      key: ValueKey('role_$_resetToken'),
+      label: 'Role',
+      hintText: 'All Roles',
+      enableSearch: true,
+      items: _roles,
+      value: _role,
+      onChanged: (value) {
+        if (value == null) return;
+        setState(() => _role = value);
+      },
+    );
+  }
+
+  Widget _designationField() {
+    return AppDropdownField(
+      compact: true,
+      key: ValueKey('designation_$_resetToken'),
+      label: 'Designation',
+      hintText: 'All Designations',
+      enableSearch: true,
+      items: _designations,
+      value: _designation,
+      onChanged: (value) {
+        if (value == null) return;
+        setState(() => _designation = value);
+      },
+    );
+  }
+
+  Widget _clinicField() {
+    return AppDropdownField(
+      compact: true,
+      key: ValueKey('clinic_$_resetToken'),
+      label: 'Clinic',
+      hintText: 'All Clinics',
+      enableSearch: true,
+      items: _clinics,
+      value: _clinic,
+      onChanged: (value) {
+        if (value == null) return;
+        setState(() => _clinic = value);
+      },
+    );
+  }
+
+  Widget _departmentField() {
+    return AppDropdownField(
+      compact: true,
+      key: ValueKey('department_$_resetToken'),
+      label: 'Department',
+      hintText: 'All Departments',
+      enableSearch: true,
+      items: _departments,
+      value: _department,
+      onChanged: (value) {
+        if (value == null) return;
+        setState(() => _department = value);
+      },
+    );
+  }
+
+  Widget _shiftField() {
+    return AppDropdownField(
+      compact: true,
+      key: ValueKey('shift_$_resetToken'),
+      label: 'Shift',
+      hintText: 'All Shifts',
+      enableSearch: true,
+      items: _shifts,
+      value: _shift,
+      onChanged: (value) {
+        if (value == null) return;
+        setState(() => _shift = value);
+      },
+    );
+  }
+
+  Widget _statusField() {
+    return AppDropdownField(
+      compact: true,
+      key: ValueKey('status_$_resetToken'),
+      label: 'Status',
+      hintText: 'All Statuses',
+      enableSearch: true,
+      items: _statuses,
+      value: _status,
+      onChanged: (value) {
+        if (value == null) return;
+        setState(() => _status = value);
+      },
     );
   }
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'package:ali_therapy_admin/core/utils/app_device.dart';
+
 // ============================================================
 // FORM FIELDS ROW
 // ------------------------------------------------------------
@@ -21,7 +23,8 @@ class FormFieldsRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final isWide = constraints.maxWidth >= 520.w;
+        final isWide =
+            AppDevice.isTablet(context) || constraints.maxWidth >= 520.w;
 
         if (!isWide) {
           return Column(

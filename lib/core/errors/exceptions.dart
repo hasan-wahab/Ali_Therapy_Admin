@@ -95,7 +95,8 @@ class NotFoundException extends AppException {
 /// Dart's built-in TimeoutException from dart:async.
 class RequestTimeoutException extends AppException {
   const RequestTimeoutException({
-    super.message = 'Request timed out. Please try again.',
+    super.message =
+        'Connection is unstable. Please check your internet and try again.',
     super.debugMessage = 'Request timeout',
   });
 }

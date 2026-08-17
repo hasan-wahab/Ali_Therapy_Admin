@@ -5,6 +5,7 @@ import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_sizes.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
 import 'package:ali_therapy_admin/core/widgets/app_dropdown_field.dart';
+import 'package:ali_therapy_admin/core/widgets/app_tablet_fields_grid.dart';
 
 // ============================================================
 // PATIENT REPORT STAFF FILTERS
@@ -70,54 +71,41 @@ class PatientReportStaffFilters extends StatelessWidget {
             ],
           ),
           SizedBox(height: 6.h),
-          Row(
+          AppTabletFieldsGrid(
+            phoneColumns: 2,
+            tabletColumns: 3,
             children: [
-              const Expanded(
-                child: AppDropdownField(
-                  compact: true,
-                  enableSearch: true,
-                  label: 'Consultant',
-                  hintText: 'All Consultants',
-                  items: _consultants,
-                  value: 'Filter by Consultant',
-                ),
+              const AppDropdownField(
+                compact: true,
+                enableSearch: true,
+                label: 'Consultant',
+                hintText: 'All Consultants',
+                items: _consultants,
+                value: 'Filter by Consultant',
               ),
-              SizedBox(width: 6.w),
-              const Expanded(
-                child: AppDropdownField(
-                  compact: true,
-                  enableSearch: true,
-                  label: 'Therapist',
-                  hintText: 'All Therapists',
-                  items: _therapists,
-                  value: 'Filter by Therapist',
-                ),
+              const AppDropdownField(
+                compact: true,
+                enableSearch: true,
+                label: 'Therapist',
+                hintText: 'All Therapists',
+                items: _therapists,
+                value: 'Filter by Therapist',
               ),
-            ],
-          ),
-          SizedBox(height: 4.h),
-          Row(
-            children: [
-              const Expanded(
-                child: AppDropdownField(
-                  compact: true,
-                  enableSearch: true,
-                  label: 'Assistant Manager',
-                  hintText: 'All Assistant Managers',
-                  items: _assistantManagers,
-                  value: 'Filter by Assistant Manager',
-                ),
+              const AppDropdownField(
+                compact: true,
+                enableSearch: true,
+                label: 'Assistant Manager',
+                hintText: 'All Assistant Managers',
+                items: _assistantManagers,
+                value: 'Filter by Assistant Manager',
               ),
-              SizedBox(width: 6.w),
-              const Expanded(
-                child: AppDropdownField(
-                  compact: true,
-                  enableSearch: true,
-                  label: 'Receptionist',
-                  hintText: 'All Receptionists',
-                  items: _receptionists,
-                  value: 'Filter by Receptionist',
-                ),
+              const AppDropdownField(
+                compact: true,
+                enableSearch: true,
+                label: 'Receptionist',
+                hintText: 'All Receptionists',
+                items: _receptionists,
+                value: 'Filter by Receptionist',
               ),
             ],
           ),

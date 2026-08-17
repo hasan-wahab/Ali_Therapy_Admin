@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/widgets/app_back_app_bar.dart';
 import 'package:ali_therapy_admin/core/widgets/app_search_filter_section.dart';
+import 'package:ali_therapy_admin/core/widgets/app_tablet_safe_area.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/patient_report_card.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/patient_report_filters.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/patient_report_staff_filters.dart';
@@ -22,7 +23,7 @@ class PatientReportPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: const AppBackAppBar(title: 'Patient Report'),
-      body: SafeArea(
+      body: AppTabletSafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

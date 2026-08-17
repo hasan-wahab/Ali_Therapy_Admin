@@ -36,7 +36,8 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
     required String password,
   }) async {
-    if (!await networkInfo.isConnected) {
+    // Wait briefly for Wi‑Fi/mobile restore before failing (retries also in Dio).
+    if (!await networkInfo.ensureConnected()) {
       const failure = NetworkFailure(
         'No internet connection. Please try again.',
       );

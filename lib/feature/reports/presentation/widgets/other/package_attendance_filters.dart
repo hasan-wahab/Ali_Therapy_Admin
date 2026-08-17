@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/utils/app_snackbar.dart';
 import 'package:ali_therapy_admin/core/widgets/app_dropdown_field.dart';
+import 'package:ali_therapy_admin/core/widgets/app_tablet_fields_grid.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/report_filters_header.dart';
 
 // ============================================================
@@ -55,40 +56,35 @@ class PackageAttendanceFilters extends StatelessWidget {
             },
           ),
           SizedBox(height: 6.h),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          AppTabletFieldsGrid(
+            phoneColumns: 2,
+            tabletColumns: 3,
             children: [
-              const Expanded(
-                child: AppDropdownField(
-                  compact: true,
-                  enableSearch: true,
-                  label: 'Clinic',
-                  hintText: 'All Clinics',
-                  items: _clinics,
-                  value: 'All Clinics',
-                ),
+              const AppDropdownField(
+                compact: true,
+                enableSearch: true,
+                label: 'Clinic',
+                hintText: 'All Clinics',
+                items: _clinics,
+                value: 'All Clinics',
               ),
-              SizedBox(width: 6.w),
-              const Expanded(
-                child: AppDropdownField(
-                  compact: true,
-                  enableSearch: true,
-                  label: 'Gender',
-                  hintText: 'All Genders',
-                  items: _genders,
-                  value: 'All Genders',
-                ),
+              const AppDropdownField(
+                compact: true,
+                enableSearch: true,
+                label: 'Gender',
+                hintText: 'All Genders',
+                items: _genders,
+                value: 'All Genders',
+              ),
+              const AppDropdownField(
+                compact: true,
+                enableSearch: true,
+                label: 'Therapist',
+                hintText: 'All Therapists',
+                items: _therapists,
+                value: 'All Therapists',
               ),
             ],
-          ),
-          SizedBox(height: 4.h),
-          const AppDropdownField(
-            compact: true,
-            enableSearch: true,
-            label: 'Therapist',
-            hintText: 'All Therapists',
-            items: _therapists,
-            value: 'All Therapists',
           ),
         ],
       ),

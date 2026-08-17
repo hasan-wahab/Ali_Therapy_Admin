@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/routes/navigation_helper.dart';
+import 'package:ali_therapy_admin/core/widgets/app_tablet_safe_area.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/utils/app_snackbar.dart';
 import 'package:ali_therapy_admin/feature/patient/patient_registration/presentation/widgets/form/patient_back_app_bar.dart';
@@ -80,7 +81,7 @@ class _PatientRegistrationPageState extends State<PatientRegistrationPage> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: PatientBackAppBar(title: title),
-      body: SafeArea(
+      body: AppTabletSafeArea(
         child: Column(
           children: [
             Expanded(

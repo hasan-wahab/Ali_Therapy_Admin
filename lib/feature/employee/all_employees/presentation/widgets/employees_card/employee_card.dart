@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ali_therapy_admin/core/routes/navigation_helper.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
+import 'package:ali_therapy_admin/core/utils/app_device.dart';
 import 'package:ali_therapy_admin/core/utils/app_snackbar.dart';
 import 'package:ali_therapy_admin/feature/employee/all_employees/presentation/widgets/employees_card/change_password_dialog.dart';
 import 'package:ali_therapy_admin/feature/employee/all_employees/presentation/widgets/employees_card/delete_employee_dialog.dart';
@@ -185,9 +186,25 @@ class EmployeeCard extends StatelessWidget {
           ),
 
           SizedBox(height: 8.h),
-          EmployeeInfoBox(label: 'Role', value: _rolesText),
-          SizedBox(height: 6.h),
-          EmployeeInfoBox(label: 'Shift', value: shift),
+          // Mobile: Role / Shift stacked. Tablet: side by side (Figma).
+          if (AppDevice.isTablet(context))
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: EmployeeInfoBox(label: 'Role', value: _rolesText),
+                ),
+                SizedBox(width: 8.w),
+                Expanded(
+                  child: EmployeeInfoBox(label: 'Shift', value: shift),
+                ),
+              ],
+            )
+          else ...[
+            EmployeeInfoBox(label: 'Role', value: _rolesText),
+            SizedBox(height: 6.h),
+            EmployeeInfoBox(label: 'Shift', value: shift),
+          ],
 
           SizedBox(height: 8.h),
           Divider(color: AppColors.divider, height: 1.h),

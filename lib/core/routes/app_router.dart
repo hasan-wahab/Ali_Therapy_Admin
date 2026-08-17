@@ -362,7 +362,8 @@ class AppRouter {
             path: AppRoutes.patientDuesHistory,
             name: 'patientDuesHistory',
             pageBuilder: (context, state) {
-              final extra = state.extra as Map<String, String>? ?? {};
+              // GoRouter extra is often Map<String, dynamic> at runtime.
+              final extra = _stringMapExtra(state.extra);
               return AppPage.slide(
                 state,
                 PatientDuesHistoryPage(
@@ -383,12 +384,12 @@ class AppRouter {
             path: AppRoutes.referredPatients,
             name: 'referredPatients',
             pageBuilder: (context, state) {
-              final extra = state.extra as Map<String, Object>? ?? {};
+              final extra = _dynamicMapExtra(state.extra);
               return AppPage.slide(
                 state,
                 ReferredPatientsPage(
                   referralSource:
-                      (extra['referralSource'] as String?) ?? 'Referral Source',
+                      extra['referralSource']?.toString() ?? 'Referral Source',
                   patientCount: (extra['patientCount'] as int?) ?? 0,
                 ),
               );
@@ -458,7 +459,8 @@ class AppRouter {
             path: AppRoutes.packageAttendanceDetail,
             name: 'packageAttendanceDetail',
             pageBuilder: (context, state) {
-              final extra = state.extra as Map<String, String>? ?? {};
+              // GoRouter extra is often Map<String, dynamic> at runtime.
+              final extra = _stringMapExtra(state.extra);
               return AppPage.slide(
                 state,
                 PackageAttendanceDetailPage(
@@ -473,6 +475,26 @@ class AppRouter {
     errorBuilder: (context, state) =>
         _NotFoundPage(path: state.uri.toString()),
   );
+}
+
+/// Safe cast for GoRouter `extra` maps (runtime type is often Map<String, dynamic>).
+Map<String, String> _stringMapExtra(Object? extra) {
+  if (extra is Map<String, String>) return extra;
+  if (extra is Map) {
+    return {
+      for (final entry in extra.entries)
+        entry.key.toString(): entry.value?.toString() ?? '',
+    };
+  }
+  return {};
+}
+
+Map<String, dynamic> _dynamicMapExtra(Object? extra) {
+  if (extra is Map<String, dynamic>) return extra;
+  if (extra is Map) {
+    return Map<String, dynamic>.from(extra);
+  }
+  return {};
 }
 
 /// Builds a profile section page from View's ProfileEntity (no API).

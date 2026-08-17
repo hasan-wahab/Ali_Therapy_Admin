@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
+import 'package:ali_therapy_admin/core/widgets/app_tablet_fields_grid.dart';
 import 'package:ali_therapy_admin/core/utils/app_snackbar.dart';
 import 'package:ali_therapy_admin/core/widgets/app_dropdown_field.dart';
 import 'package:ali_therapy_admin/feature/patient/all_patients/presentation/widgets/patients_filter_date_field.dart';
@@ -99,62 +100,47 @@ class _PatientsFiltersPanelState extends State<PatientsFiltersPanel> {
         children: [
           ReportFiltersHeader(onReset: _onReset),
           SizedBox(height: 6.h),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          AppTabletFieldsGrid(
+            phoneColumns: 2,
+            tabletColumns: 4,
             children: [
-              Expanded(
-                child: AppDropdownField(
-                  compact: true,
-                  key: ValueKey('clinic_$_resetToken'),
-                  label: 'Clinic',
-                  hintText: 'All Clinics',
-                  enableSearch: true,
-                  items: _clinics,
-                  value: _clinic,
-                  onChanged: (value) {
-                    if (value == null) return;
-                    setState(() => _clinic = value);
-                  },
-                ),
+              AppDropdownField(
+                compact: true,
+                key: ValueKey('clinic_$_resetToken'),
+                label: 'Clinic',
+                hintText: 'All Clinics',
+                enableSearch: true,
+                items: _clinics,
+                value: _clinic,
+                onChanged: (value) {
+                  if (value == null) return;
+                  setState(() => _clinic = value);
+                },
               ),
-              SizedBox(width: 6.w),
-              Expanded(
-                child: AppDropdownField(
-                  compact: true,
-                  key: ValueKey('receptionist_$_resetToken'),
-                  label: 'Receptionist',
-                  hintText: 'All Receptionists',
-                  enableSearch: true,
-                  items: _receptionists,
-                  value: _receptionist,
-                  onChanged: (value) {
-                    if (value == null) return;
-                    setState(() => _receptionist = value);
-                  },
-                ),
+              AppDropdownField(
+                compact: true,
+                key: ValueKey('receptionist_$_resetToken'),
+                label: 'Receptionist',
+                hintText: 'All Receptionists',
+                enableSearch: true,
+                items: _receptionists,
+                value: _receptionist,
+                onChanged: (value) {
+                  if (value == null) return;
+                  setState(() => _receptionist = value);
+                },
               ),
-            ],
-          ),
-          SizedBox(height: 4.h),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: PatientsFilterDateField(
-                  key: ValueKey('from_$_resetToken'),
-                  label: 'From Date',
-                  valueText: _fromDate,
-                  onTap: _pickFromDate,
-                ),
+              PatientsFilterDateField(
+                key: ValueKey('from_$_resetToken'),
+                label: 'From Date',
+                valueText: _fromDate,
+                onTap: _pickFromDate,
               ),
-              SizedBox(width: 6.w),
-              Expanded(
-                child: PatientsFilterDateField(
-                  key: ValueKey('to_$_resetToken'),
-                  label: 'To Date',
-                  valueText: _toDate,
-                  onTap: _pickToDate,
-                ),
+              PatientsFilterDateField(
+                key: ValueKey('to_$_resetToken'),
+                label: 'To Date',
+                valueText: _toDate,
+                onTap: _pickToDate,
               ),
             ],
           ),

@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ali_therapy_admin/core/routes/navigation_helper.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/domain/profile_domain/entities/profile_entity.dart';
-import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/other/profile_info_row.dart';
+import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/other/profile_info_fields_grid.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/other/profile_section_card.dart';
 
 // ============================================================
@@ -29,21 +29,25 @@ class ExperienceSection extends StatelessWidget {
               children: [
                 for (var i = 0; i < experiences.length; i++) ...[
                   if (i > 0) SizedBox(height: 12.h),
-                  ProfileInfoRow(
-                    label: 'Company',
-                    value: experiences[i].companyName,
-                  ),
-                  ProfileInfoRow(
-                    label: 'Period',
-                    value: experiences[i].workingPeriod,
-                  ),
-                  ProfileInfoRow(
-                    label: 'Duties',
-                    value: experiences[i].duties,
-                  ),
-                  ProfileInfoRow(
-                    label: 'Supervisor',
-                    value: experiences[i].supervisor,
+                  ProfileInfoFieldsGrid(
+                    fields: [
+                      ProfileInfoField(
+                        label: 'Company',
+                        value: experiences[i].companyName,
+                      ),
+                      ProfileInfoField(
+                        label: 'Period',
+                        value: experiences[i].workingPeriod,
+                      ),
+                      ProfileInfoField(
+                        label: 'Duties',
+                        value: experiences[i].duties,
+                      ),
+                      ProfileInfoField(
+                        label: 'Supervisor',
+                        value: experiences[i].supervisor,
+                      ),
+                    ],
                   ),
                 ],
               ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
+import 'package:ali_therapy_admin/core/widgets/app_tablet_safe_area.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/form/form_back_app_bar.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/referred_patients_header.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/referred_patients_item_card.dart';
@@ -28,7 +29,7 @@ class ReferredPatientsPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: const FormBackAppBar(title: 'Referred Patients'),
-      body: SafeArea(
+      body: AppTabletSafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

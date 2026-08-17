@@ -30,7 +30,7 @@ class AllEmployeesRepositoryImpl implements AllEmployeesRepository {
   ResultFuture<EmployeesPageEntity> getEmployeesPage({
     required int page,
   }) async {
-    if (!await networkInfo.isConnected) {
+    if (!await networkInfo.ensureConnected()) {
       const failure = NetworkFailure(
         'No internet connection. Please try again.',
       );

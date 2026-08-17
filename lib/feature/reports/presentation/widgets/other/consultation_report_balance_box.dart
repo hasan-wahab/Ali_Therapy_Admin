@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
+import 'package:ali_therapy_admin/core/widgets/app_tablet_fields_grid.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/patient_dues_money_line.dart';
 
 // ============================================================
@@ -45,10 +46,16 @@ class ConsultationReportBalanceBox extends StatelessWidget {
             style: AppTextStyles.label.copyWith(fontWeight: FontWeight.w700),
           ),
           SizedBox(height: 4.h),
-          PatientDuesMoneyLine(label: 'Total Billed', value: totalBilled),
-          PatientDuesMoneyLine(label: 'Paid', value: paid),
-          PatientDuesMoneyLine(label: 'Discount', value: discount),
-          PatientDuesMoneyLine(label: 'Insurance', value: insurance),
+          AppTabletFieldsGrid(
+            phoneColumns: 1,
+            tabletColumns: 2,
+            children: [
+              PatientDuesMoneyLine(label: 'Total Billed', value: totalBilled),
+              PatientDuesMoneyLine(label: 'Paid', value: paid),
+              PatientDuesMoneyLine(label: 'Discount', value: discount),
+              PatientDuesMoneyLine(label: 'Insurance', value: insurance),
+            ],
+          ),
           SizedBox(height: 4.h),
           Divider(height: 1.h, color: AppColors.divider),
           SizedBox(height: 4.h),

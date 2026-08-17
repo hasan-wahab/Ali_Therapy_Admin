@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
+import 'package:ali_therapy_admin/core/widgets/app_tablet_fields_grid.dart';
 import 'package:ali_therapy_admin/feature/patient/active_packages/presentation/widgets/other/active_package_progress.dart';
 import 'package:ali_therapy_admin/feature/patient/active_packages/presentation/widgets/other/active_package_status_badge.dart';
 import 'package:ali_therapy_admin/core/widgets/app_expandable_card.dart';
@@ -61,28 +62,27 @@ class ActivePackageCard extends StatelessWidget {
                       totalSessions: totalSessions,
                     ),
                     SizedBox(height: 14.h),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                    AppTabletFieldsGrid(
+                      phoneColumns: 2,
+                      tabletColumns: 2,
                       children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Price',
-                                style: AppTextStyles.bodySmall.copyWith(
-                                  color: AppColors.textMuted,
-                                ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Price',
+                              style: AppTextStyles.bodySmall.copyWith(
+                                color: AppColors.textMuted,
                               ),
-                              SizedBox(height: 2.h),
-                              Text(
-                                price,
-                                style: AppTextStyles.body.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                ),
+                            ),
+                            SizedBox(height: 2.h),
+                            Text(
+                              price,
+                              style: AppTextStyles.body.copyWith(
+                                fontWeight: FontWeight.w700,
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.end,

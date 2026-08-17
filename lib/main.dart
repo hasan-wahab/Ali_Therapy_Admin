@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ali_therapy_admin/core/routes/app_router.dart';
 import 'package:ali_therapy_admin/core/theme/app_theme.dart';
 import 'package:ali_therapy_admin/core/utils/app_constants.dart';
+import 'package:ali_therapy_admin/core/utils/app_device.dart';
 import 'package:ali_therapy_admin/injection.dart';
 
 // ============================================================
@@ -27,29 +28,57 @@ Future<void> main() async {
   runApp(const AliTherapyAdminApp());
 }
 
-class AliTherapyAdminApp extends StatelessWidget {
+class AliTherapyAdminApp extends StatefulWidget {
   const AliTherapyAdminApp({super.key});
 
   @override
+  State<AliTherapyAdminApp> createState() => _AliTherapyAdminAppState();
+}
+
+class _AliTherapyAdminAppState extends State<AliTherapyAdminApp>
+    with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  /// Rebuild ScreenUtil when tablet rotates (portrait ↔ landscape).
+  @override
+  void didChangeMetrics() {
+    setState(() {});
+  }
+
+  Size get _designSize {
+    final view = WidgetsBinding.instance.platformDispatcher.views.first;
+    final logical = view.physicalSize / view.devicePixelRatio;
+    final landscape = logical.width > logical.height;
+    return AppDevice.screenUtilDesignSize(landscape: landscape);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // ScreenUtilInit scales the UI for different phone sizes.
+    final designSize = _designSize;
+
+    // Phone keeps AppConstants 390×844. Tablet uses iPad Pro 11" frame.
     return ScreenUtilInit(
-      designSize: const Size(
-        AppConstants.designWidth,
-        AppConstants.designHeight,
-      ),
+      key: ValueKey('${designSize.width}x${designSize.height}'),
+      designSize: designSize,
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
         return MaterialApp.router(
           title: AppConstants.appName,
           debugShowCheckedModeBanner: false,
-
-          // Theme (colors, buttons, inputs…)
           theme: AppTheme.light,
           darkTheme: AppTheme.dark,
           themeMode: ThemeMode.light,
-
           routerConfig: AppRouter.router,
         );
       },

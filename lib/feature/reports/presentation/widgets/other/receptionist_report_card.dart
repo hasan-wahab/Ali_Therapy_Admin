@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
 import 'package:ali_therapy_admin/core/widgets/app_expandable_card.dart';
+import 'package:ali_therapy_admin/core/widgets/app_tablet_fields_grid.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/patient_report_detail_row.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/therapist_report_type_badge.dart';
 
@@ -91,30 +92,36 @@ class ReceptionistReportCard extends StatelessWidget {
             SizedBox(height: 12.h),
             Divider(height: 1.h, color: AppColors.divider),
             SizedBox(height: 10.h),
-            PatientReportDetailRow(
-              icon: Icons.support_agent_outlined,
-              label: 'Receptionist',
-              value: receptionistName,
-            ),
-            PatientReportDetailRow(
-              icon: Icons.event_outlined,
-              label: 'Visit Date',
-              value: visitDate,
-            ),
-            PatientReportDetailRow(
-              icon: Icons.phone_outlined,
-              label: 'Patient Phone',
-              value: patientPhone,
-            ),
-            PatientReportDetailRow(
-              icon: Icons.local_hospital_outlined,
-              label: 'Clinic',
-              value: clinic,
-            ),
-            PatientReportDetailRow(
-              icon: Icons.category_outlined,
-              label: 'Type',
-              value: type,
+            AppTabletFieldsGrid(
+              phoneColumns: 1,
+              tabletColumns: 2,
+              children: [
+                PatientReportDetailRow(
+                  icon: Icons.support_agent_outlined,
+                  label: 'Receptionist',
+                  value: receptionistName,
+                ),
+                PatientReportDetailRow(
+                  icon: Icons.event_outlined,
+                  label: 'Visit Date',
+                  value: visitDate,
+                ),
+                PatientReportDetailRow(
+                  icon: Icons.phone_outlined,
+                  label: 'Patient Phone',
+                  value: patientPhone,
+                ),
+                PatientReportDetailRow(
+                  icon: Icons.local_hospital_outlined,
+                  label: 'Clinic',
+                  value: clinic,
+                ),
+                PatientReportDetailRow(
+                  icon: Icons.category_outlined,
+                  label: 'Type',
+                  value: type,
+                ),
+              ],
             ),
           ],
         ),

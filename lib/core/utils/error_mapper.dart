@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 
 import 'package:ali_therapy_admin/core/errors/exceptions.dart';
@@ -8,6 +10,7 @@ import 'package:ali_therapy_admin/core/utils/app_error_logger.dart';
 /// ERROR MAPPER
 /// ------------------------------------------------------------
 /// Converts Exceptions → Failures and logs them for debugging.
+/// Never returns raw TimeoutException / Dio messages to the UI.
 /// ============================================================
 
 class ErrorMapper {
@@ -57,7 +60,25 @@ class ErrorMapper {
       return toFailure(error);
     }
 
+    // Never show raw TimeoutException / technical strings in UI.
+    if (error is TimeoutException) {
+      return const TimeoutFailure();
+    }
+
+    if (error is DioException) {
+      switch (error.type) {
+        case DioExceptionType.connectionTimeout:
+        case DioExceptionType.sendTimeout:
+        case DioExceptionType.receiveTimeout:
+          return const TimeoutFailure();
+        case DioExceptionType.connectionError:
+          return const NetworkFailure();
+        default:
+          break;
+      }
+    }
+
     AppErrorLogger.logUnknown(error, where: 'ErrorMapper.fromUnknown');
-    return UnknownFailure(error.toString(), error.runtimeType.toString());
+    return const UnknownFailure('Something went wrong. Please try again.');
   }
 }

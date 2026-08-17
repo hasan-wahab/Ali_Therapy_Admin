@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
+import 'package:ali_therapy_admin/core/utils/app_device.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/form/form_back_app_bar.dart';
 import 'package:ali_therapy_admin/feature/patient/patient_detail/presentation/widgets/other/patient_detail_tab.dart';
 import 'package:ali_therapy_admin/feature/patient/patient_detail/presentation/widgets/other/patient_detail_tab_bar.dart';
@@ -41,26 +42,43 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isTablet = AppDevice.isTablet(context);
+    final hPad = isTablet
+        ? (AppDevice.isLandscape(context) ? 40.w : 48.w)
+        : 16.w;
+
+    final scrollContent = SingleChildScrollView(
+      padding: EdgeInsets.fromLTRB(hPad, 8.h, hPad, 24.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          PatientDetailTabBar(
+            activeTab: _activeTab,
+            onTabSelected: (tab) {
+              setState(() => _activeTab = tab);
+            },
+          ),
+          SizedBox(height: 12.h),
+          _buildSection(),
+        ],
+      ),
+    );
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: const FormBackAppBar(title: 'Detail'),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 24.h),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              PatientDetailTabBar(
-                activeTab: _activeTab,
-                onTabSelected: (tab) {
-                  setState(() => _activeTab = tab);
-                },
-              ),
-              SizedBox(height: 12.h),
-              _buildSection(),
-            ],
-          ),
-        ),
+        child: isTablet
+            ? Align(
+                alignment: Alignment.topCenter,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: AppDevice.contentMaxWidth(context),
+                  ),
+                  child: scrollContent,
+                ),
+              )
+            : scrollContent,
       ),
     );
   }

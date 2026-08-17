@@ -31,7 +31,7 @@ class ForgetPasswordRepositoryImpl implements ForgetPasswordRepository {
   ResultFuture<ForgetPasswordEntity> requestReset({
     required String email,
   }) async {
-    if (!await networkInfo.isConnected) {
+    if (!await networkInfo.ensureConnected()) {
       const failure = NetworkFailure(
         'No internet connection. Please try again.',
       );

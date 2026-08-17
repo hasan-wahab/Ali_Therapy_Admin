@@ -6,6 +6,7 @@ import 'package:ali_therapy_admin/core/di/service_locator.dart';
 import 'package:ali_therapy_admin/core/routes/navigation_helper.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
+import 'package:ali_therapy_admin/core/utils/app_device.dart';
 import 'package:ali_therapy_admin/core/utils/app_snackbar.dart';
 import 'package:ali_therapy_admin/core/widgets/app_back_app_bar.dart';
 import 'package:ali_therapy_admin/core/widgets/app_loading_dialog.dart';
@@ -64,33 +65,69 @@ class ChangePasswordPage extends StatelessWidget {
                 ),
                 SafeArea(
                   child: Center(
-                    child: SingleChildScrollView(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 24.w,
-                        vertical: 24.h,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          const ChangePasswordHeader(),
-                          SizedBox(height: 28.h),
-                          const ChangePasswordFormCard(),
-                          SizedBox(height: 18.h),
-                          TextButton(
-                            onPressed: isLoading
-                                ? null
-                                : () => AppNavigation.goHome(context),
-                            child: Text(
-                              'Back to Home',
-                              style: AppTextStyles.bodySmall.copyWith(
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.w600,
+                    child: AppDevice.isTablet(context)
+                        ? Align(
+                            alignment: Alignment.topCenter,
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxWidth: AppDevice.contentMaxWidth(context),
+                              ),
+                              child: SingleChildScrollView(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 24.w,
+                                  vertical: 24.h,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    const ChangePasswordHeader(),
+                                    SizedBox(height: 28.h),
+                                    const ChangePasswordFormCard(),
+                                    SizedBox(height: 18.h),
+                                    TextButton(
+                                      onPressed: isLoading
+                                          ? null
+                                          : () => AppNavigation.goHome(context),
+                                      child: Text(
+                                        'Back to Home',
+                                        style: AppTextStyles.bodySmall.copyWith(
+                                          color: AppColors.primary,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
+                          )
+                        : SingleChildScrollView(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 24.w,
+                              vertical: 24.h,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                const ChangePasswordHeader(),
+                                SizedBox(height: 28.h),
+                                const ChangePasswordFormCard(),
+                                SizedBox(height: 18.h),
+                                TextButton(
+                                  onPressed: isLoading
+                                      ? null
+                                      : () => AppNavigation.goHome(context),
+                                  child: Text(
+                                    'Back to Home',
+                                    style: AppTextStyles.bodySmall.copyWith(
+                                      color: AppColors.primary,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ],
-                      ),
-                    ),
                   ),
                 ),
                 if (isLoading)

@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
 import 'package:ali_therapy_admin/core/widgets/app_expandable_card.dart';
+import 'package:ali_therapy_admin/core/widgets/app_tablet_fields_grid.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/patient_dues_money_line.dart';
 
 // ============================================================
@@ -91,15 +92,24 @@ class InsurancePanelCard extends StatelessWidget {
               ),
             ),
             SizedBox(height: 6.h),
-            PatientDuesMoneyLine(
-              label: 'Consultation Billed',
-              value: consultationBilled,
-            ),
-            PatientDuesMoneyLine(label: 'Package Billed', value: packageBilled),
-            PatientDuesMoneyLine(
-              label: 'Total Billed',
-              value: totalBilled,
-              bold: true,
+            AppTabletFieldsGrid(
+              phoneColumns: 1,
+              tabletColumns: 2,
+              children: [
+                PatientDuesMoneyLine(
+                  label: 'Consultation Billed',
+                  value: consultationBilled,
+                ),
+                PatientDuesMoneyLine(
+                  label: 'Package Billed',
+                  value: packageBilled,
+                ),
+                PatientDuesMoneyLine(
+                  label: 'Total Billed',
+                  value: totalBilled,
+                  bold: true,
+                ),
+              ],
             ),
             SizedBox(height: 10.h),
             Text(
@@ -109,15 +119,24 @@ class InsurancePanelCard extends StatelessWidget {
               ),
             ),
             SizedBox(height: 6.h),
-            PatientDuesMoneyLine(label: 'Total Covered', value: totalCovered),
-            PatientDuesMoneyLine(
-              label: 'Total Paid Cash',
-              value: totalPaidCash,
-            ),
-            PatientDuesMoneyLine(
-              label: 'Outstanding Balance',
-              value: outstandingBalance,
-              bold: true,
+            AppTabletFieldsGrid(
+              phoneColumns: 1,
+              tabletColumns: 2,
+              children: [
+                PatientDuesMoneyLine(
+                  label: 'Total Covered',
+                  value: totalCovered,
+                ),
+                PatientDuesMoneyLine(
+                  label: 'Total Paid Cash',
+                  value: totalPaidCash,
+                ),
+                PatientDuesMoneyLine(
+                  label: 'Outstanding Balance',
+                  value: outstandingBalance,
+                  bold: true,
+                ),
+              ],
             ),
           ],
         ),

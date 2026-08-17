@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:ali_therapy_admin/feature/employee/profile/domain/profile_domain/entities/profile_entity.dart';
-import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/other/profile_info_row.dart';
+import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/other/profile_info_fields_grid.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/other/profile_section_card.dart';
 
 // ============================================================
@@ -17,14 +17,14 @@ class AddressesSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return ProfileSectionCard(
       title: 'Addresses',
-      child: Column(
-        children: [
-          ProfileInfoRow(label: 'District', value: profile.district),
-          ProfileInfoRow(
+      child: ProfileInfoFieldsGrid(
+        fields: [
+          ProfileInfoField(label: 'District', value: profile.district),
+          ProfileInfoField(
             label: 'Present Address',
             value: profile.presentAddress,
           ),
-          ProfileInfoRow(
+          ProfileInfoField(
             label: 'Permanent Address',
             value: profile.permanentAddress,
           ),

@@ -27,7 +27,7 @@ class ChangePasswordRepositoryImpl implements ChangePasswordRepository {
     required String currentPassword,
     required String newPassword,
   }) async {
-    if (!await networkInfo.isConnected) {
+    if (!await networkInfo.ensureConnected()) {
       const failure = NetworkFailure(
         'No internet connection. Please try again.',
       );

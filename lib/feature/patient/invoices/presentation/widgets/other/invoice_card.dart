@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_sizes.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
+import 'package:ali_therapy_admin/core/widgets/app_tablet_fields_grid.dart';
 import 'package:ali_therapy_admin/feature/patient/invoices/presentation/widgets/other/invoice_meta_field.dart';
 import 'package:ali_therapy_admin/feature/patient/invoices/presentation/widgets/other/invoice_payment_record.dart';
 import 'package:ali_therapy_admin/core/widgets/app_expandable_card.dart';
@@ -97,41 +98,29 @@ class _InvoiceCardState extends State<InvoiceCard> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
+                AppTabletFieldsGrid(
+                  phoneColumns: 2,
+                  tabletColumns: 2,
+                  gapH: 8.h,
                   children: [
-                    Expanded(
-                      child: InvoiceMetaField(
-                        label: 'Amount',
-                        value: widget.amount,
-                      ),
+                    InvoiceMetaField(
+                      label: 'Amount',
+                      value: widget.amount,
                     ),
-                    SizedBox(width: 8.w),
-                    Expanded(
-                      child: InvoiceMetaField(
-                        label: 'Discount',
-                        value: widget.discount,
-                      ),
+                    InvoiceMetaField(
+                      label: 'Discount',
+                      value: widget.discount,
                     ),
-                  ],
-                ),
-                SizedBox(height: 8.h),
-                Row(
-                  children: [
-                    Expanded(
-                      child: InvoiceMetaField(
-                        label: 'Paid',
-                        value: widget.paid,
-                        valueColor: AppColors.primary,
-                      ),
+                    InvoiceMetaField(
+                      label: 'Paid',
+                      value: widget.paid,
+                      valueColor: AppColors.primary,
                     ),
-                    SizedBox(width: 8.w),
-                    Expanded(
-                      child: InvoiceMetaField(
-                        label: 'Due',
-                        value: widget.due,
-                        valueColor:
-                            hasDue ? AppColors.error : AppColors.textPrimary,
-                      ),
+                    InvoiceMetaField(
+                      label: 'Due',
+                      value: widget.due,
+                      valueColor:
+                          hasDue ? AppColors.error : AppColors.textPrimary,
                     ),
                   ],
                 ),

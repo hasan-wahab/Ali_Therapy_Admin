@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/routes/navigation_helper.dart';
+import 'package:ali_therapy_admin/core/widgets/app_tablet_safe_area.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/form/form_add_another_button.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/form/form_back_app_bar.dart';
@@ -23,7 +24,7 @@ class AddExperiencePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: const FormBackAppBar(title: 'Experience'),
-      body: SafeArea(
+      body: AppTabletSafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(24.w, 16.h, 24.w, 24.h),
           child: Column(

@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/widgets/app_dropdown_field.dart';
+import 'package:ali_therapy_admin/core/widgets/app_tablet_fields_grid.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/report_date_field.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/report_filters_header.dart';
 
@@ -56,57 +57,43 @@ class ReferByFilters extends StatelessWidget {
         children: [
           const ReportFiltersHeader(),
           SizedBox(height: 6.h),
-          Row(
+          AppTabletFieldsGrid(
+            phoneColumns: 2,
+            tabletColumns: 3,
             children: [
-              const Expanded(
-                child: ReportDateField(
-                  label: 'From Date',
-                  valueText: '08/11/2026',
-                ),
+              const ReportDateField(
+                label: 'From Date',
+                valueText: '08/11/2026',
               ),
-              SizedBox(width: 6.w),
-              const Expanded(
-                child: ReportDateField(
-                  label: 'To Date',
-                  valueText: '08/11/2026',
-                ),
+              const ReportDateField(
+                label: 'To Date',
+                valueText: '08/11/2026',
+              ),
+              const AppDropdownField(
+                compact: true,
+                enableSearch: true,
+                label: 'Clinic',
+                hintText: 'All clinics',
+                items: _clinics,
+                value: 'All clinics',
+              ),
+              const AppDropdownField(
+                compact: true,
+                enableSearch: true,
+                label: 'Receptionist',
+                hintText: 'All receptionists',
+                items: _receptionists,
+                value: 'All receptionists',
+              ),
+              const AppDropdownField(
+                compact: true,
+                enableSearch: true,
+                label: 'Referral Type',
+                hintText: 'All Referral Types',
+                items: _referralTypes,
+                value: 'All Referral Types',
               ),
             ],
-          ),
-          SizedBox(height: 4.h),
-          Row(
-            children: [
-              const Expanded(
-                child: AppDropdownField(
-                  compact: true,
-                  enableSearch: true,
-                  label: 'Clinic',
-                  hintText: 'All clinics',
-                  items: _clinics,
-                  value: 'All clinics',
-                ),
-              ),
-              SizedBox(width: 6.w),
-              const Expanded(
-                child: AppDropdownField(
-                  compact: true,
-                  enableSearch: true,
-                  label: 'Receptionist',
-                  hintText: 'All receptionists',
-                  items: _receptionists,
-                  value: 'All receptionists',
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 4.h),
-          const AppDropdownField(
-            compact: true,
-            enableSearch: true,
-            label: 'Referral Type',
-            hintText: 'All Referral Types',
-            items: _referralTypes,
-            value: 'All Referral Types',
           ),
         ],
       ),

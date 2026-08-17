@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
 import 'package:ali_therapy_admin/core/widgets/app_expandable_card.dart';
+import 'package:ali_therapy_admin/core/widgets/app_tablet_fields_grid.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/consultation_report_balance_box.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/consultation_report_info_line.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/consultation_report_patient_type_badge.dart';
@@ -109,20 +110,26 @@ class ConsultationReportCard extends StatelessWidget {
               ],
             ),
             SizedBox(height: 4.h),
-            ConsultationReportStaffLine(
-              icon: Icons.support_agent_outlined,
-              label: 'Receptionist',
-              value: receptionist,
-            ),
-            ConsultationReportStaffLine(
-              icon: Icons.badge_outlined,
-              label: 'Assistant Mgr',
-              value: assistantManager,
-            ),
-            ConsultationReportStaffLine(
-              icon: Icons.handshake_outlined,
-              label: 'Therapist',
-              value: therapist,
+            AppTabletFieldsGrid(
+              phoneColumns: 1,
+              tabletColumns: 2,
+              children: [
+                ConsultationReportStaffLine(
+                  icon: Icons.support_agent_outlined,
+                  label: 'Receptionist',
+                  value: receptionist,
+                ),
+                ConsultationReportStaffLine(
+                  icon: Icons.badge_outlined,
+                  label: 'Assistant Mgr',
+                  value: assistantManager,
+                ),
+                ConsultationReportStaffLine(
+                  icon: Icons.handshake_outlined,
+                  label: 'Therapist',
+                  value: therapist,
+                ),
+              ],
             ),
             SizedBox(height: 6.h),
             Divider(height: 1.h, color: AppColors.divider),
@@ -149,17 +156,23 @@ class ConsultationReportCard extends StatelessWidget {
               ],
             ),
             SizedBox(height: 4.h),
-            ConsultationReportInfoLine(
-              icon: Icons.event_outlined,
-              text: visitDateTime,
-            ),
-            ConsultationReportInfoLine(
-              icon: Icons.phone_outlined,
-              text: phone,
-            ),
-            ConsultationReportInfoLine(
-              icon: Icons.local_hospital_outlined,
-              text: clinic,
+            AppTabletFieldsGrid(
+              phoneColumns: 1,
+              tabletColumns: 2,
+              children: [
+                ConsultationReportInfoLine(
+                  icon: Icons.event_outlined,
+                  text: visitDateTime,
+                ),
+                ConsultationReportInfoLine(
+                  icon: Icons.phone_outlined,
+                  text: phone,
+                ),
+                ConsultationReportInfoLine(
+                  icon: Icons.local_hospital_outlined,
+                  text: clinic,
+                ),
+              ],
             ),
             SizedBox(height: 6.h),
 
