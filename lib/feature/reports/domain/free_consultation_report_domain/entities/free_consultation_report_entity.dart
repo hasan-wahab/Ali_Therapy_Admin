@@ -1,18 +1,41 @@
 import 'package:equatable/equatable.dart';
 
 // ============================================================
-// FREECONSULTATIONREPORT ENTITY (Domain)
+// FREE CONSULTATION REPORT ENTITY (Domain)
 // ------------------------------------------------------------
-// Pure business object — no Flutter / Dio / JSON here.
-// Fill fields when the API contract is known.
+// One row from GET /api/admin/reports/free-consultation
 // ============================================================
 
 class FreeConsultationReportEntity extends Equatable {
-  /// Placeholder id until real fields are defined.
-  final String id;
+  const FreeConsultationReportEntity({
+    required this.id,
+    required this.visitDate,
+    required this.patientName,
+    required this.patientPhone,
+    required this.patientCnic,
+    required this.consultantName,
+    required this.clinicName,
+    required this.fee,
+  });
 
-  const FreeConsultationReportEntity({required this.id});
+  final String id;
+  final String visitDate;
+  final String patientName;
+  final String patientPhone;
+  final String patientCnic;
+  final String consultantName;
+  final String clinicName;
+  final double fee;
 
   @override
-  List<Object?> get props => [id];
+  List<Object?> get props => [
+        id,
+        visitDate,
+        patientName,
+        patientPhone,
+        patientCnic,
+        consultantName,
+        clinicName,
+        fee,
+      ];
 }

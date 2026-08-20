@@ -66,6 +66,10 @@ class ApiConstants {
   /// GET — list all employees
   static const String employeesList = 'employees-list';
 
+  /// GET — All Employees filter dropdown data
+  /// (roles, designations, clinics, departments, shifts, statuses)
+  static const String employeesFiltersData = 'employees-filters-data';
+
   /// GET — show one employee
   static String employeeShow(String id) => 'employees/$id';
 
@@ -80,6 +84,82 @@ class ApiConstants {
 
   /// DELETE — delete employee
   static String employeeDelete(String id) => 'employees/$id';
+
+  /// POST — toggle employee active / inactive status
+  static String employeeToggleStatus(String id) =>
+      'employees/$id/toggle-status';
+
+  /// POST — terminate employee
+  static String employeeTerminate(String id) => 'employees/$id/terminate';
+
+  /// POST — change employee password
+  static String employeeChangePassword(String id) =>
+      'employees/$id/change-password';
+
+  /// POST — assign device ID to employee
+  static String employeeAssignDeviceId(String id) =>
+      'employees/$id/assign-device-id';
+
+  /// POST — assign biometric ID to employee
+  static String employeeAssignBiometricId(String id) =>
+      'employees/$id/assign-biometric-id';
+
+  // ----------------------------------------------------------
+  // REPORTS ENDPOINTS
+  // Base: /api/admin/reports/...
+  // ----------------------------------------------------------
+  /// Prefix for every report endpoint.
+  /// Usage: ApiConstants.reports('patient-dues')
+  static String reports(String path) => 'reports/$path';
+
+  /// GET — all filter dropdowns for report screens
+  /// (clinics, consultants, therapists, receptionists,
+  ///  assistant_managers, insurance_panels)
+  static const String reportsFilterOptions = 'reports/filter-options';
+
+  /// GET — paginated patient dues list
+  static const String patientDues = 'reports/patient-dues';
+
+  /// GET — invoice history for one patient
+  static String patientDuesHistory(String patientId) =>
+      'reports/patient-dues/$patientId';
+
+  /// GET — paginated consultant / consultation report list
+  static const String consultationReport = 'reports/consultant';
+
+  /// GET — paginated therapist report list
+  static const String therapistReport = 'reports/therapist';
+
+  /// GET — paginated reconsultation report list
+  static const String reconsultationReport = 'reports/reconsultation';
+
+  /// GET — paginated free consultation report list
+  static const String freeConsultationReport = 'reports/free-consultation';
+
+  /// GET — paginated assistant manager report list
+  static const String assistantManagerReport = 'reports/assistant-manager';
+
+  /// GET — paginated receptionist report list
+  static const String receptionistReport = 'reports/receptionist';
+
+  /// GET — paginated patient report list
+  static const String patientReport = 'reports/patient-report';
+
+  /// GET — paginated package attendance list
+  static const String packageAttendance = 'reports/package-attendance';
+
+  /// GET — packages + session history for one patient
+  static String packageAttendanceDetail(String patientId) =>
+      'reports/package-attendance/$patientId';
+
+  /// GET — refer-by report list
+  static const String referByReport = 'reports/refer-by';
+
+  /// GET — insurance panel report list + summary
+  static const String insurancePanelReport = 'reports/insurance-panel';
+
+  /// GET — paginated user activity report list
+  static const String userActivityReport = 'reports/user-activity';
 
   // ----------------------------------------------------------
   // ATTENDANCE ENDPOINTS

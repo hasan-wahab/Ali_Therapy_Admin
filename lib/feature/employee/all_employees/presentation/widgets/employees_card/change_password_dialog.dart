@@ -4,18 +4,68 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
 import 'package:ali_therapy_admin/core/utils/app_snackbar.dart';
+import 'package:ali_therapy_admin/core/utils/validators.dart';
 import 'package:ali_therapy_admin/core/widgets/app_form_dialog.dart';
 import 'package:ali_therapy_admin/core/widgets/app_text_field.dart';
 
 // ============================================================
 // CHANGE PASSWORD DIALOG
 // ------------------------------------------------------------
-// Admin sets a new password for an employee (UI only).
-// Uses shared AppFormDialog (keyboard-safe).
+// Collects new + confirm password, then returns values.
+// API is called from AllEmployeesBloc (not from this dialog).
 // ============================================================
 
-class ChangePasswordDialog extends StatelessWidget {
+class ChangePasswordFormResult {
+  const ChangePasswordFormResult({
+    required this.newPassword,
+    required this.confirmPassword,
+  });
+
+  final String newPassword;
+  final String confirmPassword;
+}
+
+class ChangePasswordDialog extends StatefulWidget {
   const ChangePasswordDialog({super.key});
+
+  @override
+  State<ChangePasswordDialog> createState() => _ChangePasswordDialogState();
+}
+
+class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
+  final _passwordController = TextEditingController();
+  final _confirmController = TextEditingController();
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    _confirmController.dispose();
+    super.dispose();
+  }
+
+  void _onConfirm() {
+    final password = _passwordController.text;
+    final confirm = _confirmController.text;
+
+    final passwordError = Validators.password(password, minLength: 8);
+    if (passwordError != null) {
+      AppSnackbar.warning(context, passwordError);
+      return;
+    }
+
+    final confirmError = Validators.confirmPassword(confirm, password);
+    if (confirmError != null) {
+      AppSnackbar.warning(context, confirmError);
+      return;
+    }
+
+    Navigator.of(context).pop(
+      ChangePasswordFormResult(
+        newPassword: password,
+        confirmPassword: confirm,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,17 +75,15 @@ class ChangePasswordDialog extends StatelessWidget {
       headerColor: AppColors.primary,
       confirmLabel: 'Change Password',
       confirmColor: AppColors.primary,
-      onConfirm: () {
-        AppSnackbar.info(context, 'Change password coming soon');
-        Navigator.of(context).pop();
-      },
+      onConfirm: _onConfirm,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const AppTextField(
+          AppTextField(
             label: 'New Password',
             isRequired: true,
             obscureText: true,
+            controller: _passwordController,
           ),
           SizedBox(height: 4.h),
           Text(
@@ -45,10 +93,11 @@ class ChangePasswordDialog extends StatelessWidget {
             ),
           ),
           SizedBox(height: 12.h),
-          const AppTextField(
+          AppTextField(
             label: 'Confirm Password',
             isRequired: true,
             obscureText: true,
+            controller: _confirmController,
           ),
         ],
       ),
@@ -56,9 +105,11 @@ class ChangePasswordDialog extends StatelessWidget {
   }
 }
 
-/// Opens the change-password dialog for an employee.
-Future<void> showChangePasswordDialog(BuildContext context) {
-  return showAppFormDialog<void>(
+/// Opens the change-password dialog and returns values if confirmed.
+Future<ChangePasswordFormResult?> showChangePasswordDialog(
+  BuildContext context,
+) {
+  return showAppFormDialog<ChangePasswordFormResult>(
     context: context,
     builder: (context) => const ChangePasswordDialog(),
   );

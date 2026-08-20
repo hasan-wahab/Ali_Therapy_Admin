@@ -1,13 +1,13 @@
 import 'package:ali_therapy_admin/core/utils/typedefs.dart';
-import '../entities/user_activity_report_entity.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/user_activity_report_domain/entities/user_activity_report_page_entity.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/user_activity_report_domain/entities/user_activity_report_query.dart';
 
 // ============================================================
-// USERACTIVITYREPORT REPOSITORY CONTRACT (Domain)
-// ------------------------------------------------------------
-// Domain only knows WHAT we need — not HOW (no Dio here).
+// USER ACTIVITY REPORT REPOSITORY CONTRACT (Domain)
 // ============================================================
 
 abstract class UserActivityReportRepository {
-  /// Load data for this feature. Replace with real methods later.
-  ResultFuture<UserActivityReportEntity> getUserActivityReport();
+  ResultFuture<UserActivityReportPageEntity> getUserActivityReportPage({
+    required UserActivityReportQuery query,
+  });
 }

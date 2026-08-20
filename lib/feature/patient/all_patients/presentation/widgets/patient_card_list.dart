@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'package:ali_therapy_admin/core/utils/app_search_ranker.dart';
 import 'package:ali_therapy_admin/feature/patient/all_patients/presentation/widgets/patients_card/patient_card.dart';
 
 // ============================================================
@@ -10,7 +11,12 @@ import 'package:ali_therapy_admin/feature/patient/all_patients/presentation/widg
 // ============================================================
 
 class PatientCardList extends StatelessWidget {
-  const PatientCardList({super.key});
+  const PatientCardList({
+    super.key,
+    this.searchQuery = '',
+  });
+
+  final String searchQuery;
 
   static const _samplePatients = [
     (
@@ -78,13 +84,49 @@ class PatientCardList extends StatelessWidget {
     ),
   ];
 
+  static int matchCountFor(String query) {
+    return AppSearchRanker.matchCount(
+      items: _samplePatients,
+      query: query,
+      fieldsOf: (patient) => [
+        patient.name,
+        patient.patientId,
+        patient.cnic,
+        patient.problems,
+        patient.insurance,
+        patient.createdBy,
+        patient.receptionist,
+        patient.assistantManager,
+        patient.consultant,
+        patient.therapist,
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final patients = AppSearchRanker.matchesThenRelated(
+      items: _samplePatients,
+      query: searchQuery,
+      fieldsOf: (patient) => [
+        patient.name,
+        patient.patientId,
+        patient.cnic,
+        patient.problems,
+        patient.insurance,
+        patient.createdBy,
+        patient.receptionist,
+        patient.assistantManager,
+        patient.consultant,
+        patient.therapist,
+      ],
+    );
+
     return SliverList.separated(
-      itemCount: _samplePatients.length,
+      itemCount: patients.length,
       separatorBuilder: (context, index) => SizedBox(height: 10.h),
       itemBuilder: (context, index) {
-        final patient = _samplePatients[index];
+        final patient = patients[index];
         return PatientCard(
           initiallyExpanded: index == 0,
           patientId: patient.patientId,

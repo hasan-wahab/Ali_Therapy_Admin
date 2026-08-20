@@ -18,6 +18,21 @@ import 'package:ali_therapy_admin/injection.dart';
 //   3. Call runApp()
 // ============================================================
 
+/// Removes the Android overscroll glow (rainbow) app-wide.
+/// AppPullRefresh uses a teal linear indicator instead.
+class _NoGlowScrollBehavior extends ScrollBehavior {
+  const _NoGlowScrollBehavior();
+
+  @override
+  Widget buildOverscrollIndicator(
+    BuildContext context,
+    Widget child,
+    ScrollableDetails details,
+  ) {
+    return child; // no glow
+  }
+}
+
 Future<void> main() async {
   // Required before using plugins or async startup code.
   WidgetsFlutterBinding.ensureInitialized();
@@ -80,6 +95,9 @@ class _AliTherapyAdminAppState extends State<AliTherapyAdminApp>
           darkTheme: AppTheme.dark,
           themeMode: ThemeMode.light,
           routerConfig: AppRouter.router,
+          // Remove Android rainbow/glow on overscroll — our AppPullRefresh
+          // shows a teal linear line instead.
+          scrollBehavior: const _NoGlowScrollBehavior(),
         );
       },
     );

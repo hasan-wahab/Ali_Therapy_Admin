@@ -19,6 +19,7 @@ import 'package:ali_therapy_admin/core/widgets/app_tablet_fields_grid.dart';
 class PatientDuesCard extends StatelessWidget {
   const PatientDuesCard({
     super.key,
+    required this.patientId,
     required this.patientName,
     required this.cnic,
     required this.phone,
@@ -36,6 +37,7 @@ class PatientDuesCard extends StatelessWidget {
     this.initiallyExpanded = false,
   });
 
+  final String patientId;
   final String patientName;
   final String cnic;
   final String phone;
@@ -118,6 +120,7 @@ class PatientDuesCard extends StatelessWidget {
                   onTap: () {
                     AppNavigation.openPatientDuesHistory(
                       context,
+                      patientId: patientId,
                       patientName: patientName,
                       cnic: cnic,
                       phone: phone,

@@ -9,7 +9,7 @@ import 'package:ali_therapy_admin/feature/employee/all_employees/presentation/wi
 // ============================================================
 // EMPLOYEE ACTIONS BUTTON
 // ------------------------------------------------------------
-// Compact teal "Actions" popup menu (same pattern as patient card).
+// Compact teal "Actions" popup — items match the All Employees card menu.
 // ============================================================
 
 class EmployeeActionsButton extends StatelessWidget {
@@ -20,9 +20,11 @@ class EmployeeActionsButton extends StatelessWidget {
 
   final ValueChanged<EmployeeActionType>? onSelected;
 
+  static const Color _editColor = Color(0xFF42A5F5);
   static const Color _terminateColor = Color(0xFFE57373);
-  static const Color _passwordColor = Color(0xFF26A69A);
-  static const Color _deleteColor = Color(0xFFE57373);
+  static const Color _passwordColor = Color(0xFF26C6DA);
+  static const Color _assignColor = Color(0xFF424242);
+  static const Color _deleteColor = Color(0xFFE53935);
 
   @override
   Widget build(BuildContext context) {
@@ -30,24 +32,19 @@ class EmployeeActionsButton extends StatelessWidget {
       onSelected: onSelected,
       offset: Offset(0, 6.h),
       color: AppColors.surface,
-      elevation: 6,
+      elevation: 8,
       padding: EdgeInsets.zero,
+      position: PopupMenuPosition.under,
+      constraints: BoxConstraints(minWidth: 220.w, maxHeight: 420.h),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.r),
-        side: const BorderSide(color: AppColors.border),
       ),
       itemBuilder: (context) => [
         _menuItem(
-          type: EmployeeActionType.view,
-          icon: Icons.visibility_outlined,
-          label: 'View',
-          color: AppColors.primary,
-        ),
-        _menuItem(
           type: EmployeeActionType.edit,
-          icon: Icons.edit_note_rounded,
+          icon: Icons.edit_square,
           label: 'Edit',
-          color: AppColors.primary,
+          color: _editColor,
         ),
         _menuItem(
           type: EmployeeActionType.terminate,
@@ -57,7 +54,7 @@ class EmployeeActionsButton extends StatelessWidget {
         ),
         _menuItem(
           type: EmployeeActionType.changePassword,
-          icon: Icons.key_outlined,
+          icon: Icons.vpn_key_outlined,
           label: 'Change Password',
           color: _passwordColor,
         ),
@@ -65,15 +62,14 @@ class EmployeeActionsButton extends StatelessWidget {
           type: EmployeeActionType.assignDeviceId,
           icon: Icons.smartphone_outlined,
           label: 'Assign Device ID',
-          color: AppColors.primary,
+          color: _assignColor,
         ),
         _menuItem(
           type: EmployeeActionType.assignBiometricId,
           icon: Icons.fingerprint,
           label: 'Assign Biometric ID',
-          color: AppColors.primary,
+          color: _assignColor,
         ),
-        const PopupMenuDivider(height: 1),
         _menuItem(
           type: EmployeeActionType.delete,
           icon: Icons.delete_outline_rounded,

@@ -1,21 +1,25 @@
 import 'package:ali_therapy_admin/core/usecase/usecase.dart';
 import 'package:ali_therapy_admin/core/utils/typedefs.dart';
-import '../entities/assistant_manager_report_entity.dart';
-import '../repositories/assistant_manager_report_repository.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/assistant_manager_report_domain/entities/assistant_manager_report_page_entity.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/assistant_manager_report_domain/entities/assistant_manager_report_query.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/assistant_manager_report_domain/repositories/assistant_manager_report_repository.dart';
 
 // ============================================================
-// GET ASSISTANTMANAGERREPORT USE CASE
+// GET ASSISTANT MANAGER REPORT USE CASE
 // ------------------------------------------------------------
-// One job: fetch assistant manager report data.
+// One job: fetch paginated assistant manager report rows.
 // ============================================================
 
-class GetAssistantManagerReportUseCase extends UseCase<AssistantManagerReportEntity, NoParams> {
-  final AssistantManagerReportRepository repository;
-
+class GetAssistantManagerReportUseCase extends UseCase<
+    AssistantManagerReportPageEntity, AssistantManagerReportQuery> {
   GetAssistantManagerReportUseCase(this.repository);
 
+  final AssistantManagerReportRepository repository;
+
   @override
-  ResultFuture<AssistantManagerReportEntity> call(NoParams params) {
-    return repository.getAssistantManagerReport();
+  ResultFuture<AssistantManagerReportPageEntity> call(
+    AssistantManagerReportQuery params,
+  ) {
+    return repository.getAssistantManagerReportPage(query: params);
   }
 }

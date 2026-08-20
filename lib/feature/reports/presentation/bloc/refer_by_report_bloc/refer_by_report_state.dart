@@ -15,11 +15,52 @@ class ReferByReportLoading extends ReferByReportState {
   const ReferByReportLoading();
 }
 
-class ReferByReportError extends ReferByReportState {
-  final String message;
+class ReferByReportLoaded extends ReferByReportState {
+  const ReferByReportLoaded({
+    required this.rows,
+    this.isRefreshingList = false,
+    this.filterOptions = const ReportFilterOptionsEntity.empty(),
+    this.query = const ReferByReportQuery(),
+  });
 
-  const ReferByReportError(this.message);
+  final List<ReferByReportEntity> rows;
+  final bool isRefreshingList;
+  final ReportFilterOptionsEntity filterOptions;
+  final ReferByReportQuery query;
+
+  ReferByReportLoaded copyWith({
+    List<ReferByReportEntity>? rows,
+    bool? isRefreshingList,
+    ReportFilterOptionsEntity? filterOptions,
+    ReferByReportQuery? query,
+  }) {
+    return ReferByReportLoaded(
+      rows: rows ?? this.rows,
+      isRefreshingList: isRefreshingList ?? this.isRefreshingList,
+      filterOptions: filterOptions ?? this.filterOptions,
+      query: query ?? this.query,
+    );
+  }
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [rows, isRefreshingList, filterOptions, query];
+}
+
+class ReferByReportError extends ReferByReportState {
+  const ReferByReportError({
+    required this.title,
+    required this.message,
+    this.rows = const [],
+    this.filterOptions = const ReportFilterOptionsEntity.empty(),
+    this.query = const ReferByReportQuery(),
+  });
+
+  final String title;
+  final String message;
+  final List<ReferByReportEntity> rows;
+  final ReportFilterOptionsEntity filterOptions;
+  final ReferByReportQuery query;
+
+  @override
+  List<Object?> get props => [title, message, rows, filterOptions, query];
 }

@@ -1,21 +1,25 @@
 import 'package:ali_therapy_admin/core/usecase/usecase.dart';
 import 'package:ali_therapy_admin/core/utils/typedefs.dart';
-import '../entities/receptionist_report_entity.dart';
-import '../repositories/receptionist_report_repository.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/receptionist_report_domain/entities/receptionist_report_page_entity.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/receptionist_report_domain/entities/receptionist_report_query.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/receptionist_report_domain/repositories/receptionist_report_repository.dart';
 
 // ============================================================
-// GET RECEPTIONISTREPORT USE CASE
+// GET RECEPTIONIST REPORT USE CASE
 // ------------------------------------------------------------
-// One job: fetch receptionist report data.
+// One job: fetch paginated receptionist report rows.
 // ============================================================
 
-class GetReceptionistReportUseCase extends UseCase<ReceptionistReportEntity, NoParams> {
-  final ReceptionistReportRepository repository;
-
+class GetReceptionistReportUseCase
+    extends UseCase<ReceptionistReportPageEntity, ReceptionistReportQuery> {
   GetReceptionistReportUseCase(this.repository);
 
+  final ReceptionistReportRepository repository;
+
   @override
-  ResultFuture<ReceptionistReportEntity> call(NoParams params) {
-    return repository.getReceptionistReport();
+  ResultFuture<ReceptionistReportPageEntity> call(
+    ReceptionistReportQuery params,
+  ) {
+    return repository.getReceptionistReportPage(query: params);
   }
 }

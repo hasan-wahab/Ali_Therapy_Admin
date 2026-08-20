@@ -1,21 +1,23 @@
 import 'package:ali_therapy_admin/core/usecase/usecase.dart';
 import 'package:ali_therapy_admin/core/utils/typedefs.dart';
-import '../entities/package_attendance_entity.dart';
-import '../repositories/package_attendance_repository.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/package_attendance_domain/entities/package_attendance_page_entity.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/package_attendance_domain/entities/package_attendance_query.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/package_attendance_domain/repositories/package_attendance_repository.dart';
 
 // ============================================================
-// GET PACKAGEATTENDANCE USE CASE
+// GET PACKAGE ATTENDANCE USE CASE
 // ------------------------------------------------------------
-// One job: fetch package attendance data.
+// One job: fetch paginated package attendance rows.
 // ============================================================
 
-class GetPackageAttendanceUseCase extends UseCase<PackageAttendanceEntity, NoParams> {
-  final PackageAttendanceRepository repository;
-
+class GetPackageAttendanceUseCase
+    extends UseCase<PackageAttendancePageEntity, PackageAttendanceQuery> {
   GetPackageAttendanceUseCase(this.repository);
 
+  final PackageAttendanceRepository repository;
+
   @override
-  ResultFuture<PackageAttendanceEntity> call(NoParams params) {
-    return repository.getPackageAttendance();
+  ResultFuture<PackageAttendancePageEntity> call(PackageAttendanceQuery params) {
+    return repository.getPackageAttendancePage(query: params);
   }
 }

@@ -1,13 +1,13 @@
 import 'package:ali_therapy_admin/core/utils/typedefs.dart';
-import '../entities/therapist_report_entity.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/therapist_report_domain/entities/therapist_report_page_entity.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/therapist_report_domain/entities/therapist_report_query.dart';
 
 // ============================================================
-// THERAPISTREPORT REPOSITORY CONTRACT (Domain)
-// ------------------------------------------------------------
-// Domain only knows WHAT we need — not HOW (no Dio here).
+// THERAPIST REPORT REPOSITORY CONTRACT (Domain)
 // ============================================================
 
 abstract class TherapistReportRepository {
-  /// Load data for this feature. Replace with real methods later.
-  ResultFuture<TherapistReportEntity> getTherapistReport();
+  ResultFuture<TherapistReportPageEntity> getTherapistReportPage({
+    required TherapistReportQuery query,
+  });
 }

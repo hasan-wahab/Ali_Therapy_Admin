@@ -1,18 +1,47 @@
 import 'package:equatable/equatable.dart';
 
 // ============================================================
-// INSURANCEPANELREPORT ENTITY (Domain)
+// INSURANCE PANEL REPORT ENTITY (Domain)
 // ------------------------------------------------------------
-// Pure business object — no Flutter / Dio / JSON here.
-// Fill fields when the API contract is known.
+// One panel row from GET /api/admin/reports/insurance-panel
 // ============================================================
 
 class InsurancePanelReportEntity extends Equatable {
-  /// Placeholder id until real fields are defined.
-  final String id;
+  const InsurancePanelReportEntity({
+    required this.id,
+    required this.panelName,
+    required this.policyType,
+    required this.totalInvoices,
+    required this.consultationBilled,
+    required this.packageBilled,
+    required this.totalBilled,
+    required this.totalCovered,
+    required this.totalPaidCash,
+    required this.outstandingBalance,
+  });
 
-  const InsurancePanelReportEntity({required this.id});
+  final String id;
+  final String panelName;
+  final String policyType;
+  final int totalInvoices;
+  final double consultationBilled;
+  final double packageBilled;
+  final double totalBilled;
+  final double totalCovered;
+  final double totalPaidCash;
+  final double outstandingBalance;
 
   @override
-  List<Object?> get props => [id];
+  List<Object?> get props => [
+        id,
+        panelName,
+        policyType,
+        totalInvoices,
+        consultationBilled,
+        packageBilled,
+        totalBilled,
+        totalCovered,
+        totalPaidCash,
+        outstandingBalance,
+      ];
 }

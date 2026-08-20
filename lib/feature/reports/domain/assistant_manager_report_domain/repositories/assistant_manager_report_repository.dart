@@ -1,13 +1,13 @@
 import 'package:ali_therapy_admin/core/utils/typedefs.dart';
-import '../entities/assistant_manager_report_entity.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/assistant_manager_report_domain/entities/assistant_manager_report_page_entity.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/assistant_manager_report_domain/entities/assistant_manager_report_query.dart';
 
 // ============================================================
-// ASSISTANTMANAGERREPORT REPOSITORY CONTRACT (Domain)
-// ------------------------------------------------------------
-// Domain only knows WHAT we need — not HOW (no Dio here).
+// ASSISTANT MANAGER REPORT REPOSITORY CONTRACT (Domain)
 // ============================================================
 
 abstract class AssistantManagerReportRepository {
-  /// Load data for this feature. Replace with real methods later.
-  ResultFuture<AssistantManagerReportEntity> getAssistantManagerReport();
+  ResultFuture<AssistantManagerReportPageEntity> getAssistantManagerReportPage({
+    required AssistantManagerReportQuery query,
+  });
 }

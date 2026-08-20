@@ -1,18 +1,50 @@
 import 'package:equatable/equatable.dart';
 
 // ============================================================
-// USERACTIVITYREPORT ENTITY (Domain)
+// USER ACTIVITY REPORT ENTITY (Domain)
 // ------------------------------------------------------------
-// Pure business object — no Flutter / Dio / JSON here.
-// Fill fields when the API contract is known.
+// One row from GET /api/admin/reports/user-activity
 // ============================================================
 
 class UserActivityReportEntity extends Equatable {
-  /// Placeholder id until real fields are defined.
-  final String id;
+  const UserActivityReportEntity({
+    required this.id,
+    required this.patientName,
+    required this.patientCnic,
+    required this.packageName,
+    required this.sessionsUsed,
+    required this.sessionsTotal,
+    required this.remaining,
+    required this.invoiceType,
+    required this.paymentDate,
+    required this.paymentMethod,
+    required this.amount,
+  });
 
-  const UserActivityReportEntity({required this.id});
+  final String id;
+  final String patientName;
+  final String patientCnic;
+  final String packageName;
+  final int sessionsUsed;
+  final int sessionsTotal;
+  final int remaining;
+  final String invoiceType;
+  final String paymentDate;
+  final String paymentMethod;
+  final double amount;
 
   @override
-  List<Object?> get props => [id];
+  List<Object?> get props => [
+        id,
+        patientName,
+        patientCnic,
+        packageName,
+        sessionsUsed,
+        sessionsTotal,
+        remaining,
+        invoiceType,
+        paymentDate,
+        paymentMethod,
+        amount,
+      ];
 }

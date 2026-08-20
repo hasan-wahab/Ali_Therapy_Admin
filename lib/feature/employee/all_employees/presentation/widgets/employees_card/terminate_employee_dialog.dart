@@ -1,23 +1,103 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_sizes.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
 import 'package:ali_therapy_admin/core/utils/app_snackbar.dart';
-import 'package:ali_therapy_admin/core/widgets/app_field_label.dart';
+import 'package:ali_therapy_admin/core/utils/helpers.dart';
 import 'package:ali_therapy_admin/core/widgets/app_form_dialog.dart';
 import 'package:ali_therapy_admin/core/widgets/app_text_field.dart';
 
 // ============================================================
 // TERMINATE EMPLOYEE DIALOG
 // ------------------------------------------------------------
-// Confirm terminate form: date + reason (UI only).
-// Uses shared AppFormDialog (keyboard-safe).
+// Collects termination date + reason, then returns values.
+// API is called from AllEmployeesBloc (not from this dialog).
 // ============================================================
 
-class TerminateEmployeeDialog extends StatelessWidget {
-  const TerminateEmployeeDialog({super.key});
+class TerminateEmployeeFormResult {
+  const TerminateEmployeeFormResult({
+    required this.reason,
+    required this.date,
+  });
+
+  final String reason;
+
+  /// API value: yyyy-MM-dd, or empty string.
+  final String date;
+}
+
+class TerminateEmployeeDialog extends StatefulWidget {
+  const TerminateEmployeeDialog({
+    super.key,
+    required this.employeeName,
+  });
+
+  final String employeeName;
+
+  @override
+  State<TerminateEmployeeDialog> createState() =>
+      _TerminateEmployeeDialogState();
+}
+
+class _TerminateEmployeeDialogState extends State<TerminateEmployeeDialog> {
+  final _reasonController = TextEditingController();
+  final _dateController = TextEditingController();
+
+  static final _displayDateFormat = DateFormat('MM/dd/yyyy');
+
+  @override
+  void dispose() {
+    _reasonController.dispose();
+    _dateController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickDate() async {
+    final now = DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: now,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(now.year + 5),
+    );
+    if (picked == null) return;
+    _dateController.text = Helpers.formatDate(picked, pattern: 'MM/dd/yyyy');
+  }
+
+  String _toApiDate(String display) {
+    final trimmed = display.trim();
+    if (trimmed.isEmpty) return '';
+    try {
+      final parsed = _displayDateFormat.parseStrict(trimmed);
+      return Helpers.formatDate(parsed, pattern: 'yyyy-MM-dd');
+    } catch (_) {
+      return '';
+    }
+  }
+
+  void _onConfirm() {
+    final reason = _reasonController.text.trim();
+    final dateDisplay = _dateController.text.trim();
+
+    if (dateDisplay.isEmpty) {
+      AppSnackbar.warning(context, 'Please select a termination date.');
+      return;
+    }
+    if (reason.isEmpty) {
+      AppSnackbar.warning(context, 'Please enter a termination reason.');
+      return;
+    }
+
+    Navigator.of(context).pop(
+      TerminateEmployeeFormResult(
+        reason: reason,
+        date: _toApiDate(dateDisplay),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,10 +107,7 @@ class TerminateEmployeeDialog extends StatelessWidget {
       headerColor: AppColors.error,
       confirmLabel: 'Terminate',
       confirmColor: AppColors.error,
-      onConfirm: () {
-        AppSnackbar.info(context, 'Terminate coming soon');
-        Navigator.of(context).pop();
-      },
+      onConfirm: _onConfirm,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -55,7 +132,7 @@ class TerminateEmployeeDialog extends StatelessWidget {
                 SizedBox(width: 8.w),
                 Expanded(
                   child: Text(
-                    'Are you sure you want to terminate this employee?',
+                    'Are you sure you want to terminate ${widget.employeeName}?',
                     style: AppTextStyles.bodySmall.copyWith(
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.w600,
@@ -67,32 +144,25 @@ class TerminateEmployeeDialog extends StatelessWidget {
             ),
           ),
           SizedBox(height: 12.h),
-          const AppFieldLabel(
+          AppTextField(
             label: 'Termination Date',
             isRequired: true,
-          ),
-          SizedBox(height: 6.h),
-          InputDecorator(
-            decoration: AppTextField.decoration(
-              hintText: 'mm/dd/yyyy',
-              suffixIcon: Icon(
-                Icons.calendar_today_outlined,
-                size: AppSizes.iconSm,
-                color: AppColors.textMuted,
-              ),
-            ),
-            child: Text(
-              'mm/dd/yyyy',
-              style: AppTextStyles.body.copyWith(
-                color: AppColors.textMuted,
-              ),
+            hintText: 'mm/dd/yyyy',
+            controller: _dateController,
+            readOnly: true,
+            onTap: _pickDate,
+            suffixIcon: Icon(
+              Icons.calendar_today_outlined,
+              size: AppSizes.iconSm,
+              color: AppColors.textMuted,
             ),
           ),
           SizedBox(height: 12.h),
-          const AppTextField(
+          AppTextField(
             label: 'Termination Reason',
             isRequired: true,
             hintText: 'Enter details here...',
+            controller: _reasonController,
             maxLines: 3,
           ),
         ],
@@ -101,10 +171,13 @@ class TerminateEmployeeDialog extends StatelessWidget {
   }
 }
 
-/// Opens the terminate employee dialog.
-Future<void> showTerminateEmployeeDialog(BuildContext context) {
-  return showAppFormDialog<void>(
+/// Opens the terminate employee dialog and returns form values if confirmed.
+Future<TerminateEmployeeFormResult?> showTerminateEmployeeDialog(
+  BuildContext context, {
+  required String employeeName,
+}) {
+  return showAppFormDialog<TerminateEmployeeFormResult>(
     context: context,
-    builder: (context) => const TerminateEmployeeDialog(),
+    builder: (context) => TerminateEmployeeDialog(employeeName: employeeName),
   );
 }

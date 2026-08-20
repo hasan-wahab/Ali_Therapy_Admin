@@ -1,9 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'package:ali_therapy_admin/core/theme/app_colors.dart';
+import 'package:ali_therapy_admin/core/widgets/app_top_linear_loading.dart';
 
 // ============================================================
 // APP PULL REFRESH (shared)
@@ -103,15 +102,11 @@ class _AppPullRefreshState extends State<AppPullRefresh> {
           ),
         ),
         if (_isRefreshing)
-          Positioned(
+          const Positioned(
             top: 0,
             left: 0,
             right: 0,
-            child: LinearProgressIndicator(
-              minHeight: 2.h,
-              color: AppColors.primary,
-              backgroundColor: AppColors.primaryLight,
-            ),
+            child: AppTopLinearLoading(),
           ),
       ],
     );

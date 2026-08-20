@@ -1,13 +1,13 @@
 import 'package:ali_therapy_admin/core/utils/typedefs.dart';
-import '../entities/refer_by_report_entity.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/refer_by_report_domain/entities/refer_by_report_entity.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/refer_by_report_domain/entities/refer_by_report_query.dart';
 
 // ============================================================
-// REFERBYREPORT REPOSITORY CONTRACT (Domain)
-// ------------------------------------------------------------
-// Domain only knows WHAT we need — not HOW (no Dio here).
+// REFER BY REPORT REPOSITORY CONTRACT (Domain)
 // ============================================================
 
 abstract class ReferByReportRepository {
-  /// Load data for this feature. Replace with real methods later.
-  ResultFuture<ReferByReportEntity> getReferByReport();
+  ResultFuture<List<ReferByReportEntity>> getReferByReport({
+    required ReferByReportQuery query,
+  });
 }

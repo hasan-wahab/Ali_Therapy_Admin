@@ -17,7 +17,12 @@ import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/rep
 // ============================================================
 
 class PatientsFiltersPanel extends StatefulWidget {
-  const PatientsFiltersPanel({super.key});
+  const PatientsFiltersPanel({
+    super.key,
+    this.onApplied,
+  });
+
+  final VoidCallback? onApplied;
 
   @override
   State<PatientsFiltersPanel> createState() => _PatientsFiltersPanelState();
@@ -98,7 +103,14 @@ class _PatientsFiltersPanelState extends State<PatientsFiltersPanel> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          ReportFiltersHeader(onReset: _onReset),
+          ReportFiltersHeader(
+            onReset: _onReset,
+            onApply: widget.onApplied,
+            applyEnabled: _clinic != _clinics.first ||
+                _receptionist != _receptionists.first ||
+                _fromDate != null ||
+                _toDate != null,
+          ),
           SizedBox(height: 6.h),
           AppTabletFieldsGrid(
             phoneColumns: 2,

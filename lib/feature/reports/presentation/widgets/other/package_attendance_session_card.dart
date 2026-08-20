@@ -21,6 +21,7 @@ class PackageAttendanceSessionCard extends StatelessWidget {
     required this.therapist,
     required this.clinic,
     required this.timeDuration,
+    this.status,
     this.notes,
   });
 
@@ -29,6 +30,7 @@ class PackageAttendanceSessionCard extends StatelessWidget {
   final String therapist;
   final String clinic;
   final String timeDuration;
+  final String? status;
   final String? notes;
 
   @override
@@ -118,6 +120,13 @@ class PackageAttendanceSessionCard extends StatelessWidget {
                 icon: Icons.local_hospital_outlined,
                 label: 'Clinic',
                 text: clinic,
+              ),
+              PackageAttendanceSessionInfoRow(
+                icon: Icons.task_alt_outlined,
+                label: 'Status',
+                text: (status == null || status!.trim().isEmpty)
+                    ? '_'
+                    : status!,
               ),
             ],
           ),

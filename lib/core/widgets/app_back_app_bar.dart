@@ -14,7 +14,7 @@ import 'package:ali_therapy_admin/core/widgets/app_app_bar_underline.dart';
 // Same look on every screen:
 //   - with back → teal back + centered title
 //   - no back  → title sits in leading (left)
-//   - thick teal underline under the bar
+//   - underline: rainbow normally, teal linear when isLoading=true
 // ============================================================
 
 class AppBackAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -24,18 +24,16 @@ class AppBackAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.actions,
     this.showBack = true,
     this.onBack,
+    this.isLoading = false,
   });
 
   final String title;
-
-  /// Optional trailing actions (same teal icon style).
   final List<Widget>? actions;
-
-  /// When false, title is shown on the leading side (left).
   final bool showBack;
-
-  /// Custom back action (default: AppNavigation.back).
   final VoidCallback? onBack;
+
+  /// When true, rainbow underline → teal linear progress bar.
+  final bool isLoading;
 
   @override
   Size get preferredSize =>
@@ -93,7 +91,7 @@ class AppBackAppBar extends StatelessWidget implements PreferredSizeWidget {
         color: AppColors.primary,
         size: AppSizes.iconLg,
       ),
-      bottom: AppAppBarUnderline.bar,
+      bottom: AppAppBarUnderline.forState(isLoading: isLoading),
     );
   }
 }

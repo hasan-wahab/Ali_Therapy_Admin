@@ -15,9 +15,17 @@ class ReferredPatientsToolbar extends StatelessWidget {
   const ReferredPatientsToolbar({
     super.key,
     required this.totalPatients,
+    this.onSearchChanged,
+    this.searchQuery = '',
+    this.searchMatchCount = 0,
+    this.listIsEmpty = false,
   });
 
   final int totalPatients;
+  final ValueChanged<String>? onSearchChanged;
+  final String searchQuery;
+  final int searchMatchCount;
+  final bool listIsEmpty;
 
   @override
   Widget build(BuildContext context) {
@@ -49,8 +57,12 @@ class ReferredPatientsToolbar extends StatelessWidget {
             ],
           ),
           SizedBox(height: 10.h),
-          const AppSearchFilterSection(
+          AppSearchFilterSection(
             searchHint: 'Search by name, CNIC, or phone...',
+            onSearchChanged: onSearchChanged,
+            searchQuery: searchQuery,
+            searchMatchCount: searchMatchCount,
+            listIsEmpty: listIsEmpty,
           ),
         ],
       ),

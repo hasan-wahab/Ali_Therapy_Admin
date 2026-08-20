@@ -17,6 +17,7 @@ import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/pac
 class PackageAttendanceCard extends StatelessWidget {
   const PackageAttendanceCard({
     super.key,
+    required this.patientId,
     required this.patientName,
     required this.mrNo,
     required this.gender,
@@ -28,6 +29,8 @@ class PackageAttendanceCard extends StatelessWidget {
     required this.totalSessions,
     this.initiallyExpanded = false,
   });
+
+  final String patientId;
 
   final String patientName;
   final String mrNo;
@@ -173,6 +176,7 @@ class PackageAttendanceCard extends StatelessWidget {
                 onPressed: () {
                   AppNavigation.openPackageAttendanceDetail(
                     context,
+                    patientId: patientId,
                     patientName: patientName,
                     mrNo: mrNo,
                     phone: phone,

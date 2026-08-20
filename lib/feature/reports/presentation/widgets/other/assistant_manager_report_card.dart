@@ -24,6 +24,7 @@ class AssistantManagerReportCard extends StatelessWidget {
     required this.patientPhone,
     required this.clinic,
     required this.type,
+    this.consultantName = 'N/A',
     this.initiallyExpanded = false,
   });
 
@@ -34,6 +35,7 @@ class AssistantManagerReportCard extends StatelessWidget {
   final String patientPhone;
   final String clinic;
   final String type;
+  final String consultantName;
 
   final bool initiallyExpanded;
   @override
@@ -102,6 +104,11 @@ class AssistantManagerReportCard extends StatelessWidget {
                   value: assistantManagerName,
                 ),
                 PatientReportDetailRow(
+                  icon: Icons.medical_services_outlined,
+                  label: 'Consultant',
+                  value: consultantName,
+                ),
+                PatientReportDetailRow(
                   icon: Icons.event_outlined,
                   label: 'Visit Date',
                   value: visitDate,
@@ -118,7 +125,7 @@ class AssistantManagerReportCard extends StatelessWidget {
                 ),
                 PatientReportDetailRow(
                   icon: Icons.category_outlined,
-                  label: 'Type',
+                  label: 'Stage',
                   value: type,
                 ),
               ],

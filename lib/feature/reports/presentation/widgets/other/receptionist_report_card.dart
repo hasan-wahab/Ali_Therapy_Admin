@@ -22,8 +22,9 @@ class ReceptionistReportCard extends StatelessWidget {
     required this.patientName,
     required this.visitDate,
     required this.patientPhone,
+    required this.patientCnic,
     required this.clinic,
-    required this.type,
+    required this.amountCollected,
     this.initiallyExpanded = false,
   });
 
@@ -32,10 +33,12 @@ class ReceptionistReportCard extends StatelessWidget {
   final String patientName;
   final String visitDate;
   final String patientPhone;
+  final String patientCnic;
   final String clinic;
-  final String type;
+  final String amountCollected;
 
   final bool initiallyExpanded;
+
   @override
   Widget build(BuildContext context) {
     return AppExpandableCard(
@@ -86,7 +89,7 @@ class ReceptionistReportCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                TherapistReportTypeBadge(text: type),
+                TherapistReportTypeBadge(text: amountCollected),
               ],
             ),
             SizedBox(height: 12.h),
@@ -112,14 +115,19 @@ class ReceptionistReportCard extends StatelessWidget {
                   value: patientPhone,
                 ),
                 PatientReportDetailRow(
+                  icon: Icons.badge_outlined,
+                  label: 'Patient CNIC',
+                  value: patientCnic,
+                ),
+                PatientReportDetailRow(
                   icon: Icons.local_hospital_outlined,
                   label: 'Clinic',
                   value: clinic,
                 ),
                 PatientReportDetailRow(
-                  icon: Icons.category_outlined,
-                  label: 'Type',
-                  value: type,
+                  icon: Icons.payments_outlined,
+                  label: 'Amount Collected',
+                  value: amountCollected,
                 ),
               ],
             ),

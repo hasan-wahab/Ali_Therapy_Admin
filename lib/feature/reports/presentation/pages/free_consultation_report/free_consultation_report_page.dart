@@ -1,92 +1,157 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
-import 'package:ali_therapy_admin/core/widgets/app_back_app_bar.dart';
-import 'package:ali_therapy_admin/core/widgets/app_search_filter_section.dart';
+import 'package:ali_therapy_admin/core/utils/app_device.dart';
+import 'package:ali_therapy_admin/core/utils/app_snackbar.dart';
+import 'package:ali_therapy_admin/core/widgets/app_pull_refresh.dart';
+import 'package:ali_therapy_admin/core/widgets/app_shimmer.dart';
 import 'package:ali_therapy_admin/core/widgets/app_tablet_safe_area.dart';
-import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/free_consultation_report_card.dart';
-import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/free_consultation_report_filters.dart';
+import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/form/form_back_app_bar.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/free_consultation_report_domain/entities/free_consultation_report_entity.dart';
+import 'package:ali_therapy_admin/feature/reports/presentation/bloc/free_consultation_report_bloc/free_consultation_report_bloc.dart';
+import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/free_consultation_report_card_list.dart';
+import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/free_consultation_report_card_skeleton.dart';
+import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/free_consultation_report_search_filter_section.dart';
+import 'package:ali_therapy_admin/injection.dart';
 
 // ============================================================
 // FREE CONSULTATION REPORT PAGE
 // ------------------------------------------------------------
-// Mobile free consultation visits report.
+// Same screen flow as ReconsultationReportPage:
+// shimmer first load, search + filters, pull refresh, load more.
 // ============================================================
 
 class FreeConsultationReportPage extends StatelessWidget {
   const FreeConsultationReportPage({super.key});
 
+  static const int _prefetchRemainingCards = 2;
+
+  double get _approxCardHeight => 260.h;
+
+  List<FreeConsultationReportEntity> _rowsOf(
+    FreeConsultationReportState state,
+  ) {
+    if (state is FreeConsultationReportLoaded) return state.rows;
+    if (state is FreeConsultationReportError) return state.rows;
+    return const [];
+  }
+
+  bool _isLoading(FreeConsultationReportState state) {
+    if (state is FreeConsultationReportLoading ||
+        state is FreeConsultationReportInitial) {
+      return true;
+    }
+    if (state is FreeConsultationReportLoaded) {
+      return state.isRefreshingList || state.isLoadingMore;
+    }
+    return false;
+  }
+
+  bool _onScroll(BuildContext context, ScrollNotification notification) {
+    if (notification is! ScrollUpdateNotification) return false;
+
+    final remainingBelow = notification.metrics.extentAfter;
+    final prefetchDistance =
+        (_prefetchRemainingCards * _approxCardHeight) + 20.h;
+    if (remainingBelow > prefetchDistance) return false;
+
+    context
+        .read<FreeConsultationReportBloc>()
+        .add(const FreeConsultationReportLoadMore());
+    return false;
+  }
+
+  Widget _listContent({
+    required BuildContext context,
+    required FreeConsultationReportState state,
+    required bool isFirstLoad,
+    required double hPad,
+  }) {
+    final listScroll = NotificationListener<ScrollNotification>(
+      onNotification: (notification) => _onScroll(context, notification),
+      child: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(
+          parent: ClampingScrollPhysics(),
+        ),
+        slivers: [
+          SliverPadding(
+            padding: EdgeInsets.fromLTRB(hPad, 0, hPad, 8.h),
+            sliver: isFirstLoad
+                ? const FreeConsultationReportCardSkeletonSliver(itemCount: 5)
+                : FreeConsultationReportCardList(
+                    rows: _rowsOf(state),
+                    hasMore: state is FreeConsultationReportLoaded &&
+                        state.hasMore,
+                    isLoadingMore: state is FreeConsultationReportLoaded &&
+                        state.isLoadingMore,
+                  ),
+          ),
+          SliverToBoxAdapter(child: SizedBox(height: 16.h)),
+        ],
+      ),
+    );
+
+    final listBody = isFirstLoad ? AppShimmer(child: listScroll) : listScroll;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: EdgeInsets.fromLTRB(hPad, 8.h, hPad, 12.h),
+          child: const FreeConsultationReportSearchFilterSection(),
+        ),
+        Expanded(
+          child: AppPullRefresh(
+            enabled: !isFirstLoad,
+            onRefresh: () =>
+                context.read<FreeConsultationReportBloc>().pullRefresh(),
+            child: listBody,
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: const AppBackAppBar(title: 'Free Consultation Report'),
-      body: AppTabletSafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 8.h),
-              child: AppSearchFilterSection(
-                searchHint: 'Search patient, consultant…',
-                filtersPanel: const FreeConsultationReportFilters(),
-              ),
+    return BlocProvider(
+      create: (_) => sl<FreeConsultationReportBloc>()
+        ..add(const FreeConsultationReportStarted()),
+      child:
+          BlocConsumer<FreeConsultationReportBloc, FreeConsultationReportState>(
+        listener: (context, state) {
+          if (state is FreeConsultationReportError) {
+            AppSnackbar.error(context, state.message, title: state.title);
+          }
+        },
+        builder: (context, state) {
+          final isFirstLoad = state is FreeConsultationReportLoading ||
+              state is FreeConsultationReportInitial;
+          final isLoading = _isLoading(state);
+          final isTablet = AppDevice.isTablet(context);
+
+          final hPad = isTablet
+              ? (AppDevice.isLandscape(context) ? 40.w : 48.w)
+              : 16.w;
+
+          final content = _listContent(
+            context: context,
+            state: state,
+            isFirstLoad: isFirstLoad,
+            hPad: hPad,
+          );
+
+          return Scaffold(
+            backgroundColor: AppColors.background,
+            appBar: FormBackAppBar(
+              title: 'Free Consultation Report',
+              isLoading: isLoading,
             ),
-            Expanded(
-              child: ListView(
-                padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 24.h),
-                children: [
-                  const FreeConsultationReportCard(
-                    initiallyExpanded: true,
-                    index: 1,
-                    consultantName: 'DR ARSALAN JAMIL',
-                    patientName: 'Haaris Suhail Qadir',
-                    visitDate: 'Aug 10, 2026 07:04 PM',
-                    patientPhone: '0321-4598000',
-                    clinic: 'Clinic 2',
-                  ),
-                  SizedBox(height: 10.h),
-                  const FreeConsultationReportCard(
-                    index: 2,
-                    consultantName: 'DR HIRA HASSAN',
-                    patientName: 'Hamza Maqsood',
-                    visitDate: 'Aug 10, 2026 06:30 PM',
-                    patientPhone: '0300-1122334',
-                    clinic: 'Clinic 2',
-                  ),
-                  SizedBox(height: 10.h),
-                  const FreeConsultationReportCard(
-                    index: 3,
-                    consultantName: 'N/A',
-                    patientName: 'Amina Bibi',
-                    visitDate: 'Aug 09, 2026 05:15 PM',
-                    patientPhone: '0333-9988776',
-                    clinic: 'Clinic 2',
-                  ),
-                  SizedBox(height: 10.h),
-                  const FreeConsultationReportCard(
-                    index: 4,
-                    consultantName: 'DR ARSALAN JAMIL',
-                    patientName: 'Farid Ullah',
-                    visitDate: 'Aug 09, 2026 03:40 PM',
-                    patientPhone: '0345-5566778',
-                    clinic: 'Clinic 2',
-                  ),
-                  SizedBox(height: 10.h),
-                  const FreeConsultationReportCard(
-                    index: 5,
-                    consultantName: 'DR HIRA HASSAN',
-                    patientName: 'Noor Fatima',
-                    visitDate: 'Aug 08, 2026 02:10 PM',
-                    patientPhone: '0312-2233445',
-                    clinic: 'Clinic 2',
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+            body: AppTabletSafeArea(child: content),
+          );
+        },
       ),
     );
   }

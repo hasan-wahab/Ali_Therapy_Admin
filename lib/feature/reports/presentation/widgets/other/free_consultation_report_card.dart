@@ -22,6 +22,7 @@ class FreeConsultationReportCard extends StatelessWidget {
     required this.visitDate,
     required this.patientPhone,
     required this.clinic,
+    required this.fee,
     this.initiallyExpanded = false,
   });
 
@@ -31,6 +32,7 @@ class FreeConsultationReportCard extends StatelessWidget {
   final String visitDate;
   final String patientPhone;
   final String clinic;
+  final String fee;
 
   final bool initiallyExpanded;
   @override
@@ -111,6 +113,11 @@ class FreeConsultationReportCard extends StatelessWidget {
                   icon: Icons.local_hospital_outlined,
                   label: 'Clinic',
                   value: clinic,
+                ),
+                PatientReportDetailRow(
+                  icon: Icons.payments_outlined,
+                  label: 'Fee',
+                  value: fee,
                 ),
               ],
             ),

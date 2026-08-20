@@ -130,6 +130,7 @@ class AppNavigation {
 
   static void openPatientDuesHistory(
     BuildContext context, {
+    required String patientId,
     required String patientName,
     required String cnic,
     required String phone,
@@ -137,6 +138,7 @@ class AppNavigation {
     context.push(
       AppRoutes.patientDuesHistory,
       extra: <String, String>{
+        'patientId': patientId,
         'patientName': patientName,
         'cnic': cnic,
         'phone': phone,
@@ -204,6 +206,7 @@ class AppNavigation {
 
   static void openPackageAttendanceDetail(
     BuildContext context, {
+    required String patientId,
     required String patientName,
     required String mrNo,
     required String phone,
@@ -211,6 +214,7 @@ class AppNavigation {
     context.push(
       AppRoutes.packageAttendanceDetail,
       extra: <String, String>{
+        'patientId': patientId,
         'patientName': patientName,
         'mrNo': mrNo,
         'phone': phone,

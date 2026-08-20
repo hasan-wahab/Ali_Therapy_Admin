@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_sizes.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
-import 'package:ali_therapy_admin/core/utils/app_snackbar.dart';
 import 'package:ali_therapy_admin/core/routes/navigation_helper.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/patient_dues_badge.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/patient_dues_money_line.dart';
@@ -217,46 +216,40 @@ class ReferByCard extends StatelessWidget {
             SizedBox(height: 10.h),
             Align(
               alignment: Alignment.centerRight,
-              child: Material(
-                color: duesColor,
-                borderRadius: BorderRadius.circular(6.r),
-                child: InkWell(
-                  onTap: () {
-                    AppSnackbar.info(context, 'Dues action coming soon');
-                  },
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 10.w,
+                  vertical: 8.h,
+                ),
+                decoration: BoxDecoration(
+                  color: duesColor,
                   borderRadius: BorderRadius.circular(6.r),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 10.w,
-                      vertical: 8.h,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.error_outline_rounded,
+                      size: AppSizes.iconSm,
+                      color: AppColors.textOnPrimary,
                     ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.error_outline_rounded,
-                          size: AppSizes.iconSm,
-                          color: AppColors.textOnPrimary,
-                        ),
-                        SizedBox(width: 6.w),
-                        Text(
-                          'Dues',
-                          style: AppTextStyles.label.copyWith(
-                            color: AppColors.textOnPrimary,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        SizedBox(width: 6.w),
-                        Text(
-                          dues,
-                          style: AppTextStyles.label.copyWith(
-                            color: AppColors.textOnPrimary,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                      ],
+                    SizedBox(width: 6.w),
+                    Text(
+                      'Dues',
+                      style: AppTextStyles.label.copyWith(
+                        color: AppColors.textOnPrimary,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
-                  ),
+                    SizedBox(width: 6.w),
+                    Text(
+                      dues,
+                      style: AppTextStyles.label.copyWith(
+                        color: AppColors.textOnPrimary,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),

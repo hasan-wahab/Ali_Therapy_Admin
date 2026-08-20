@@ -1,29 +1,24 @@
 import 'package:ali_therapy_admin/core/usecase/usecase.dart';
 import 'package:ali_therapy_admin/core/utils/typedefs.dart';
 
+import '../entities/employees_list_query.dart';
 import '../entities/employees_page_entity.dart';
 import '../repositories/all_employees_repository.dart';
 
 // ============================================================
 // GET ALL EMPLOYEES USE CASE
 // ------------------------------------------------------------
-// One job: load one employees page.
+// One job: load one employees page (with search + filters).
 // ============================================================
 
-class GetEmployeesPageParams {
-  const GetEmployeesPageParams({required this.page});
-
-  final int page;
-}
-
 class GetAllEmployeesUseCase
-    extends UseCase<EmployeesPageEntity, GetEmployeesPageParams> {
-  final AllEmployeesRepository repository;
-
+    extends UseCase<EmployeesPageEntity, EmployeesListQuery> {
   GetAllEmployeesUseCase(this.repository);
 
+  final AllEmployeesRepository repository;
+
   @override
-  ResultFuture<EmployeesPageEntity> call(GetEmployeesPageParams params) {
-    return repository.getEmployeesPage(page: params.page);
+  ResultFuture<EmployeesPageEntity> call(EmployeesListQuery params) {
+    return repository.getEmployeesPage(query: params);
   }
 }

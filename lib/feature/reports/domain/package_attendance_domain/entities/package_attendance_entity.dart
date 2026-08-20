@@ -1,18 +1,54 @@
 import 'package:equatable/equatable.dart';
 
+import 'package_attendance_package_entity.dart';
+
 // ============================================================
-// PACKAGEATTENDANCE ENTITY (Domain)
+// PACKAGE ATTENDANCE ENTITY (Domain)
 // ------------------------------------------------------------
-// Pure business object — no Flutter / Dio / JSON here.
-// Fill fields when the API contract is known.
+// One patient row from GET /api/admin/reports/package-attendance
 // ============================================================
 
 class PackageAttendanceEntity extends Equatable {
-  /// Placeholder id until real fields are defined.
-  final String id;
+  const PackageAttendanceEntity({
+    required this.id,
+    required this.patientName,
+    required this.mrNo,
+    required this.gender,
+    required this.patientPhone,
+    required this.hasNfc,
+    required this.patientCnic,
+    required this.packages,
+  });
 
-  const PackageAttendanceEntity({required this.id});
+  final String id;
+  final String patientName;
+  final String mrNo;
+  final String gender;
+  final String patientPhone;
+  final bool hasNfc;
+  final String patientCnic;
+  final List<PackageAttendancePackageEntity> packages;
+
+  int get packagesTaken => packages.length;
+
+  /// Prefer an active package for the list-card progress block.
+  PackageAttendancePackageEntity? get featuredPackage {
+    for (final package in packages) {
+      if (package.isActive) return package;
+    }
+    if (packages.isEmpty) return null;
+    return packages.first;
+  }
 
   @override
-  List<Object?> get props => [id];
+  List<Object?> get props => [
+        id,
+        patientName,
+        mrNo,
+        gender,
+        patientPhone,
+        hasNfc,
+        patientCnic,
+        packages,
+      ];
 }

@@ -1,98 +1,146 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
-import 'package:ali_therapy_admin/core/widgets/app_back_app_bar.dart';
-import 'package:ali_therapy_admin/core/widgets/app_search_filter_section.dart';
+import 'package:ali_therapy_admin/core/utils/app_device.dart';
+import 'package:ali_therapy_admin/core/utils/app_snackbar.dart';
+import 'package:ali_therapy_admin/core/widgets/app_pull_refresh.dart';
+import 'package:ali_therapy_admin/core/widgets/app_shimmer.dart';
 import 'package:ali_therapy_admin/core/widgets/app_tablet_safe_area.dart';
-import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/patient_dues_card.dart';
-import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/patient_dues_filters.dart';
+import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/form/form_back_app_bar.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/patient_dues_domain/entities/patient_dues_entity.dart';
+import 'package:ali_therapy_admin/feature/reports/presentation/bloc/patient_dues_bloc/patient_dues_bloc.dart';
+import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/patient_dues_card_list.dart';
+import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/patient_dues_card_skeleton.dart';
+import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/patient_dues_search_filter_section.dart';
+import 'package:ali_therapy_admin/injection.dart';
 
 // ============================================================
 // PATIENT DUES PAGE
 // ------------------------------------------------------------
-// Mobile report: filters + sample dues cards.
+// Same screen flow as AllEmployeesPage:
+// shimmer first load, search + filters, pull refresh, load more.
+// Filter dropdowns come from GET /reports/filter-options.
 // ============================================================
 
 class PatientDuesPage extends StatelessWidget {
   const PatientDuesPage({super.key});
 
+  static const int _prefetchRemainingCards = 2;
+
+  double get _approxCardHeight => 340.h;
+
+  List<PatientDuesEntity> _rowsOf(PatientDuesState state) {
+    if (state is PatientDuesLoaded) return state.rows;
+    if (state is PatientDuesError) return state.rows;
+    return const [];
+  }
+
+  bool _isLoading(PatientDuesState state) {
+    if (state is PatientDuesLoading || state is PatientDuesInitial) {
+      return true;
+    }
+    if (state is PatientDuesLoaded) {
+      return state.isRefreshingList || state.isLoadingMore;
+    }
+    return false;
+  }
+
+  bool _onScroll(BuildContext context, ScrollNotification notification) {
+    if (notification is! ScrollUpdateNotification) return false;
+
+    final remainingBelow = notification.metrics.extentAfter;
+    final prefetchDistance =
+        (_prefetchRemainingCards * _approxCardHeight) + 20.h;
+    if (remainingBelow > prefetchDistance) return false;
+
+    context.read<PatientDuesBloc>().add(const PatientDuesLoadMore());
+    return false;
+  }
+
+  Widget _listContent({
+    required BuildContext context,
+    required PatientDuesState state,
+    required bool isFirstLoad,
+    required double hPad,
+  }) {
+    final listScroll = NotificationListener<ScrollNotification>(
+      onNotification: (notification) => _onScroll(context, notification),
+      child: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(
+          parent: ClampingScrollPhysics(),
+        ),
+        slivers: [
+          SliverPadding(
+            padding: EdgeInsets.fromLTRB(hPad, 0, hPad, 8.h),
+            sliver: isFirstLoad
+                ? const PatientDuesCardSkeletonSliver(itemCount: 5)
+                : PatientDuesCardList(
+                    rows: _rowsOf(state),
+                    hasMore: state is PatientDuesLoaded && state.hasMore,
+                    isLoadingMore:
+                        state is PatientDuesLoaded && state.isLoadingMore,
+                  ),
+          ),
+          SliverToBoxAdapter(child: SizedBox(height: 16.h)),
+        ],
+      ),
+    );
+
+    final listBody = isFirstLoad ? AppShimmer(child: listScroll) : listScroll;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: EdgeInsets.fromLTRB(hPad, 8.h, hPad, 12.h),
+          child: const PatientDuesSearchFilterSection(),
+        ),
+        Expanded(
+          child: AppPullRefresh(
+            enabled: !isFirstLoad,
+            onRefresh: () => context.read<PatientDuesBloc>().pullRefresh(),
+            child: listBody,
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: const AppBackAppBar(title: 'Patient Dues'),
-      body: AppTabletSafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 8.h),
-              child: AppSearchFilterSection(
-                searchHint: 'Search patient, CNIC…',
-                filtersPanel: const PatientDuesFilters(),
-              ),
-            ),
-            Expanded(
-              child: ListView(
-                padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 24.h),
-                children: [
-                  const PatientDuesCard(
-                    initiallyExpanded: true,
-                    patientName: 'Asia Noreen',
-                    cnic: '37105-0248077-0',
-                    phone: '0331-0303882',
-                    registeredBy: 'KAINAT RASHEED',
-                    grossBilled: 'PKR 30,000.00',
-                    consultation: 'PKR 0.00',
-                    packageBilled: 'PKR 30,000.00',
-                    directDiscount: 'PKR 9,000.00',
-                    directDiscountPercent: '30%',
-                    insuranceDiscount: 'PKR 0.00',
-                    netBilled: 'PKR 21,000.00',
-                    packagePaid: 'PKR 11,000.00',
-                    totalReceived: 'PKR 11,000.00',
-                    dues: 'PKR 10,000.00',
-                  ),
-                  SizedBox(height: 10.h),
-                  const PatientDuesCard(
-                    patientName: 'Saima Raees',
-                    cnic: '82401-9475130-9',
-                    phone: '0300-1122334',
-                    registeredBy: 'KAINAT RASHEED',
-                    grossBilled: 'PKR 33,000.00',
-                    consultation: 'PKR 3,000.00',
-                    packageBilled: 'PKR 30,000.00',
-                    directDiscount: 'PKR 0.00',
-                    directDiscountPercent: '0%',
-                    insuranceDiscount: 'PKR 0.00',
-                    netBilled: 'PKR 33,000.00',
-                    packagePaid: 'PKR 3,000.00',
-                    totalReceived: 'PKR 3,000.00',
-                    dues: 'PKR 30,000.00',
-                  ),
-                  SizedBox(height: 10.h),
-                  const PatientDuesCard(
-                    patientName: 'Iqra Javed',
-                    cnic: '35202-1234567-8',
-                    phone: '0321-4455667',
-                    registeredBy: 'KAINAT RASHEED',
-                    grossBilled: 'PKR 15,000.00',
-                    consultation: 'PKR 3,000.00',
-                    packageBilled: 'PKR 12,000.00',
-                    directDiscount: 'PKR 1,500.00',
-                    directDiscountPercent: '10%',
-                    insuranceDiscount: 'PKR 0.00',
-                    netBilled: 'PKR 13,500.00',
-                    packagePaid: 'PKR 5,000.00',
-                    totalReceived: 'PKR 5,000.00',
-                    dues: 'PKR 8,500.00',
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+    return BlocProvider(
+      create: (_) => sl<PatientDuesBloc>()..add(const PatientDuesStarted()),
+      child: BlocConsumer<PatientDuesBloc, PatientDuesState>(
+        listener: (context, state) {
+          if (state is PatientDuesError) {
+            AppSnackbar.error(context, state.message, title: state.title);
+          }
+        },
+        builder: (context, state) {
+          final isFirstLoad =
+              state is PatientDuesLoading || state is PatientDuesInitial;
+          final isLoading = _isLoading(state);
+          final isTablet = AppDevice.isTablet(context);
+
+          final hPad = isTablet
+              ? (AppDevice.isLandscape(context) ? 40.w : 48.w)
+              : 16.w;
+
+          final content = _listContent(
+            context: context,
+            state: state,
+            isFirstLoad: isFirstLoad,
+            hPad: hPad,
+          );
+
+          return Scaffold(
+            backgroundColor: AppColors.background,
+            appBar: FormBackAppBar(title: 'Patient Dues', isLoading: isLoading),
+            body: AppTabletSafeArea(child: content),
+          );
+        },
       ),
     );
   }

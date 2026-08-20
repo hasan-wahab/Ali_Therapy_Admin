@@ -1,21 +1,23 @@
 import 'package:ali_therapy_admin/core/usecase/usecase.dart';
 import 'package:ali_therapy_admin/core/utils/typedefs.dart';
-import '../entities/patient_report_entity.dart';
-import '../repositories/patient_report_repository.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/patient_report_domain/entities/patient_report_page_entity.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/patient_report_domain/entities/patient_report_query.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/patient_report_domain/repositories/patient_report_repository.dart';
 
 // ============================================================
-// GET PATIENTREPORT USE CASE
+// GET PATIENT REPORT USE CASE
 // ------------------------------------------------------------
-// One job: fetch patient report data.
+// One job: fetch paginated patient report rows.
 // ============================================================
 
-class GetPatientReportUseCase extends UseCase<PatientReportEntity, NoParams> {
-  final PatientReportRepository repository;
-
+class GetPatientReportUseCase
+    extends UseCase<PatientReportPageEntity, PatientReportQuery> {
   GetPatientReportUseCase(this.repository);
 
+  final PatientReportRepository repository;
+
   @override
-  ResultFuture<PatientReportEntity> call(NoParams params) {
-    return repository.getPatientReport();
+  ResultFuture<PatientReportPageEntity> call(PatientReportQuery params) {
+    return repository.getPatientReportPage(query: params);
   }
 }

@@ -367,6 +367,7 @@ class AppRouter {
               return AppPage.slide(
                 state,
                 PatientDuesHistoryPage(
+                  patientId: extra['patientId'] ?? '',
                   patientName: extra['patientName'] ?? 'Patient',
                   cnic: extra['cnic'] ?? '—',
                   phone: extra['phone'] ?? '—',
@@ -464,9 +465,10 @@ class AppRouter {
               return AppPage.slide(
                 state,
                 PackageAttendanceDetailPage(
+                  patientId: extra['patientId'] ?? '',
                   patientName: extra['patientName'] ?? 'Patient',
-                  mrNo: extra['mrNo'] ?? '—',
-                  phone: extra['phone'] ?? '—',
+                  mrNo: extra['mrNo'] ?? '_',
+                  phone: extra['phone'] ?? '_',
                 ),
               );
             },

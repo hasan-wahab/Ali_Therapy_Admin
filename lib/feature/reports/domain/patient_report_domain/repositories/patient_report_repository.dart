@@ -1,13 +1,13 @@
 import 'package:ali_therapy_admin/core/utils/typedefs.dart';
-import '../entities/patient_report_entity.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/patient_report_domain/entities/patient_report_page_entity.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/patient_report_domain/entities/patient_report_query.dart';
 
 // ============================================================
-// PATIENTREPORT REPOSITORY CONTRACT (Domain)
-// ------------------------------------------------------------
-// Domain only knows WHAT we need — not HOW (no Dio here).
+// PATIENT REPORT REPOSITORY CONTRACT (Domain)
 // ============================================================
 
 abstract class PatientReportRepository {
-  /// Load data for this feature. Replace with real methods later.
-  ResultFuture<PatientReportEntity> getPatientReport();
+  ResultFuture<PatientReportPageEntity> getPatientReportPage({
+    required PatientReportQuery query,
+  });
 }

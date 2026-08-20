@@ -1,13 +1,13 @@
 import 'package:ali_therapy_admin/core/utils/typedefs.dart';
-import '../entities/free_consultation_report_entity.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/free_consultation_report_domain/entities/free_consultation_report_page_entity.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/free_consultation_report_domain/entities/free_consultation_report_query.dart';
 
 // ============================================================
-// FREECONSULTATIONREPORT REPOSITORY CONTRACT (Domain)
-// ------------------------------------------------------------
-// Domain only knows WHAT we need — not HOW (no Dio here).
+// FREE CONSULTATION REPORT REPOSITORY CONTRACT (Domain)
 // ============================================================
 
 abstract class FreeConsultationReportRepository {
-  /// Load data for this feature. Replace with real methods later.
-  ResultFuture<FreeConsultationReportEntity> getFreeConsultationReport();
+  ResultFuture<FreeConsultationReportPageEntity> getFreeConsultationReportPage({
+    required FreeConsultationReportQuery query,
+  });
 }

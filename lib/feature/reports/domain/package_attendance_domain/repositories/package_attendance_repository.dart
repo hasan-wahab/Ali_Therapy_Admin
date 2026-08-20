@@ -1,13 +1,13 @@
 import 'package:ali_therapy_admin/core/utils/typedefs.dart';
-import '../entities/package_attendance_entity.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/package_attendance_domain/entities/package_attendance_page_entity.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/package_attendance_domain/entities/package_attendance_query.dart';
 
 // ============================================================
-// PACKAGEATTENDANCE REPOSITORY CONTRACT (Domain)
-// ------------------------------------------------------------
-// Domain only knows WHAT we need — not HOW (no Dio here).
+// PACKAGE ATTENDANCE REPOSITORY CONTRACT (Domain)
 // ============================================================
 
 abstract class PackageAttendanceRepository {
-  /// Load data for this feature. Replace with real methods later.
-  ResultFuture<PackageAttendanceEntity> getPackageAttendance();
+  ResultFuture<PackageAttendancePageEntity> getPackageAttendancePage({
+    required PackageAttendanceQuery query,
+  });
 }

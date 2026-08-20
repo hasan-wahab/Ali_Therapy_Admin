@@ -10,13 +10,30 @@ import 'package:ali_therapy_admin/feature/patient/all_patients/presentation/widg
 // ============================================================
 
 class PatientsSearchFilterSection extends StatelessWidget {
-  const PatientsSearchFilterSection({super.key});
+  const PatientsSearchFilterSection({
+    super.key,
+    this.onSearchChanged,
+    this.searchQuery = '',
+    this.searchMatchCount = 0,
+    this.listIsEmpty = false,
+  });
+
+  final ValueChanged<String>? onSearchChanged;
+  final String searchQuery;
+  final int searchMatchCount;
+  final bool listIsEmpty;
 
   @override
   Widget build(BuildContext context) {
-    return const AppSearchFilterSection(
+    return AppSearchFilterSection(
       searchHint: 'Search patients...',
-      filtersPanel: PatientsFiltersPanel(),
+      onSearchChanged: onSearchChanged,
+      searchQuery: searchQuery,
+      searchMatchCount: searchMatchCount,
+      listIsEmpty: listIsEmpty,
+      filtersPanelBuilder: (closeFilters) => PatientsFiltersPanel(
+        onApplied: closeFilters,
+      ),
     );
   }
 }

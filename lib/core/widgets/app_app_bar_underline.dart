@@ -6,13 +6,15 @@ import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 // ============================================================
 // APP APP BAR UNDERLINE
 // ------------------------------------------------------------
-// Thin rainbow gradient line under every app bar.
+// Thin line under every app bar.
+// Default: rainbow gradient.
+// Loading: solid teal linear progress.
 // ============================================================
 
 class AppAppBarUnderline {
   AppAppBarUnderline._();
 
-  static double get height => 1.h;
+  static double get height => 1.5.h;
 
   /// Extra height to add on top of [kToolbarHeight].
   static double get preferredExtra => height;
@@ -28,26 +30,56 @@ class AppAppBarUnderline {
     Color(0xFF8E24AA), // violet
   ];
 
-  static PreferredSizeWidget get bar {
-    return PreferredSize(
-      preferredSize: Size.fromHeight(height),
-      child: Container(
-        width: double.infinity,
-        height: height,
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-            colors: _rainbow,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary.withValues(alpha: 0.18),
-              blurRadius: 3,
-              offset: const Offset(0, 1),
-            ),
-          ],
+  /// Rainbow line (default, no loading).
+  static PreferredSizeWidget get bar => _AppBarUnderlineWidget(isLoading: false);
+
+  /// Loading line (teal linear progress replaces rainbow).
+  static PreferredSizeWidget get loadingBar =>
+      _AppBarUnderlineWidget(isLoading: true);
+
+  /// Choose between rainbow and loading bar.
+  static PreferredSizeWidget forState({required bool isLoading}) =>
+      _AppBarUnderlineWidget(isLoading: isLoading);
+}
+
+class _AppBarUnderlineWidget extends StatelessWidget
+    implements PreferredSizeWidget {
+  const _AppBarUnderlineWidget({required this.isLoading});
+
+  final bool isLoading;
+
+  @override
+  Size get preferredSize => Size.fromHeight(AppAppBarUnderline.height);
+
+  @override
+  Widget build(BuildContext context) {
+    if (isLoading) {
+      return SizedBox(
+        height: AppAppBarUnderline.height,
+        child: LinearProgressIndicator(
+          minHeight: AppAppBarUnderline.height,
+          color: AppColors.primary,
+          backgroundColor: AppColors.primaryLight,
         ),
+      );
+    }
+
+    return Container(
+      width: double.infinity,
+      height: AppAppBarUnderline.height,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: AppAppBarUnderline._rainbow,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.18),
+            blurRadius: 3,
+            offset: const Offset(0, 1),
+          ),
+        ],
       ),
     );
   }

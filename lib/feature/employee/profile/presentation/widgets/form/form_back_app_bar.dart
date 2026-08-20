@@ -7,6 +7,7 @@ import 'package:ali_therapy_admin/core/widgets/app_back_app_bar.dart';
 // FORM BACK APP BAR
 // ------------------------------------------------------------
 // Alias of shared AppBackAppBar (same look everywhere).
+// Pass isLoading=true to show teal linear progress instead of rainbow.
 // ============================================================
 
 class FormBackAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -14,10 +15,12 @@ class FormBackAppBar extends StatelessWidget implements PreferredSizeWidget {
     super.key,
     required this.title,
     this.actions,
+    this.isLoading = false,
   });
 
   final String title;
   final List<Widget>? actions;
+  final bool isLoading;
 
   @override
   Size get preferredSize =>
@@ -25,6 +28,10 @@ class FormBackAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBackAppBar(title: title, actions: actions);
+    return AppBackAppBar(
+      title: title,
+      actions: actions,
+      isLoading: isLoading,
+    );
   }
 }
