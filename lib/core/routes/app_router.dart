@@ -46,6 +46,8 @@ import 'package:ali_therapy_admin/feature/reports/presentation/pages/receptionis
 import 'package:ali_therapy_admin/feature/reports/presentation/pages/user_activity_report/user_activity_report_page.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/pages/package_attendance/package_attendance_page.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/pages/package_attendance/package_attendance_detail_page.dart';
+import 'package:ali_therapy_admin/feature/reports/presentation/pages/in_progress_sessions/in_progress_sessions_page.dart';
+import 'package:ali_therapy_admin/feature/reports/presentation/pages/discount_report/discount_report_page.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/sections/addresses/addresses_section.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/sections/audit/audit_section.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/sections/bank_details/bank_details_section.dart';
@@ -472,6 +474,18 @@ class AppRouter {
                 ),
               );
             },
+          ),
+          GoRoute(
+            path: AppRoutes.inProgressSessions,
+            name: 'inProgressSessions',
+            pageBuilder: (context, state) =>
+                AppPage.slide(state, const InProgressSessionsPage()),
+          ),
+          GoRoute(
+            path: AppRoutes.discountReport,
+            name: 'discountReport',
+            pageBuilder: (context, state) =>
+                AppPage.slide(state, const DiscountReportPage()),
           ),
     ],
     errorBuilder: (context, state) =>

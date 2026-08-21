@@ -204,6 +204,14 @@ class AppNavigation {
     context.push(AppRoutes.packageAttendance);
   }
 
+  static void openInProgressSessions(BuildContext context) {
+    context.push(AppRoutes.inProgressSessions);
+  }
+
+  static void openDiscountReport(BuildContext context) {
+    context.push(AppRoutes.discountReport);
+  }
+
   static void openPackageAttendanceDetail(
     BuildContext context, {
     required String patientId,

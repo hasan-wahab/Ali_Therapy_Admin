@@ -17,8 +17,9 @@ part 'refer_by_report_state.dart';
 // ============================================================
 // REFER BY REPORT BLOC
 // ------------------------------------------------------------
-// Same flow as PatientReportBloc, without pagination
+// Same flow as PatientDuesBloc, without pagination
 // because GET /reports/refer-by returns the full list.
+// Search: matches first, then related rows (dual fetch).
 // ============================================================
 
 class ReferByReportBloc extends Bloc<ReferByReportEvent, ReferByReportState> {
@@ -169,17 +170,18 @@ class ReferByReportBloc extends Bloc<ReferByReportEvent, ReferByReportState> {
     Emitter<ReferByReportState> emit, {
     _Snapshot keepOnError = const _Snapshot(),
   }) async {
-    // Keep search local so the API still returns the full filtered list.
-    final result = await getReferByReportUseCase(_query.copyWith(search: ''));
+    final search = _query.search.trim();
+    if (search.isNotEmpty) {
+      await _loadRankedRows(emit, keepOnError: keepOnError);
+      return;
+    }
+
+    final result = await getReferByReportUseCase(_query);
 
     result.when(
       success: (rows) {
         emit(ReferByReportLoaded(
-          rows: AppSearchRanker.matchesThenRelated(
-            items: rows,
-            query: _query.search,
-            fieldsOf: _searchFields,
-          ),
+          rows: rows,
           isRefreshingList: false,
           filterOptions: _filterOptions,
           query: _query,
@@ -203,6 +205,58 @@ class ReferByReportBloc extends Bloc<ReferByReportEvent, ReferByReportState> {
         }
       },
     );
+  }
+
+  Future<void> _loadRankedRows(
+    Emitter<ReferByReportState> emit, {
+    required _Snapshot keepOnError,
+  }) async {
+    final results = await Future.wait([
+      getReferByReportUseCase(_query),
+      getReferByReportUseCase(_query.copyWith(search: '')),
+    ]);
+    final matchResult = results[0];
+    final relatedResult = results[1];
+
+    if (matchResult.isFailure && relatedResult.isFailure) {
+      final failure = matchResult.failure;
+      emit(ReferByReportError(
+        title: failure.title,
+        message: failure.message,
+        rows: keepOnError.rows,
+        filterOptions: keepOnError.filterOptions,
+        query: keepOnError.query,
+      ));
+      if (keepOnError.rows.isNotEmpty) {
+        emit(ReferByReportLoaded(
+          rows: keepOnError.rows,
+          isRefreshingList: false,
+          filterOptions: keepOnError.filterOptions,
+          query: keepOnError.query,
+        ));
+      }
+      return;
+    }
+
+    final matches = matchResult.isSuccess
+        ? matchResult.data
+        : <ReferByReportEntity>[];
+    final related = relatedResult.isSuccess
+        ? relatedResult.data
+        : <ReferByReportEntity>[];
+
+    emit(ReferByReportLoaded(
+      rows: AppSearchRanker.pinMatchesThenRelated(
+        matches: matches,
+        related: related,
+        query: _query.search,
+        idOf: (row) => row.id,
+        fieldsOf: _searchFields,
+      ),
+      isRefreshingList: false,
+      filterOptions: _filterOptions,
+      query: _query,
+    ));
   }
 }
 

@@ -80,9 +80,7 @@ class LoginModel extends LoginEntity {
       'permissions': permissions
           .map((p) => p is PermissionModel ? p.name : p.name)
           .toList(),
-      'roles': {
-        for (final role in roles) role.id: role.name,
-      },
+      'roles': {for (final role in roles) role.id: role.name},
     };
   }
 
@@ -92,8 +90,9 @@ class LoginModel extends LoginEntity {
       user: user is UserModel ? (user as UserModel).toEntity() : user,
       permissions: permissions
           .map(
-            (p) =>
-                p is PermissionModel ? p.toEntity() : PermissionEntity(name: p.name),
+            (p) => p is PermissionModel
+                ? p.toEntity()
+                : PermissionEntity(name: p.name),
           )
           .toList(),
       roles: roles

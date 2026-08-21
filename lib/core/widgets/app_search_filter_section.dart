@@ -65,11 +65,31 @@ class AppSearchFilterSection extends StatefulWidget {
 }
 
 class _AppSearchFilterSectionState extends State<AppSearchFilterSection> {
-  final TextEditingController _searchController = TextEditingController();
+  late final TextEditingController _searchController;
   bool _filtersOpen = false;
 
   bool get _hasFilters =>
       widget.filtersPanel != null || widget.filtersPanelBuilder != null;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController(text: widget.searchQuery);
+  }
+
+  @override
+  void didUpdateWidget(covariant AppSearchFilterSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Keep the field in sync when Bloc / page clears or replaces search.
+    // Do not overwrite while the user is still typing.
+    if (widget.searchQuery != oldWidget.searchQuery &&
+        widget.searchQuery != _searchController.text) {
+      _searchController.value = TextEditingValue(
+        text: widget.searchQuery,
+        selection: TextSelection.collapsed(offset: widget.searchQuery.length),
+      );
+    }
+  }
 
   @override
   void dispose() {

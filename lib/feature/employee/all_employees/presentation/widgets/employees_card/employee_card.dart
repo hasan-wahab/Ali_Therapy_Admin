@@ -49,7 +49,7 @@ class EmployeeCard extends StatelessWidget {
     this.initiallyExpanded = false,
   });
 
-  /// API row id — used for Edit / terminate / password / IDs.
+  /// API row id — used for View / Edit / terminate / password / IDs.
   final String id;
   final String name;
   final String email;
@@ -75,6 +75,11 @@ class EmployeeCard extends StatelessWidget {
   void _handleAction(BuildContext context, EmployeeActionType type) {
     if (onActionSelected != null) {
       onActionSelected!(type);
+      return;
+    }
+
+    if (type == EmployeeActionType.view) {
+      AppNavigation.openProfile(context, employeeId: id);
       return;
     }
 

@@ -7,6 +7,8 @@ import 'package:ali_therapy_admin/feature/reports/data/package_attendance_data/m
 import 'package:ali_therapy_admin/feature/reports/data/package_attendance_detail_data/models/package_attendance_detail_model.dart';
 import 'package:ali_therapy_admin/feature/reports/data/patient_report_data/models/patient_report_model.dart';
 import 'package:ali_therapy_admin/feature/reports/data/reconsultation_report_data/models/reconsultation_report_model.dart';
+import 'package:ali_therapy_admin/feature/reports/data/discount_report_data/models/discount_report_model.dart';
+import 'package:ali_therapy_admin/feature/reports/data/in_progress_sessions_data/models/in_progress_sessions_model.dart';
 import 'package:ali_therapy_admin/feature/reports/data/insurance_panel_report_data/models/insurance_panel_report_model.dart';
 import 'package:ali_therapy_admin/feature/reports/data/refer_by_report_data/models/refer_by_report_model.dart';
 import 'package:ali_therapy_admin/feature/reports/data/report_filter_options_data/models/report_filter_options_model.dart';
@@ -20,6 +22,8 @@ import 'package:ali_therapy_admin/feature/reports/domain/patient_dues_domain/ent
 import 'package:ali_therapy_admin/feature/reports/domain/package_attendance_domain/entities/package_attendance_query.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/patient_report_domain/entities/patient_report_query.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/reconsultation_report_domain/entities/reconsultation_report_query.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/discount_report_domain/entities/discount_report_query.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/in_progress_sessions_domain/entities/in_progress_sessions_query.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/insurance_panel_report_domain/entities/insurance_panel_report_query.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/refer_by_report_domain/entities/refer_by_report_query.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/receptionist_report_domain/entities/receptionist_report_query.dart';
@@ -100,6 +104,16 @@ abstract class ReportsRemoteDataSource {
   /// GET /api/admin/reports/insurance-panel
   Future<InsurancePanelReportResultModel> getInsurancePanelReport({
     required InsurancePanelReportQuery query,
+  });
+
+  /// GET /api/admin/reports/in-progress-sessions
+  Future<InProgressSessionsPageModel> getInProgressSessionsPage({
+    required InProgressSessionsQuery query,
+  });
+
+  /// GET /api/admin/reports/discount
+  Future<DiscountReportPageModel> getDiscountReportPage({
+    required DiscountReportQuery query,
   });
 
   /// GET /api/admin/reports/user-activity

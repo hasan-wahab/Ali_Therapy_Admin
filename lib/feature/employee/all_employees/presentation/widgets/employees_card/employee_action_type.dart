@@ -5,6 +5,7 @@
 // ============================================================
 
 enum EmployeeActionType {
+  view,
   edit,
   terminate,
   changePassword,

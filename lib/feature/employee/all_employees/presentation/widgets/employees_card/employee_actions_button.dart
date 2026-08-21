@@ -41,6 +41,12 @@ class EmployeeActionsButton extends StatelessWidget {
       ),
       itemBuilder: (context) => [
         _menuItem(
+          type: EmployeeActionType.view,
+          icon: Icons.visibility_outlined,
+          label: 'View',
+          color: AppColors.primary,
+        ),
+        _menuItem(
           type: EmployeeActionType.edit,
           icon: Icons.edit_square,
           label: 'Edit',

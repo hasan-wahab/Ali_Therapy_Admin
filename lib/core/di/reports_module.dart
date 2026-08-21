@@ -6,7 +6,9 @@ import 'package:ali_therapy_admin/core/network/dio_client.dart';
 import 'package:ali_therapy_admin/core/network/network_info.dart';
 import 'package:ali_therapy_admin/feature/reports/data/assistant_manager_report_data/repositories/assistant_manager_report_repository_impl.dart';
 import 'package:ali_therapy_admin/feature/reports/data/consultation_report_data/repositories/consultation_report_repository_impl.dart';
+import 'package:ali_therapy_admin/feature/reports/data/discount_report_data/repositories/discount_report_repository_impl.dart';
 import 'package:ali_therapy_admin/feature/reports/data/free_consultation_report_data/repositories/free_consultation_report_repository_impl.dart';
+import 'package:ali_therapy_admin/feature/reports/data/in_progress_sessions_data/repositories/in_progress_sessions_repository_impl.dart';
 import 'package:ali_therapy_admin/feature/reports/data/insurance_panel_report_data/repositories/insurance_panel_report_repository_impl.dart';
 import 'package:ali_therapy_admin/feature/reports/data/package_attendance_data/repositories/package_attendance_repository_impl.dart';
 import 'package:ali_therapy_admin/feature/reports/data/package_attendance_detail_data/repositories/package_attendance_detail_repository_impl.dart';
@@ -23,8 +25,12 @@ import 'package:ali_therapy_admin/feature/reports/domain/assistant_manager_repor
 import 'package:ali_therapy_admin/feature/reports/domain/assistant_manager_report_domain/usecases/get_assistant_manager_report_usecase.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/consultation_report_domain/repositories/consultation_report_repository.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/consultation_report_domain/usecases/get_consultation_report_usecase.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/discount_report_domain/repositories/discount_report_repository.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/discount_report_domain/usecases/get_discount_report_usecase.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/free_consultation_report_domain/repositories/free_consultation_report_repository.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/free_consultation_report_domain/usecases/get_free_consultation_report_usecase.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/in_progress_sessions_domain/repositories/in_progress_sessions_repository.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/in_progress_sessions_domain/usecases/get_in_progress_sessions_usecase.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/insurance_panel_report_domain/repositories/insurance_panel_report_repository.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/insurance_panel_report_domain/usecases/get_insurance_panel_report_usecase.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/package_attendance_domain/repositories/package_attendance_repository.dart';
@@ -51,7 +57,9 @@ import 'package:ali_therapy_admin/feature/reports/domain/user_activity_report_do
 import 'package:ali_therapy_admin/feature/reports/domain/user_activity_report_domain/usecases/get_user_activity_report_usecase.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/bloc/assistant_manager_report_bloc/assistant_manager_report_bloc.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/bloc/consultation_report_bloc/consultation_report_bloc.dart';
+import 'package:ali_therapy_admin/feature/reports/presentation/bloc/discount_report_bloc/discount_report_bloc.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/bloc/free_consultation_report_bloc/free_consultation_report_bloc.dart';
+import 'package:ali_therapy_admin/feature/reports/presentation/bloc/in_progress_sessions_bloc/in_progress_sessions_bloc.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/bloc/insurance_panel_report_bloc/insurance_panel_report_bloc.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/bloc/package_attendance_bloc/package_attendance_bloc.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/bloc/package_attendance_detail_bloc/package_attendance_detail_bloc.dart';
@@ -355,6 +363,44 @@ class ReportsModule implements DiModule {
     sl.registerFactory(
       () => InsurancePanelReportBloc(
         getInsurancePanelReportUseCase: sl<GetInsurancePanelReportUseCase>(),
+        getReportFilterOptionsUseCase: sl<GetReportFilterOptionsUseCase>(),
+      ),
+    );
+
+    // ── In-Progress Sessions ─────────────────────────────────
+    sl.registerLazySingleton<InProgressSessionsRepository>(
+      () => InProgressSessionsRepositoryImpl(
+        remoteDataSource: sl<ReportsRemoteDataSource>(),
+        networkInfo: sl<NetworkInfo>(),
+      ),
+    );
+
+    sl.registerLazySingleton(
+      () => GetInProgressSessionsUseCase(sl<InProgressSessionsRepository>()),
+    );
+
+    sl.registerFactory(
+      () => InProgressSessionsBloc(
+        getInProgressSessionsUseCase: sl<GetInProgressSessionsUseCase>(),
+        getReportFilterOptionsUseCase: sl<GetReportFilterOptionsUseCase>(),
+      ),
+    );
+
+    // ── Discount Report ──────────────────────────────────────
+    sl.registerLazySingleton<DiscountReportRepository>(
+      () => DiscountReportRepositoryImpl(
+        remoteDataSource: sl<ReportsRemoteDataSource>(),
+        networkInfo: sl<NetworkInfo>(),
+      ),
+    );
+
+    sl.registerLazySingleton(
+      () => GetDiscountReportUseCase(sl<DiscountReportRepository>()),
+    );
+
+    sl.registerFactory(
+      () => DiscountReportBloc(
+        getDiscountReportUseCase: sl<GetDiscountReportUseCase>(),
         getReportFilterOptionsUseCase: sl<GetReportFilterOptionsUseCase>(),
       ),
     );

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -30,7 +32,10 @@ class ReferredPatientsPage extends StatefulWidget {
 }
 
 class _ReferredPatientsPageState extends State<ReferredPatientsPage> {
+  static const _debounceDuration = Duration(milliseconds: 450);
+
   String _searchQuery = '';
+  Timer? _searchDebounce;
 
   static const _samplePatients = [
     (
@@ -58,6 +63,25 @@ class _ReferredPatientsPageState extends State<ReferredPatientsPage> {
       regDate: '05 Aug 2026',
     ),
   ];
+
+  @override
+  void dispose() {
+    _searchDebounce?.cancel();
+    super.dispose();
+  }
+
+  void _onSearchChanged(String value) {
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(_debounceDuration, () {
+      if (!mounted) return;
+      setState(() => _searchQuery = value);
+    });
+  }
+
+  void _onSearchSubmitted(String value) {
+    _searchDebounce?.cancel();
+    setState(() => _searchQuery = value);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,9 +120,8 @@ class _ReferredPatientsPageState extends State<ReferredPatientsPage> {
                 ],
               ),
               listIsEmpty: patients.isEmpty,
-              onSearchChanged: (value) {
-                setState(() => _searchQuery = value);
-              },
+              onSearchChanged: _onSearchChanged,
+              onSearchSubmitted: _onSearchSubmitted,
             ),
             Divider(height: 1.h, color: AppColors.divider),
             Expanded(

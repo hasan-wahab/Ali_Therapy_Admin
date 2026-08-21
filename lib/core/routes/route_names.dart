@@ -75,4 +75,6 @@ class AppRoutes {
   static const String packageAttendance = '/reports/package-attendance';
   static const String packageAttendanceDetail =
       '/reports/package-attendance/detail';
+  static const String inProgressSessions = '/reports/in-progress-sessions';
+  static const String discountReport = '/reports/discount-report';
 }

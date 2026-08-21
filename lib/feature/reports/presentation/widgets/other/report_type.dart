@@ -19,6 +19,8 @@ enum ReportType {
   assistantManagerReport,
   receptionistReport,
   userActivityReport,
+  inProgressSessions,
+  discountReport,
 }
 
 extension ReportTypeUi on ReportType {
@@ -48,6 +50,10 @@ extension ReportTypeUi on ReportType {
         return 'Receptionist Report';
       case ReportType.userActivityReport:
         return 'User Activity Report';
+      case ReportType.inProgressSessions:
+        return 'In-Progress Sessions';
+      case ReportType.discountReport:
+        return 'Discount Report';
     }
   }
 
@@ -77,6 +83,10 @@ extension ReportTypeUi on ReportType {
         return Icons.support_agent_outlined;
       case ReportType.userActivityReport:
         return Icons.manage_accounts_outlined;
+      case ReportType.inProgressSessions:
+        return Icons.pending_actions_outlined;
+      case ReportType.discountReport:
+        return Icons.local_offer_outlined;
     }
   }
 }

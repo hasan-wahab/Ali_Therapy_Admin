@@ -18,8 +18,8 @@ part 'insurance_panel_report_state.dart';
 // ============================================================
 // INSURANCE PANEL REPORT BLOC
 // ------------------------------------------------------------
-// Same flow as ReferByReportBloc: full list, local search,
-// filters as API query params. Summary comes from the API.
+// Same flow as PatientDuesBloc, without pagination:
+// search = matches first, then related rows (dual fetch).
 // ============================================================
 
 class InsurancePanelReportBloc
@@ -184,19 +184,18 @@ class InsurancePanelReportBloc
     Emitter<InsurancePanelReportState> emit, {
     _Snapshot keepOnError = const _Snapshot(),
   }) async {
-    // Keep search local so the API still returns the full filtered list.
-    final result = await getInsurancePanelReportUseCase(
-      _query.copyWith(search: ''),
-    );
+    final search = _query.search.trim();
+    if (search.isNotEmpty) {
+      await _loadRankedRows(emit, keepOnError: keepOnError);
+      return;
+    }
+
+    final result = await getInsurancePanelReportUseCase(_query);
 
     result.when(
       success: (page) {
         emit(InsurancePanelReportLoaded(
-          rows: AppSearchRanker.matchesThenRelated(
-            items: page.panels,
-            query: _query.search,
-            fieldsOf: _searchFields,
-          ),
+          rows: page.panels,
           summary: page.summary,
           showTotals: keepOnError.showTotals,
           isRefreshingList: false,
@@ -226,6 +225,66 @@ class InsurancePanelReportBloc
         }
       },
     );
+  }
+
+  Future<void> _loadRankedRows(
+    Emitter<InsurancePanelReportState> emit, {
+    required _Snapshot keepOnError,
+  }) async {
+    final results = await Future.wait([
+      getInsurancePanelReportUseCase(_query),
+      getInsurancePanelReportUseCase(_query.copyWith(search: '')),
+    ]);
+    final matchResult = results[0];
+    final relatedResult = results[1];
+
+    if (matchResult.isFailure && relatedResult.isFailure) {
+      final failure = matchResult.failure;
+      emit(InsurancePanelReportError(
+        title: failure.title,
+        message: failure.message,
+        rows: keepOnError.rows,
+        summary: keepOnError.summary,
+        showTotals: keepOnError.showTotals,
+        filterOptions: keepOnError.filterOptions,
+        query: keepOnError.query,
+      ));
+      if (keepOnError.rows.isNotEmpty) {
+        emit(InsurancePanelReportLoaded(
+          rows: keepOnError.rows,
+          summary: keepOnError.summary,
+          showTotals: keepOnError.showTotals,
+          isRefreshingList: false,
+          filterOptions: keepOnError.filterOptions,
+          query: keepOnError.query,
+        ));
+      }
+      return;
+    }
+
+    final matches = matchResult.isSuccess
+        ? matchResult.data.panels
+        : <InsurancePanelReportEntity>[];
+    final relatedPage = relatedResult.isSuccess ? relatedResult.data : null;
+    final related = relatedPage?.panels ?? <InsurancePanelReportEntity>[];
+
+    emit(InsurancePanelReportLoaded(
+      rows: AppSearchRanker.pinMatchesThenRelated(
+        matches: matches,
+        related: related,
+        query: _query.search,
+        idOf: (row) => row.id,
+        fieldsOf: _searchFields,
+      ),
+      summary: relatedPage?.summary ??
+          (matchResult.isSuccess
+              ? matchResult.data.summary
+              : keepOnError.summary),
+      showTotals: keepOnError.showTotals,
+      isRefreshingList: false,
+      filterOptions: _filterOptions,
+      query: _query,
+    ));
   }
 }
 

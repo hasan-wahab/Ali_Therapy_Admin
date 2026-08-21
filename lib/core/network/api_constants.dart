@@ -158,6 +158,12 @@ class ApiConstants {
   /// GET — insurance panel report list + summary
   static const String insurancePanelReport = 'reports/insurance-panel';
 
+  /// GET — paginated in-progress sessions list
+  static const String inProgressSessions = 'reports/in-progress-sessions';
+
+  /// GET — paginated discount report list
+  static const String discountReport = 'reports/discount';
+
   /// GET — paginated user activity report list
   static const String userActivityReport = 'reports/user-activity';
 

@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/widgets/app_tablet_fields_grid.dart';
-import 'package:ali_therapy_admin/core/utils/app_snackbar.dart';
 import 'package:ali_therapy_admin/core/widgets/app_dropdown_field.dart';
 import 'package:ali_therapy_admin/feature/patient/all_patients/presentation/widgets/patients_filter_date_field.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/report_filters_header.dart';
@@ -11,18 +10,36 @@ import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/rep
 // ============================================================
 // PATIENTS FILTERS PANEL
 // ------------------------------------------------------------
-// Same filter pattern as All Employees / reports.
-// Clinic, Receptionist (searchable), From/To dates + Reset.
-// UI only until API is wired.
+// Same filter pattern as Patient Dues:
+// dropdowns only update local draft; list updates after Apply.
+// UI only until the patients API is wired.
 // ============================================================
 
 class PatientsFiltersPanel extends StatefulWidget {
   const PatientsFiltersPanel({
     super.key,
+    required this.clinic,
+    required this.receptionist,
+    this.fromDate,
+    this.toDate,
+    required this.onApply,
     this.onApplied,
   });
 
+  final String clinic;
+  final String receptionist;
+  final String? fromDate;
+  final String? toDate;
+  final void Function({
+    required String clinic,
+    required String receptionist,
+    String? fromDate,
+    String? toDate,
+  }) onApply;
   final VoidCallback? onApplied;
+
+  static const allClinics = 'All Clinics';
+  static const allReceptionists = 'All Receptionists';
 
   @override
   State<PatientsFiltersPanel> createState() => _PatientsFiltersPanelState();
@@ -30,7 +47,7 @@ class PatientsFiltersPanel extends StatefulWidget {
 
 class _PatientsFiltersPanelState extends State<PatientsFiltersPanel> {
   static const _clinics = [
-    'All Clinics',
+    PatientsFiltersPanel.allClinics,
     'Clinic 1',
     'Clinic 2',
     'Clinic 3 (Neuro and Stroke)',
@@ -38,7 +55,7 @@ class _PatientsFiltersPanelState extends State<PatientsFiltersPanel> {
   ];
 
   static const _receptionists = [
-    'All Receptionists',
+    PatientsFiltersPanel.allReceptionists,
     'AAILA REHMAN',
     'AMAN QAMAR ABBASI',
     'Amna Anum',
@@ -49,6 +66,7 @@ class _PatientsFiltersPanelState extends State<PatientsFiltersPanel> {
     'KAINAT RASHEED',
     'NIDA FATIMA',
     'SABA NOOR',
+    'SANA MAJEED',
   ];
 
   late String _clinic;
@@ -60,22 +78,54 @@ class _PatientsFiltersPanelState extends State<PatientsFiltersPanel> {
   @override
   void initState() {
     super.initState();
-    _resetValues();
+    _syncFromApplied();
   }
 
-  void _resetValues() {
-    _clinic = _clinics.first;
-    _receptionist = _receptionists.first;
-    _fromDate = null;
-    _toDate = null;
+  @override
+  void didUpdateWidget(covariant PatientsFiltersPanel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.clinic != widget.clinic ||
+        oldWidget.receptionist != widget.receptionist ||
+        oldWidget.fromDate != widget.fromDate ||
+        oldWidget.toDate != widget.toDate) {
+      setState(() {
+        _syncFromApplied();
+        _resetToken++;
+      });
+    }
   }
+
+  void _syncFromApplied() {
+    _clinic = widget.clinic;
+    _receptionist = widget.receptionist;
+    _fromDate = widget.fromDate;
+    _toDate = widget.toDate;
+  }
+
+  bool get _hasPendingChanges =>
+      _clinic != widget.clinic ||
+      _receptionist != widget.receptionist ||
+      _fromDate != widget.fromDate ||
+      _toDate != widget.toDate;
 
   void _onReset() {
     setState(() {
-      _resetValues();
+      _clinic = PatientsFiltersPanel.allClinics;
+      _receptionist = PatientsFiltersPanel.allReceptionists;
+      _fromDate = null;
+      _toDate = null;
       _resetToken++;
     });
-    AppSnackbar.info(context, 'Filters reset (UI only)');
+  }
+
+  void _onApply() {
+    widget.onApply(
+      clinic: _clinic,
+      receptionist: _receptionist,
+      fromDate: _fromDate,
+      toDate: _toDate,
+    );
+    widget.onApplied?.call();
   }
 
   Future<void> _pickFromDate() async {
@@ -105,11 +155,8 @@ class _PatientsFiltersPanelState extends State<PatientsFiltersPanel> {
         children: [
           ReportFiltersHeader(
             onReset: _onReset,
-            onApply: widget.onApplied,
-            applyEnabled: _clinic != _clinics.first ||
-                _receptionist != _receptionists.first ||
-                _fromDate != null ||
-                _toDate != null,
+            onApply: _onApply,
+            applyEnabled: _hasPendingChanges,
           ),
           SizedBox(height: 6.h),
           AppTabletFieldsGrid(
@@ -120,10 +167,12 @@ class _PatientsFiltersPanelState extends State<PatientsFiltersPanel> {
                 compact: true,
                 key: ValueKey('clinic_$_resetToken'),
                 label: 'Clinic',
-                hintText: 'All Clinics',
+                hintText: PatientsFiltersPanel.allClinics,
                 enableSearch: true,
                 items: _clinics,
-                value: _clinic,
+                value: _clinics.contains(_clinic)
+                    ? _clinic
+                    : PatientsFiltersPanel.allClinics,
                 onChanged: (value) {
                   if (value == null) return;
                   setState(() => _clinic = value);
@@ -133,10 +182,12 @@ class _PatientsFiltersPanelState extends State<PatientsFiltersPanel> {
                 compact: true,
                 key: ValueKey('receptionist_$_resetToken'),
                 label: 'Receptionist',
-                hintText: 'All Receptionists',
+                hintText: PatientsFiltersPanel.allReceptionists,
                 enableSearch: true,
                 items: _receptionists,
-                value: _receptionist,
+                value: _receptionists.contains(_receptionist)
+                    ? _receptionist
+                    : PatientsFiltersPanel.allReceptionists,
                 onChanged: (value) {
                   if (value == null) return;
                   setState(() => _receptionist = value);

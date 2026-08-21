@@ -45,6 +45,10 @@ class ReportsPage extends StatelessWidget {
         return AppRoutes.userActivityReport;
       case ReportType.packageAttendance:
         return AppRoutes.packageAttendance;
+      case ReportType.inProgressSessions:
+        return AppRoutes.inProgressSessions;
+      case ReportType.discountReport:
+        return AppRoutes.discountReport;
     }
   }
 

@@ -16,6 +16,7 @@ class ReferredPatientsToolbar extends StatelessWidget {
     super.key,
     required this.totalPatients,
     this.onSearchChanged,
+    this.onSearchSubmitted,
     this.searchQuery = '',
     this.searchMatchCount = 0,
     this.listIsEmpty = false,
@@ -23,6 +24,7 @@ class ReferredPatientsToolbar extends StatelessWidget {
 
   final int totalPatients;
   final ValueChanged<String>? onSearchChanged;
+  final ValueChanged<String>? onSearchSubmitted;
   final String searchQuery;
   final int searchMatchCount;
   final bool listIsEmpty;
@@ -60,6 +62,7 @@ class ReferredPatientsToolbar extends StatelessWidget {
           AppSearchFilterSection(
             searchHint: 'Search by name, CNIC, or phone...',
             onSearchChanged: onSearchChanged,
+            onSearchSubmitted: onSearchSubmitted,
             searchQuery: searchQuery,
             searchMatchCount: searchMatchCount,
             listIsEmpty: listIsEmpty,
