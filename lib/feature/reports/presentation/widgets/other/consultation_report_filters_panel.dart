@@ -41,7 +41,6 @@ class _ConsultationReportFiltersPanelState
     extends State<ConsultationReportFiltersPanel> {
   static const _allConsultants = 'All Consultants';
   static const _allClinics = 'All Clinics';
-  static const _perPageLabels = ['15', '25', '50', '100'];
 
   late String? _fromDateApi;
   late String? _toDateApi;
@@ -83,11 +82,11 @@ class _ConsultationReportFiltersPanelState
   }
 
   void _syncFromQuery(ConsultationReportQuery q) {
-    _fromDateApi = q.fromDate;
-    _toDateApi = q.toDate;
+    _fromDateApi = ReportDateField.orToday(q.fromDate);
+    _toDateApi = ReportDateField.orToday(q.toDate);
     _consultant = _nameForConsultantId(q.consultantId);
     _clinic = _nameForClinicId(q.clinicId);
-    _perPage = q.perPage.toString();
+    _perPage = ConsultationReportPerPage.labelFor(q.perPage);
   }
 
   String _nameForConsultantId(int? id) {
@@ -130,13 +129,19 @@ class _ConsultationReportFiltersPanelState
   }
 
   Future<void> _pickFrom() async {
-    final picked = await ReportDateField.pickDate(context);
+    final picked = await ReportDateField.pickDate(
+      context,
+      currentApiDate: _fromDateApi,
+    );
     if (picked == null) return;
     setState(() => _fromDateApi = _toApiDate(picked));
   }
 
   Future<void> _pickTo() async {
-    final picked = await ReportDateField.pickDate(context);
+    final picked = await ReportDateField.pickDate(
+      context,
+      currentApiDate: _toDateApi,
+    );
     if (picked == null) return;
     setState(() => _toDateApi = _toApiDate(picked));
   }
@@ -161,7 +166,7 @@ class _ConsultationReportFiltersPanelState
       toDate: _toDateApi,
       consultantId: _consultantIdForName(_consultant),
       clinicId: _clinicIdForName(_clinic),
-      perPage: int.tryParse(_perPage) ?? 15,
+      perPage: ConsultationReportPerPage.valueForLabel(_perPage),
       page: 1,
     );
   }
@@ -293,9 +298,13 @@ class _ConsultationReportFiltersPanelState
       compact: true,
       key: ValueKey('cr_per_page_$_resetToken'),
       label: 'Per Page',
-      hintText: '15',
-      items: _perPageLabels,
-      value: _perPage,
+      hintText: ConsultationReportPerPage.defaultSize.toString(),
+      items: ConsultationReportPerPage.dropdownLabels,
+      value: ConsultationReportPerPage.dropdownLabels.contains(_perPage)
+          ? _perPage
+          : ConsultationReportPerPage.labelFor(
+              ConsultationReportPerPage.defaultSize,
+            ),
       onChanged: (v) {
         if (v == null) return;
         setState(() => _perPage = v);

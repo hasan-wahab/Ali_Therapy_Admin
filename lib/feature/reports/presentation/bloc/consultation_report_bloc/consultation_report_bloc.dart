@@ -7,6 +7,7 @@ import 'package:ali_therapy_admin/core/usecase/usecase.dart';
 import 'package:ali_therapy_admin/core/utils/app_search_ranker.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/consultation_report_domain/entities/consultation_report_entity.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/consultation_report_domain/entities/consultation_report_query.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/consultation_report_domain/entities/consultation_report_summary_entity.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/consultation_report_domain/usecases/get_consultation_report_usecase.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/report_filter_options_domain/entities/report_filter_options_entity.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/report_filter_options_domain/usecases/get_report_filter_options_usecase.dart';
@@ -32,6 +33,7 @@ class ConsultationReportBloc
     on<ConsultationReportSearchChanged>(_onSearchChanged);
     on<ConsultationReportSearchSubmitted>(_onSearchSubmitted);
     on<ConsultationReportFiltersApplied>(_onFiltersApplied);
+    on<ConsultationReportStatsToggled>(_onStatsToggled);
   }
 
   final GetConsultationReportUseCase getConsultationReportUseCase;
@@ -145,6 +147,16 @@ class ConsultationReportBloc
     await _reloadList(emit);
   }
 
+  void _onStatsToggled(
+    ConsultationReportStatsToggled event,
+    Emitter<ConsultationReportState> emit,
+  ) {
+    final current = state;
+    if (current is ConsultationReportLoaded) {
+      emit(current.copyWith(showStats: !current.showStats));
+    }
+  }
+
   Future<void> _reloadList(Emitter<ConsultationReportState> emit) async {
     final current = state;
     if (current is ConsultationReportLoaded) {
@@ -172,6 +184,8 @@ class ConsultationReportBloc
         currentPage: s.currentPage,
         lastPage: s.lastPage,
         total: s.total,
+        summary: s.summary,
+        showStats: s.showStats,
         filterOptions: s.filterOptions,
         query: s.query,
       );
@@ -182,11 +196,33 @@ class ConsultationReportBloc
         currentPage: s.currentPage,
         lastPage: s.lastPage,
         total: s.total,
+        summary: s.summary,
+        showStats: s.showStats,
         filterOptions: s.filterOptions,
         query: s.query,
       );
     }
     return _Snapshot(filterOptions: _filterOptions, query: _query);
+  }
+
+  ConsultationReportSummaryEntity _resolvedSummary({
+    required ConsultationReportSummaryEntity incoming,
+    required List<ConsultationReportEntity> rows,
+    required int consultationCount,
+  }) {
+    final fallback = ConsultationReportSummaryEntity.fromRows(
+      rows,
+      consultationCount: consultationCount,
+      clinicNames: [
+        for (final clinic in _filterOptions.clinics) clinic.name,
+      ],
+    );
+    if (incoming.isEmpty) return fallback;
+    if (incoming.clinics.isNotEmpty) return incoming;
+    return ConsultationReportSummaryEntity(
+      totalConsultations: incoming.totalConsultations,
+      clinics: fallback.clinics,
+    );
   }
 
   List<String> _searchFields(ConsultationReportEntity row) => [
@@ -244,6 +280,12 @@ class ConsultationReportBloc
           currentPage: pageData.currentPage,
           lastPage: pageData.lastPage,
           total: pageData.total,
+          summary: _resolvedSummary(
+            incoming: pageData.summary,
+            rows: merged,
+            consultationCount: pageData.total,
+          ),
+          showStats: keepOnError.showStats,
           isLoadingMore: false,
           isRefreshingList: false,
           filterOptions: _filterOptions,
@@ -258,6 +300,8 @@ class ConsultationReportBloc
           currentPage: keepOnError.currentPage,
           lastPage: keepOnError.lastPage,
           total: keepOnError.total,
+          summary: keepOnError.summary,
+          showStats: keepOnError.showStats,
           filterOptions: keepOnError.filterOptions,
           query: keepOnError.query,
         ));
@@ -267,6 +311,8 @@ class ConsultationReportBloc
             currentPage: keepOnError.currentPage,
             lastPage: keepOnError.lastPage,
             total: keepOnError.total,
+            summary: keepOnError.summary,
+            showStats: keepOnError.showStats,
             isLoadingMore: false,
             isRefreshingList: false,
             filterOptions: keepOnError.filterOptions,
@@ -297,6 +343,8 @@ class ConsultationReportBloc
         currentPage: keepOnError.currentPage,
         lastPage: keepOnError.lastPage,
         total: keepOnError.total,
+        summary: keepOnError.summary,
+        showStats: keepOnError.showStats,
         filterOptions: keepOnError.filterOptions,
         query: keepOnError.query,
       ));
@@ -306,6 +354,8 @@ class ConsultationReportBloc
           currentPage: keepOnError.currentPage,
           lastPage: keepOnError.lastPage,
           total: keepOnError.total,
+          summary: keepOnError.summary,
+          showStats: keepOnError.showStats,
           isLoadingMore: false,
           isRefreshingList: false,
           filterOptions: keepOnError.filterOptions,
@@ -321,17 +371,29 @@ class ConsultationReportBloc
     final relatedPage = relatedResult.isSuccess ? relatedResult.data : null;
     final related = relatedPage?.rows ?? <ConsultationReportEntity>[];
 
+    final rankedRows = AppSearchRanker.pinMatchesThenRelated(
+      matches: matches,
+      related: related,
+      query: _query.search,
+      idOf: (row) => row.id,
+      fieldsOf: _searchFields,
+    );
+    final rankedTotal = relatedPage?.total ?? matches.length;
+
     emit(ConsultationReportLoaded(
-      rows: AppSearchRanker.pinMatchesThenRelated(
-        matches: matches,
-        related: related,
-        query: _query.search,
-        idOf: (row) => row.id,
-        fieldsOf: _searchFields,
-      ),
+      rows: rankedRows,
       currentPage: relatedPage?.currentPage ?? 1,
       lastPage: relatedPage?.lastPage ?? 1,
-      total: relatedPage?.total ?? matches.length,
+      total: rankedTotal,
+      summary: _resolvedSummary(
+        incoming: relatedPage?.summary ??
+            (matchResult.isSuccess
+                ? matchResult.data.summary
+                : const ConsultationReportSummaryEntity.empty()),
+        rows: rankedRows,
+        consultationCount: rankedTotal,
+      ),
+      showStats: keepOnError.showStats,
       isLoadingMore: false,
       isRefreshingList: false,
       filterOptions: _filterOptions,
@@ -346,6 +408,8 @@ class _Snapshot {
     this.currentPage = 0,
     this.lastPage = 0,
     this.total = 0,
+    this.summary = const ConsultationReportSummaryEntity.empty(),
+    this.showStats = false,
     this.filterOptions = const ReportFilterOptionsEntity.empty(),
     this.query = const ConsultationReportQuery(),
   });
@@ -354,6 +418,8 @@ class _Snapshot {
   final int currentPage;
   final int lastPage;
   final int total;
+  final ConsultationReportSummaryEntity summary;
+  final bool showStats;
   final ReportFilterOptionsEntity filterOptions;
   final ConsultationReportQuery query;
 }

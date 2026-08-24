@@ -10,10 +10,12 @@ import 'package:ali_therapy_admin/core/widgets/app_shimmer.dart';
 import 'package:ali_therapy_admin/core/widgets/app_tablet_safe_area.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/form/form_back_app_bar.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/discount_report_domain/entities/discount_report_entity.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/discount_report_domain/entities/discount_report_summary_entity.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/bloc/discount_report_bloc/discount_report_bloc.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/discount_report_card_list.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/discount_report_card_skeleton.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/discount_report_search_filter_section.dart';
+import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/discount_report_totals.dart';
 import 'package:ali_therapy_admin/injection.dart';
 
 // ============================================================
@@ -26,6 +28,9 @@ import 'package:ali_therapy_admin/injection.dart';
 class DiscountReportPage extends StatelessWidget {
   const DiscountReportPage({super.key});
 
+  /// Hidden until this report API sends Show Stats.
+  static const bool _showStatsFromApi = false;
+
   static const int _prefetchRemainingCards = 2;
 
   double get _approxCardHeight => 300.h;
@@ -34,6 +39,18 @@ class DiscountReportPage extends StatelessWidget {
     if (state is DiscountReportLoaded) return state.rows;
     if (state is DiscountReportError) return state.rows;
     return const [];
+  }
+
+  DiscountReportSummaryEntity _summaryOf(DiscountReportState state) {
+    if (state is DiscountReportLoaded) return state.summary;
+    if (state is DiscountReportError) return state.summary;
+    return const DiscountReportSummaryEntity.empty();
+  }
+
+  bool _showStatsOf(DiscountReportState state) {
+    if (state is DiscountReportLoaded) return state.showStats;
+    if (state is DiscountReportError) return state.showStats;
+    return false;
   }
 
   bool _isLoading(DiscountReportState state) {
@@ -71,6 +88,21 @@ class DiscountReportPage extends StatelessWidget {
           parent: ClampingScrollPhysics(),
         ),
         slivers: [
+          if (!isFirstLoad && _showStatsFromApi)
+            SliverPadding(
+              padding: EdgeInsets.fromLTRB(hPad, 0, hPad, 12.h),
+              sliver: SliverToBoxAdapter(
+                child: DiscountReportTotals(
+                  summary: _summaryOf(state),
+                  expanded: _showStatsOf(state),
+                  onToggle: () {
+                    context.read<DiscountReportBloc>().add(
+                          const DiscountReportStatsToggled(),
+                        );
+                  },
+                ),
+              ),
+            ),
           SliverPadding(
             padding: EdgeInsets.fromLTRB(hPad, 0, hPad, 8.h),
             sliver: isFirstLoad

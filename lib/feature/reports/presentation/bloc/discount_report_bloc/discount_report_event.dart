@@ -42,6 +42,10 @@ class DiscountReportSearchSubmitted extends DiscountReportEvent {
   List<Object?> get props => [search];
 }
 
+class DiscountReportStatsToggled extends DiscountReportEvent {
+  const DiscountReportStatsToggled();
+}
+
 class DiscountReportFiltersApplied extends DiscountReportEvent {
   const DiscountReportFiltersApplied({
     this.clinicId,
@@ -50,6 +54,7 @@ class DiscountReportFiltersApplied extends DiscountReportEvent {
     this.fromDate,
     this.toDate,
     this.discountPercent,
+    this.perPage,
     this.clearClinicId = false,
     this.clearConsultantId = false,
     this.clearReceptionistId = false,
@@ -65,6 +70,7 @@ class DiscountReportFiltersApplied extends DiscountReportEvent {
   final String? fromDate;
   final String? toDate;
   final int? discountPercent;
+  final int? perPage;
   final bool clearClinicId;
   final bool clearConsultantId;
   final bool clearReceptionistId;
@@ -81,6 +87,7 @@ class DiscountReportFiltersApplied extends DiscountReportEvent {
         fromDate,
         toDate,
         discountPercent,
+        perPage,
         clearClinicId,
         clearConsultantId,
         clearReceptionistId,

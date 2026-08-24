@@ -46,6 +46,7 @@ class AllEmployeesPage extends StatelessWidget {
       return state.isRefreshingList ||
           state.isLoadingMore ||
           state.terminatingEmployeeId != null ||
+          state.deletingEmployeeId != null ||
           state.changingPasswordEmployeeId != null ||
           state.assigningDeviceEmployeeId != null ||
           state.assigningBiometricEmployeeId != null;
@@ -167,6 +168,9 @@ class AllEmployeesPage extends StatelessWidget {
           final isTerminating =
               state is AllEmployeesLoaded &&
               state.terminatingEmployeeId != null;
+          final isDeleting =
+              state is AllEmployeesLoaded &&
+              state.deletingEmployeeId != null;
           final isChangingPassword =
               state is AllEmployeesLoaded &&
               state.changingPasswordEmployeeId != null;
@@ -187,6 +191,11 @@ class AllEmployeesPage extends StatelessWidget {
                   if (isTerminating)
                     const AppLoadingOverlay(
                       message: 'Terminating...',
+                      subtitle: 'Please wait',
+                    )
+                  else if (isDeleting)
+                    const AppLoadingOverlay(
+                      message: 'Deleting...',
                       subtitle: 'Please wait',
                     )
                   else if (isChangingPassword)

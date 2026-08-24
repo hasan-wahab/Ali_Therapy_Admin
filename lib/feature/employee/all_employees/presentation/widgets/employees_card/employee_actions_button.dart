@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_sizes.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
+import 'package:ali_therapy_admin/core/utils/app_permission.dart';
 import 'package:ali_therapy_admin/feature/employee/all_employees/presentation/widgets/employees_card/employee_action_type.dart';
 
 // ============================================================
@@ -28,6 +29,60 @@ class EmployeeActionsButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final items = <PopupMenuItem<EmployeeActionType>>[
+      if (AppPermission.canViewEmployeeProfile)
+        _menuItem(
+          type: EmployeeActionType.view,
+          icon: Icons.visibility_outlined,
+          label: 'View',
+          color: AppColors.primary,
+        ),
+      if (AppPermission.canEditEmployee)
+        _menuItem(
+          type: EmployeeActionType.edit,
+          icon: Icons.edit_square,
+          label: 'Edit',
+          color: _editColor,
+        ),
+      if (AppPermission.canManageEmployee)
+        _menuItem(
+          type: EmployeeActionType.terminate,
+          icon: Icons.warning_amber_rounded,
+          label: 'Terminate Employee',
+          color: _terminateColor,
+        ),
+      if (AppPermission.canChangeEmployeePassword)
+        _menuItem(
+          type: EmployeeActionType.changePassword,
+          icon: Icons.vpn_key_outlined,
+          label: 'Change Password',
+          color: _passwordColor,
+        ),
+      if (AppPermission.canManageEmployee)
+        _menuItem(
+          type: EmployeeActionType.assignDeviceId,
+          icon: Icons.smartphone_outlined,
+          label: 'Assign Device ID',
+          color: _assignColor,
+        ),
+      if (AppPermission.canManageEmployee)
+        _menuItem(
+          type: EmployeeActionType.assignBiometricId,
+          icon: Icons.fingerprint,
+          label: 'Assign Biometric ID',
+          color: _assignColor,
+        ),
+      if (AppPermission.canDeleteEmployee)
+        _menuItem(
+          type: EmployeeActionType.delete,
+          icon: Icons.delete_outline_rounded,
+          label: 'Delete',
+          color: _deleteColor,
+        ),
+    ];
+
+    if (items.isEmpty) return const SizedBox.shrink();
+
     return PopupMenuButton<EmployeeActionType>(
       onSelected: onSelected,
       offset: Offset(0, 6.h),
@@ -39,50 +94,7 @@ class EmployeeActionsButton extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.r),
       ),
-      itemBuilder: (context) => [
-        _menuItem(
-          type: EmployeeActionType.view,
-          icon: Icons.visibility_outlined,
-          label: 'View',
-          color: AppColors.primary,
-        ),
-        _menuItem(
-          type: EmployeeActionType.edit,
-          icon: Icons.edit_square,
-          label: 'Edit',
-          color: _editColor,
-        ),
-        _menuItem(
-          type: EmployeeActionType.terminate,
-          icon: Icons.warning_amber_rounded,
-          label: 'Terminate Employee',
-          color: _terminateColor,
-        ),
-        _menuItem(
-          type: EmployeeActionType.changePassword,
-          icon: Icons.vpn_key_outlined,
-          label: 'Change Password',
-          color: _passwordColor,
-        ),
-        _menuItem(
-          type: EmployeeActionType.assignDeviceId,
-          icon: Icons.smartphone_outlined,
-          label: 'Assign Device ID',
-          color: _assignColor,
-        ),
-        _menuItem(
-          type: EmployeeActionType.assignBiometricId,
-          icon: Icons.fingerprint,
-          label: 'Assign Biometric ID',
-          color: _assignColor,
-        ),
-        _menuItem(
-          type: EmployeeActionType.delete,
-          icon: Icons.delete_outline_rounded,
-          label: 'Delete',
-          color: _deleteColor,
-        ),
-      ],
+      itemBuilder: (context) => items,
       child: Container(
         height: 30.h,
         padding: EdgeInsets.symmetric(horizontal: 10.w),

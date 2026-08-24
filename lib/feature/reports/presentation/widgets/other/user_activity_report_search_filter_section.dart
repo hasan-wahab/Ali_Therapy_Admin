@@ -66,13 +66,7 @@ class UserActivityReportSearchFilterSection extends StatelessWidget {
           searchMatchCount: AppSearchRanker.matchCount(
             items: rows,
             query: query.search,
-            fieldsOf: (row) => [
-              row.patientName,
-              row.patientCnic,
-              row.packageName,
-              row.invoiceType,
-              row.paymentMethod,
-            ],
+            fieldsOf: (row) => row.searchFields,
           ),
           listIsEmpty: rows.isEmpty,
           isSearchBusy: _isBusy(state),

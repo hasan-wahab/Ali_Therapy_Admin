@@ -7,6 +7,7 @@ import 'package:ali_therapy_admin/core/usecase/usecase.dart';
 import 'package:ali_therapy_admin/core/utils/app_search_ranker.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/free_consultation_report_domain/entities/free_consultation_report_entity.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/free_consultation_report_domain/entities/free_consultation_report_query.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/free_consultation_report_domain/entities/free_consultation_report_summary_entity.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/free_consultation_report_domain/usecases/get_free_consultation_report_usecase.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/report_filter_options_domain/entities/report_filter_options_entity.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/report_filter_options_domain/usecases/get_report_filter_options_usecase.dart';
@@ -32,6 +33,7 @@ class FreeConsultationReportBloc
     on<FreeConsultationReportSearchChanged>(_onSearchChanged);
     on<FreeConsultationReportSearchSubmitted>(_onSearchSubmitted);
     on<FreeConsultationReportFiltersApplied>(_onFiltersApplied);
+    on<FreeConsultationReportStatsToggled>(_onStatsToggled);
   }
 
   final GetFreeConsultationReportUseCase getFreeConsultationReportUseCase;
@@ -145,6 +147,16 @@ class FreeConsultationReportBloc
     await _reloadList(emit);
   }
 
+  void _onStatsToggled(
+    FreeConsultationReportStatsToggled event,
+    Emitter<FreeConsultationReportState> emit,
+  ) {
+    final current = state;
+    if (current is FreeConsultationReportLoaded) {
+      emit(current.copyWith(showStats: !current.showStats));
+    }
+  }
+
   Future<void> _reloadList(Emitter<FreeConsultationReportState> emit) async {
     final current = state;
     if (current is FreeConsultationReportLoaded) {
@@ -172,6 +184,8 @@ class FreeConsultationReportBloc
         currentPage: s.currentPage,
         lastPage: s.lastPage,
         total: s.total,
+        summary: s.summary,
+        showStats: s.showStats,
         filterOptions: s.filterOptions,
         query: s.query,
       );
@@ -182,6 +196,8 @@ class FreeConsultationReportBloc
         currentPage: s.currentPage,
         lastPage: s.lastPage,
         total: s.total,
+        summary: s.summary,
+        showStats: s.showStats,
         filterOptions: s.filterOptions,
         query: s.query,
       );
@@ -189,13 +205,31 @@ class FreeConsultationReportBloc
     return _Snapshot(filterOptions: _filterOptions, query: _query);
   }
 
+  FreeConsultationReportSummaryEntity _resolvedSummary({
+    required FreeConsultationReportSummaryEntity incoming,
+    required List<FreeConsultationReportEntity> rows,
+    required int freeConsultationCount,
+  }) {
+    final fallback = FreeConsultationReportSummaryEntity.fromRows(
+      rows,
+      freeConsultationCount: freeConsultationCount,
+      clinicNames: [for (final clinic in _filterOptions.clinics) clinic.name],
+    );
+    if (incoming.isEmpty) return fallback;
+    if (incoming.clinics.isNotEmpty) return incoming;
+    return FreeConsultationReportSummaryEntity(
+      totalFreeConsultations: incoming.totalFreeConsultations,
+      clinics: fallback.clinics,
+    );
+  }
+
   List<String> _searchFields(FreeConsultationReportEntity row) => [
-        row.patientName,
-        row.patientPhone,
-        row.patientCnic,
-        row.consultantName,
-        row.clinicName,
-      ];
+    row.patientName,
+    row.patientPhone,
+    row.patientCnic,
+    row.consultantName,
+    row.clinicName,
+  ];
 
   Future<void> _loadPage(
     Emitter<FreeConsultationReportState> emit, {
@@ -235,39 +269,55 @@ class FreeConsultationReportBloc
           );
         }
 
-        emit(FreeConsultationReportLoaded(
-          rows: merged,
-          currentPage: pageData.currentPage,
-          lastPage: pageData.lastPage,
-          total: pageData.total,
-          isLoadingMore: false,
-          isRefreshingList: false,
-          filterOptions: _filterOptions,
-          query: _query,
-        ));
+        emit(
+          FreeConsultationReportLoaded(
+            rows: merged,
+            currentPage: pageData.currentPage,
+            lastPage: pageData.lastPage,
+            total: pageData.total,
+            summary: _resolvedSummary(
+              incoming: pageData.summary,
+              rows: merged,
+              freeConsultationCount: pageData.total,
+            ),
+            showStats: keepOnError.showStats,
+            isLoadingMore: false,
+            isRefreshingList: false,
+            filterOptions: _filterOptions,
+            query: _query,
+          ),
+        );
       },
       failure: (failure) {
-        emit(FreeConsultationReportError(
-          title: failure.title,
-          message: failure.message,
-          rows: keepOnError.rows,
-          currentPage: keepOnError.currentPage,
-          lastPage: keepOnError.lastPage,
-          total: keepOnError.total,
-          filterOptions: keepOnError.filterOptions,
-          query: keepOnError.query,
-        ));
-        if (keepOnError.rows.isNotEmpty) {
-          emit(FreeConsultationReportLoaded(
+        emit(
+          FreeConsultationReportError(
+            title: failure.title,
+            message: failure.message,
             rows: keepOnError.rows,
             currentPage: keepOnError.currentPage,
             lastPage: keepOnError.lastPage,
             total: keepOnError.total,
-            isLoadingMore: false,
-            isRefreshingList: false,
+            summary: keepOnError.summary,
+            showStats: keepOnError.showStats,
             filterOptions: keepOnError.filterOptions,
             query: keepOnError.query,
-          ));
+          ),
+        );
+        if (keepOnError.rows.isNotEmpty) {
+          emit(
+            FreeConsultationReportLoaded(
+              rows: keepOnError.rows,
+              currentPage: keepOnError.currentPage,
+              lastPage: keepOnError.lastPage,
+              total: keepOnError.total,
+              summary: keepOnError.summary,
+              showStats: keepOnError.showStats,
+              isLoadingMore: false,
+              isRefreshingList: false,
+              filterOptions: keepOnError.filterOptions,
+              query: keepOnError.query,
+            ),
+          );
         }
       },
     );
@@ -286,27 +336,35 @@ class FreeConsultationReportBloc
 
     if (matchResult.isFailure && relatedResult.isFailure) {
       final failure = matchResult.failure;
-      emit(FreeConsultationReportError(
-        title: failure.title,
-        message: failure.message,
-        rows: keepOnError.rows,
-        currentPage: keepOnError.currentPage,
-        lastPage: keepOnError.lastPage,
-        total: keepOnError.total,
-        filterOptions: keepOnError.filterOptions,
-        query: keepOnError.query,
-      ));
-      if (keepOnError.rows.isNotEmpty) {
-        emit(FreeConsultationReportLoaded(
+      emit(
+        FreeConsultationReportError(
+          title: failure.title,
+          message: failure.message,
           rows: keepOnError.rows,
           currentPage: keepOnError.currentPage,
           lastPage: keepOnError.lastPage,
           total: keepOnError.total,
-          isLoadingMore: false,
-          isRefreshingList: false,
+          summary: keepOnError.summary,
+          showStats: keepOnError.showStats,
           filterOptions: keepOnError.filterOptions,
           query: keepOnError.query,
-        ));
+        ),
+      );
+      if (keepOnError.rows.isNotEmpty) {
+        emit(
+          FreeConsultationReportLoaded(
+            rows: keepOnError.rows,
+            currentPage: keepOnError.currentPage,
+            lastPage: keepOnError.lastPage,
+            total: keepOnError.total,
+            summary: keepOnError.summary,
+            showStats: keepOnError.showStats,
+            isLoadingMore: false,
+            isRefreshingList: false,
+            filterOptions: keepOnError.filterOptions,
+            query: keepOnError.query,
+          ),
+        );
       }
       return;
     }
@@ -317,22 +375,37 @@ class FreeConsultationReportBloc
     final relatedPage = relatedResult.isSuccess ? relatedResult.data : null;
     final related = relatedPage?.rows ?? <FreeConsultationReportEntity>[];
 
-    emit(FreeConsultationReportLoaded(
-      rows: AppSearchRanker.pinMatchesThenRelated(
-        matches: matches,
-        related: related,
-        query: _query.search,
-        idOf: (row) => row.id,
-        fieldsOf: _searchFields,
+    final rankedRows = AppSearchRanker.pinMatchesThenRelated(
+      matches: matches,
+      related: related,
+      query: _query.search,
+      idOf: (row) => row.id,
+      fieldsOf: _searchFields,
+    );
+    final rankedTotal = relatedPage?.total ?? matches.length;
+
+    emit(
+      FreeConsultationReportLoaded(
+        rows: rankedRows,
+        currentPage: relatedPage?.currentPage ?? 1,
+        lastPage: relatedPage?.lastPage ?? 1,
+        total: rankedTotal,
+        summary: _resolvedSummary(
+          incoming:
+              relatedPage?.summary ??
+              (matchResult.isSuccess
+                  ? matchResult.data.summary
+                  : const FreeConsultationReportSummaryEntity.empty()),
+          rows: rankedRows,
+          freeConsultationCount: rankedTotal,
+        ),
+        showStats: keepOnError.showStats,
+        isLoadingMore: false,
+        isRefreshingList: false,
+        filterOptions: _filterOptions,
+        query: _query,
       ),
-      currentPage: relatedPage?.currentPage ?? 1,
-      lastPage: relatedPage?.lastPage ?? 1,
-      total: relatedPage?.total ?? matches.length,
-      isLoadingMore: false,
-      isRefreshingList: false,
-      filterOptions: _filterOptions,
-      query: _query,
-    ));
+    );
   }
 }
 
@@ -342,6 +415,8 @@ class _Snapshot {
     this.currentPage = 0,
     this.lastPage = 0,
     this.total = 0,
+    this.summary = const FreeConsultationReportSummaryEntity.empty(),
+    this.showStats = false,
     this.filterOptions = const ReportFilterOptionsEntity.empty(),
     this.query = const FreeConsultationReportQuery(),
   });
@@ -350,6 +425,8 @@ class _Snapshot {
   final int currentPage;
   final int lastPage;
   final int total;
+  final FreeConsultationReportSummaryEntity summary;
+  final bool showStats;
   final ReportFilterOptionsEntity filterOptions;
   final FreeConsultationReportQuery query;
 }

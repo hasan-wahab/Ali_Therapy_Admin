@@ -112,6 +112,7 @@ class ReferByReportBloc extends Bloc<ReferByReportEvent, ReferByReportState> {
         clinicId: event.clinicId,
         receptionistId: event.receptionistId,
         referralType: event.referralType,
+        perPage: event.perPage,
         clearFromDate: event.clearFromDate,
         clearToDate: event.clearToDate,
         clearClinicId: event.clearClinicId,

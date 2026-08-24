@@ -20,6 +20,14 @@ class Helpers {
     return DateFormat(pattern).format(date);
   }
 
+  /// Today's date as yyyy-MM-dd (API / filter draft).
+  static String todayApiDate() =>
+      formatDate(DateTime.now(), pattern: 'yyyy-MM-dd');
+
+  /// Today's date as MM/dd/yyyy (filter display).
+  static String todayDisplayDate() =>
+      formatDate(DateTime.now(), pattern: 'MM/dd/yyyy');
+
   /// Format date + time.
   /// Example: 06 Aug 2026, 03:30 PM
   static String formatDateTime(

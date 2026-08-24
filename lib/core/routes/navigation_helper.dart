@@ -116,8 +116,11 @@ class AppNavigation {
     context.push(AppRoutes.consultantDetails);
   }
 
-  static void openEditEmployee(BuildContext context) {
-    context.push(AppRoutes.editEmployee);
+  static void openEditEmployee(
+    BuildContext context, {
+    required String employeeId,
+  }) {
+    context.push(AppRoutes.editEmployee, extra: employeeId);
   }
 
   static void openPatientDues(BuildContext context) {

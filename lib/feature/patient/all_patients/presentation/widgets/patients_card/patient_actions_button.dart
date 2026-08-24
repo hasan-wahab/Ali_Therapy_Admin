@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_sizes.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
+import 'package:ali_therapy_admin/core/utils/app_permission.dart';
 import 'package:ali_therapy_admin/feature/patient/all_patients/presentation/widgets/patients_card/patient_action_type.dart';
 
 // ============================================================
@@ -24,6 +25,35 @@ class PatientActionsButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final items = <PopupMenuEntry<PatientActionType>>[
+      if (AppPermission.canViewPatients)
+        _menuItem(
+          type: PatientActionType.view,
+          icon: Icons.visibility_outlined,
+          label: 'View',
+          color: AppColors.primary,
+        ),
+      if (AppPermission.canEditPatient)
+        _menuItem(
+          type: PatientActionType.edit,
+          icon: Icons.edit_note_rounded,
+          label: 'Edit',
+          color: AppColors.primary,
+        ),
+      if (AppPermission.canDeletePatient &&
+          (AppPermission.canViewPatients || AppPermission.canEditPatient))
+        const PopupMenuDivider(height: 1),
+      if (AppPermission.canDeletePatient)
+        _menuItem(
+          type: PatientActionType.delete,
+          icon: Icons.delete_outline_rounded,
+          label: 'Delete',
+          color: _deleteColor,
+        ),
+    ];
+
+    if (items.isEmpty) return const SizedBox.shrink();
+
     return PopupMenuButton<PatientActionType>(
       onSelected: onSelected,
       offset: Offset(0, 6.h),
@@ -34,27 +64,7 @@ class PatientActionsButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(12.r),
         side: const BorderSide(color: AppColors.border),
       ),
-      itemBuilder: (context) => [
-        _menuItem(
-          type: PatientActionType.view,
-          icon: Icons.visibility_outlined,
-          label: 'View',
-          color: AppColors.primary,
-        ),
-        _menuItem(
-          type: PatientActionType.edit,
-          icon: Icons.edit_note_rounded,
-          label: 'Edit',
-          color: AppColors.primary,
-        ),
-        const PopupMenuDivider(height: 1),
-        _menuItem(
-          type: PatientActionType.delete,
-          icon: Icons.delete_outline_rounded,
-          label: 'Delete',
-          color: _deleteColor,
-        ),
-      ],
+      itemBuilder: (context) => items,
       child: Container(
         height: 30.h,
         padding: EdgeInsets.symmetric(horizontal: 10.w),

@@ -10,10 +10,12 @@ import 'package:ali_therapy_admin/core/widgets/app_shimmer.dart';
 import 'package:ali_therapy_admin/core/widgets/app_tablet_safe_area.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/form/form_back_app_bar.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/in_progress_sessions_domain/entities/in_progress_sessions_entity.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/in_progress_sessions_domain/entities/in_progress_sessions_summary_entity.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/bloc/in_progress_sessions_bloc/in_progress_sessions_bloc.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/in_progress_sessions_card_list.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/in_progress_sessions_card_skeleton.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/in_progress_sessions_search_filter_section.dart';
+import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/in_progress_sessions_totals.dart';
 import 'package:ali_therapy_admin/injection.dart';
 
 // ============================================================
@@ -26,6 +28,9 @@ import 'package:ali_therapy_admin/injection.dart';
 class InProgressSessionsPage extends StatelessWidget {
   const InProgressSessionsPage({super.key});
 
+  /// Hidden until this report API sends Show Stats.
+  static const bool _showStatsFromApi = false;
+
   static const int _prefetchRemainingCards = 2;
 
   double get _approxCardHeight => 280.h;
@@ -34,6 +39,18 @@ class InProgressSessionsPage extends StatelessWidget {
     if (state is InProgressSessionsLoaded) return state.rows;
     if (state is InProgressSessionsError) return state.rows;
     return const [];
+  }
+
+  InProgressSessionsSummaryEntity _summaryOf(InProgressSessionsState state) {
+    if (state is InProgressSessionsLoaded) return state.summary;
+    if (state is InProgressSessionsError) return state.summary;
+    return const InProgressSessionsSummaryEntity.empty();
+  }
+
+  bool _showStatsOf(InProgressSessionsState state) {
+    if (state is InProgressSessionsLoaded) return state.showStats;
+    if (state is InProgressSessionsError) return state.showStats;
+    return false;
   }
 
   bool _isLoading(InProgressSessionsState state) {
@@ -74,6 +91,21 @@ class InProgressSessionsPage extends StatelessWidget {
           parent: ClampingScrollPhysics(),
         ),
         slivers: [
+          if (!isFirstLoad && _showStatsFromApi)
+            SliverPadding(
+              padding: EdgeInsets.fromLTRB(hPad, 0, hPad, 12.h),
+              sliver: SliverToBoxAdapter(
+                child: InProgressSessionsTotals(
+                  summary: _summaryOf(state),
+                  expanded: _showStatsOf(state),
+                  onToggle: () {
+                    context.read<InProgressSessionsBloc>().add(
+                          const InProgressSessionsStatsToggled(),
+                        );
+                  },
+                ),
+              ),
+            ),
           SliverPadding(
             padding: EdgeInsets.fromLTRB(hPad, 0, hPad, 8.h),
             sliver: isFirstLoad

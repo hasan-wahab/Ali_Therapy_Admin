@@ -7,6 +7,7 @@ import 'package:ali_therapy_admin/core/usecase/usecase.dart';
 import 'package:ali_therapy_admin/core/utils/app_search_ranker.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/receptionist_report_domain/entities/receptionist_report_entity.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/receptionist_report_domain/entities/receptionist_report_query.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/receptionist_report_domain/entities/receptionist_report_summary_entity.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/receptionist_report_domain/usecases/get_receptionist_report_usecase.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/report_filter_options_domain/entities/report_filter_options_entity.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/report_filter_options_domain/usecases/get_report_filter_options_usecase.dart';
@@ -32,6 +33,7 @@ class ReceptionistReportBloc
     on<ReceptionistReportSearchChanged>(_onSearchChanged);
     on<ReceptionistReportSearchSubmitted>(_onSearchSubmitted);
     on<ReceptionistReportFiltersApplied>(_onFiltersApplied);
+    on<ReceptionistReportStatsToggled>(_onStatsToggled);
   }
 
   final GetReceptionistReportUseCase getReceptionistReportUseCase;
@@ -145,6 +147,16 @@ class ReceptionistReportBloc
     await _reloadList(emit);
   }
 
+  void _onStatsToggled(
+    ReceptionistReportStatsToggled event,
+    Emitter<ReceptionistReportState> emit,
+  ) {
+    final current = state;
+    if (current is ReceptionistReportLoaded) {
+      emit(current.copyWith(showStats: !current.showStats));
+    }
+  }
+
   Future<void> _reloadList(Emitter<ReceptionistReportState> emit) async {
     final current = state;
     if (current is ReceptionistReportLoaded) {
@@ -172,6 +184,8 @@ class ReceptionistReportBloc
         currentPage: s.currentPage,
         lastPage: s.lastPage,
         total: s.total,
+        summary: s.summary,
+        showStats: s.showStats,
         filterOptions: s.filterOptions,
         query: s.query,
       );
@@ -182,11 +196,33 @@ class ReceptionistReportBloc
         currentPage: s.currentPage,
         lastPage: s.lastPage,
         total: s.total,
+        summary: s.summary,
+        showStats: s.showStats,
         filterOptions: s.filterOptions,
         query: s.query,
       );
     }
     return _Snapshot(filterOptions: _filterOptions, query: _query);
+  }
+
+  ReceptionistReportSummaryEntity _resolvedSummary({
+    required ReceptionistReportSummaryEntity incoming,
+    required List<ReceptionistReportEntity> rows,
+    required int visitCount,
+  }) {
+    final fallback = ReceptionistReportSummaryEntity.fromRows(
+      rows,
+      visitCount: visitCount,
+      clinicNames: [
+        for (final clinic in _filterOptions.clinics) clinic.name,
+      ],
+    );
+    if (incoming.isEmpty) return fallback;
+    if (incoming.clinics.isNotEmpty) return incoming;
+    return ReceptionistReportSummaryEntity(
+      totalVisits: incoming.totalVisits,
+      clinics: fallback.clinics,
+    );
   }
 
   List<String> _searchFields(ReceptionistReportEntity row) => [
@@ -240,6 +276,12 @@ class ReceptionistReportBloc
           currentPage: pageData.currentPage,
           lastPage: pageData.lastPage,
           total: pageData.total,
+          summary: _resolvedSummary(
+            incoming: pageData.summary,
+            rows: merged,
+            visitCount: pageData.total,
+          ),
+          showStats: keepOnError.showStats,
           isLoadingMore: false,
           isRefreshingList: false,
           filterOptions: _filterOptions,
@@ -254,6 +296,8 @@ class ReceptionistReportBloc
           currentPage: keepOnError.currentPage,
           lastPage: keepOnError.lastPage,
           total: keepOnError.total,
+          summary: keepOnError.summary,
+          showStats: keepOnError.showStats,
           filterOptions: keepOnError.filterOptions,
           query: keepOnError.query,
         ));
@@ -263,6 +307,8 @@ class ReceptionistReportBloc
             currentPage: keepOnError.currentPage,
             lastPage: keepOnError.lastPage,
             total: keepOnError.total,
+            summary: keepOnError.summary,
+            showStats: keepOnError.showStats,
             isLoadingMore: false,
             isRefreshingList: false,
             filterOptions: keepOnError.filterOptions,
@@ -293,6 +339,8 @@ class ReceptionistReportBloc
         currentPage: keepOnError.currentPage,
         lastPage: keepOnError.lastPage,
         total: keepOnError.total,
+        summary: keepOnError.summary,
+        showStats: keepOnError.showStats,
         filterOptions: keepOnError.filterOptions,
         query: keepOnError.query,
       ));
@@ -302,6 +350,8 @@ class ReceptionistReportBloc
           currentPage: keepOnError.currentPage,
           lastPage: keepOnError.lastPage,
           total: keepOnError.total,
+          summary: keepOnError.summary,
+          showStats: keepOnError.showStats,
           isLoadingMore: false,
           isRefreshingList: false,
           filterOptions: keepOnError.filterOptions,
@@ -317,17 +367,29 @@ class ReceptionistReportBloc
     final relatedPage = relatedResult.isSuccess ? relatedResult.data : null;
     final related = relatedPage?.rows ?? <ReceptionistReportEntity>[];
 
+    final rankedRows = AppSearchRanker.pinMatchesThenRelated(
+      matches: matches,
+      related: related,
+      query: _query.search,
+      idOf: (row) => row.id,
+      fieldsOf: _searchFields,
+    );
+    final rankedTotal = relatedPage?.total ?? matches.length;
+
     emit(ReceptionistReportLoaded(
-      rows: AppSearchRanker.pinMatchesThenRelated(
-        matches: matches,
-        related: related,
-        query: _query.search,
-        idOf: (row) => row.id,
-        fieldsOf: _searchFields,
-      ),
+      rows: rankedRows,
       currentPage: relatedPage?.currentPage ?? 1,
       lastPage: relatedPage?.lastPage ?? 1,
-      total: relatedPage?.total ?? matches.length,
+      total: rankedTotal,
+      summary: _resolvedSummary(
+        incoming: relatedPage?.summary ??
+            (matchResult.isSuccess
+                ? matchResult.data.summary
+                : const ReceptionistReportSummaryEntity.empty()),
+        rows: rankedRows,
+        visitCount: rankedTotal,
+      ),
+      showStats: keepOnError.showStats,
       isLoadingMore: false,
       isRefreshingList: false,
       filterOptions: _filterOptions,
@@ -342,6 +404,8 @@ class _Snapshot {
     this.currentPage = 0,
     this.lastPage = 0,
     this.total = 0,
+    this.summary = const ReceptionistReportSummaryEntity.empty(),
+    this.showStats = false,
     this.filterOptions = const ReportFilterOptionsEntity.empty(),
     this.query = const ReceptionistReportQuery(),
   });
@@ -350,6 +414,8 @@ class _Snapshot {
   final int currentPage;
   final int lastPage;
   final int total;
+  final ReceptionistReportSummaryEntity summary;
+  final bool showStats;
   final ReportFilterOptionsEntity filterOptions;
   final ReceptionistReportQuery query;
 }

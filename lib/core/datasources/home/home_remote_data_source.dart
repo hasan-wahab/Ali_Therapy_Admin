@@ -1,10 +1,14 @@
+import 'package:ali_therapy_admin/feature/home/data/home_data/models/dashboard_model.dart';
+import 'package:ali_therapy_admin/feature/home/domain/home_domain/entities/dashboard_overview_query.dart';
+
 // ============================================================
 // HOME REMOTE DATA SOURCE (contract)
 // ------------------------------------------------------------
-// Lives in core/datasources/home/
-// Talks to the API. Throws AppException on errors.
+// GET /api/admin/dashboard/overview
 // ============================================================
 
 abstract class HomeRemoteDataSource {
-  // TODO: add API methods, e.g. Future<Map<String, dynamic>> fetch...();
+  Future<DashboardModel> getOverview({
+    required DashboardOverviewQuery query,
+  });
 }

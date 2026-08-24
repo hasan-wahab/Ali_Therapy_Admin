@@ -6,6 +6,41 @@ import 'package:equatable/equatable.dart';
 // All query params for GET /api/admin/reports/assistant-manager
 // ============================================================
 
+/// Per-page dropdown (matches the web assistant manager report).
+class AssistantManagerReportPerPage {
+  AssistantManagerReportPerPage._();
+
+  static const int defaultSize = 10;
+
+  /// Large page size when user picks "All".
+  static const int all = 10000;
+
+  static const String allLabel = 'All';
+
+  static List<String> get dropdownLabels => [
+        '10',
+        '25',
+        '50',
+        '100',
+        '250',
+        '500',
+        '1,000',
+        allLabel,
+      ];
+
+  static String labelFor(int perPage) {
+    if (perPage >= all) return allLabel;
+    if (perPage == 1000) return '1,000';
+    return perPage.toString();
+  }
+
+  static int valueForLabel(String label) {
+    if (label == allLabel) return all;
+    final normalized = label.replaceAll(',', '');
+    return int.tryParse(normalized) ?? defaultSize;
+  }
+}
+
 class AssistantManagerReportQuery extends Equatable {
   const AssistantManagerReportQuery({
     this.search = '',
@@ -13,7 +48,7 @@ class AssistantManagerReportQuery extends Equatable {
     this.toDate,
     this.assistantManagerId,
     this.clinicId,
-    this.perPage = 15,
+    this.perPage = AssistantManagerReportPerPage.defaultSize,
     this.page = 1,
   });
 
@@ -64,10 +99,11 @@ class AssistantManagerReportQuery extends Equatable {
       clinicId != null;
 
   Map<String, dynamic> toQueryParameters() {
-    final params = <String, dynamic>{
-      'page': page,
-      'per_page': perPage,
-    };
+    final params = <String, dynamic>{};
+    if (page > 1) params['page'] = page;
+    if (perPage != AssistantManagerReportPerPage.defaultSize) {
+      params['per_page'] = perPage;
+    }
     final s = search.trim();
     if (s.isNotEmpty) params['search'] = s;
     if (fromDate != null) params['from_date'] = fromDate;

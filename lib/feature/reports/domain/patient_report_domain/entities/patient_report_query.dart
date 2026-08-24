@@ -6,6 +6,40 @@ import 'package:equatable/equatable.dart';
 // All query params for GET /api/admin/reports/patient-report
 // ============================================================
 
+/// Per-page dropdown (matches the web patient report).
+class PatientReportPerPage {
+  PatientReportPerPage._();
+
+  static const int defaultSize = 15;
+
+  /// Large page size when user picks "All".
+  static const int all = 10000;
+
+  static const String allLabel = 'All';
+
+  static List<String> get dropdownLabels => [
+        '15',
+        '50',
+        '100',
+        '250',
+        '500',
+        '1,000',
+        allLabel,
+      ];
+
+  static String labelFor(int perPage) {
+    if (perPage >= all) return allLabel;
+    if (perPage == 1000) return '1,000';
+    return perPage.toString();
+  }
+
+  static int valueForLabel(String label) {
+    if (label == allLabel) return all;
+    final normalized = label.replaceAll(',', '');
+    return int.tryParse(normalized) ?? defaultSize;
+  }
+}
+
 class PatientReportQuery extends Equatable {
   const PatientReportQuery({
     this.search = '',
@@ -16,7 +50,7 @@ class PatientReportQuery extends Equatable {
     this.therapistId,
     this.assistantManagerId,
     this.receptionistId,
-    this.perPage = 15,
+    this.perPage = PatientReportPerPage.defaultSize,
     this.page = 1,
   });
 
@@ -85,10 +119,11 @@ class PatientReportQuery extends Equatable {
       receptionistId != null;
 
   Map<String, dynamic> toQueryParameters() {
-    final params = <String, dynamic>{
-      'page': page,
-      'per_page': perPage,
-    };
+    final params = <String, dynamic>{};
+    if (page > 1) params['page'] = page;
+    if (perPage != PatientReportPerPage.defaultSize) {
+      params['per_page'] = perPage;
+    }
     final s = search.trim();
     if (s.isNotEmpty) params['search'] = s;
     if (fromDate != null) params['from_date'] = fromDate;

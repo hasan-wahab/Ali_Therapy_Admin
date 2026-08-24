@@ -27,6 +27,8 @@ class AppDropdownField extends StatefulWidget {
     this.enableSearch = false,
     this.searchHintText = 'Search...',
     this.compact = false,
+    this.hasError = false,
+    this.enabled = true,
   });
 
   final String? label;
@@ -42,6 +44,12 @@ class AppDropdownField extends StatefulWidget {
 
   /// Smaller height / gaps for filter panels.
   final bool compact;
+
+  /// Red border only — used by edit-employee step validation.
+  final bool hasError;
+
+  /// When false, the menu stays closed (select clinic before room).
+  final bool enabled;
 
   @override
   State<AppDropdownField> createState() => _AppDropdownFieldState();
@@ -63,7 +71,7 @@ class _AppDropdownFieldState extends State<AppDropdownField> {
   @override
   void didUpdateWidget(covariant AppDropdownField oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.value != oldWidget.value) {
+    if (widget.value != oldWidget.value || widget.items != oldWidget.items) {
       final next = widget.value != null && widget.items.contains(widget.value)
           ? widget.value
           : null;
@@ -84,30 +92,45 @@ class _AppDropdownFieldState extends State<AppDropdownField> {
     final textStyle = compact ? AppTextStyles.bodySmall : AppTextStyles.body;
     final iconSize = compact ? AppSizes.iconMd : AppSizes.iconLg;
     final radius = compact ? 10.r : 12.r;
+    final borderColor = widget.hasError ? AppColors.error : AppColors.border;
+    final focusColor = widget.hasError ? AppColors.error : AppColors.primary;
+    final borderWidth = widget.hasError ? 1.5.w : 1.0;
+    final border = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(radius),
+      borderSide: BorderSide(color: borderColor, width: borderWidth),
+    );
 
     final field = DropdownButtonFormField2<String>(
       isExpanded: true,
       valueListenable: _valueListenable,
-      decoration: AppTextField.decoration(hintText: widget.hintText).copyWith(
+      decoration: AppTextField.decoration(
+        hintText: widget.hintText,
+        hasError: widget.hasError,
+      ).copyWith(
+        enabled: widget.enabled,
         isDense: compact,
         contentPadding: EdgeInsets.symmetric(
           horizontal: compact ? 8.w : 12.w,
           vertical: compact ? 6.h : 4.h,
         ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(radius),
-          borderSide: const BorderSide(color: AppColors.border),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(radius),
-          borderSide: const BorderSide(color: AppColors.border),
-        ),
+        border: border,
+        enabledBorder: border,
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(radius),
-          borderSide: BorderSide(color: AppColors.primary, width: 1.5.w),
+          borderSide: BorderSide(color: focusColor, width: 1.5.w),
+        ),
+        errorBorder: border,
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(radius),
+          borderSide: BorderSide(color: AppColors.error, width: 1.5.w),
         ),
       ),
       hint: Text(
+        widget.hintText,
+        style: textStyle.copyWith(color: AppColors.textMuted),
+        overflow: TextOverflow.ellipsis,
+      ),
+      disabledHint: Text(
         widget.hintText,
         style: textStyle.copyWith(color: AppColors.textMuted),
         overflow: TextOverflow.ellipsis,
@@ -131,10 +154,12 @@ class _AppDropdownFieldState extends State<AppDropdownField> {
                 ? 'Please select ${widget.label ?? 'an option'}'
                 : null
           : null,
-      onChanged: (value) {
-        _valueListenable.value = value;
-        widget.onChanged?.call(value);
-      },
+      onChanged: widget.enabled
+          ? (value) {
+              _valueListenable.value = value;
+              widget.onChanged?.call(value);
+            }
+          : null,
       onMenuStateChange: (isOpen) {
         if (!isOpen) {
           _searchController.clear();

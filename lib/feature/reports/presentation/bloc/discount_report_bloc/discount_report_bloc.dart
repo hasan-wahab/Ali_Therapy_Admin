@@ -7,6 +7,7 @@ import 'package:ali_therapy_admin/core/usecase/usecase.dart';
 import 'package:ali_therapy_admin/core/utils/app_search_ranker.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/discount_report_domain/entities/discount_report_entity.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/discount_report_domain/entities/discount_report_query.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/discount_report_domain/entities/discount_report_summary_entity.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/discount_report_domain/usecases/get_discount_report_usecase.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/report_filter_options_domain/entities/report_filter_options_entity.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/report_filter_options_domain/usecases/get_report_filter_options_usecase.dart';
@@ -34,6 +35,7 @@ class DiscountReportBloc
     on<DiscountReportSearchChanged>(_onSearchChanged);
     on<DiscountReportSearchSubmitted>(_onSearchSubmitted);
     on<DiscountReportFiltersApplied>(_onFiltersApplied);
+    on<DiscountReportStatsToggled>(_onStatsToggled);
   }
 
   final GetDiscountReportUseCase getDiscountReportUseCase;
@@ -137,6 +139,7 @@ class DiscountReportBloc
         fromDate: event.fromDate,
         toDate: event.toDate,
         discountPercent: event.discountPercent,
+        perPage: event.perPage,
         clearClinicId: event.clearClinicId,
         clearConsultantId: event.clearConsultantId,
         clearReceptionistId: event.clearReceptionistId,
@@ -148,6 +151,16 @@ class DiscountReportBloc
     }
 
     await _reloadList(emit);
+  }
+
+  void _onStatsToggled(
+    DiscountReportStatsToggled event,
+    Emitter<DiscountReportState> emit,
+  ) {
+    final current = state;
+    if (current is DiscountReportLoaded) {
+      emit(current.copyWith(showStats: !current.showStats));
+    }
   }
 
   Future<void> _reloadList(Emitter<DiscountReportState> emit) async {
@@ -177,6 +190,8 @@ class DiscountReportBloc
         currentPage: s.currentPage,
         lastPage: s.lastPage,
         total: s.total,
+        summary: s.summary,
+        showStats: s.showStats,
         filterOptions: s.filterOptions,
         query: s.query,
       );
@@ -187,6 +202,8 @@ class DiscountReportBloc
         currentPage: s.currentPage,
         lastPage: s.lastPage,
         total: s.total,
+        summary: s.summary,
+        showStats: s.showStats,
         filterOptions: s.filterOptions,
         query: s.query,
       );
@@ -209,6 +226,18 @@ class DiscountReportBloc
     final percent = _query.discountPercent;
     if (percent == null) return rows;
     return rows.where((row) => row.discountPercent == percent).toList();
+  }
+
+  DiscountReportSummaryEntity _resolvedSummary({
+    required DiscountReportSummaryEntity incoming,
+    required List<DiscountReportEntity> rows,
+    required int invoiceCount,
+  }) {
+    if (!incoming.isEmpty) return incoming;
+    return DiscountReportSummaryEntity.fromRows(
+      rows,
+      invoiceCount: invoiceCount,
+    );
   }
 
   Future<void> _loadPage(
@@ -254,6 +283,12 @@ class DiscountReportBloc
           currentPage: pageData.currentPage,
           lastPage: pageData.lastPage,
           total: pageData.total,
+          summary: _resolvedSummary(
+            incoming: pageData.summary,
+            rows: merged,
+            invoiceCount: pageData.total,
+          ),
+          showStats: keepOnError.showStats,
           isLoadingMore: false,
           isRefreshingList: false,
           filterOptions: _filterOptions,
@@ -268,6 +303,8 @@ class DiscountReportBloc
           currentPage: keepOnError.currentPage,
           lastPage: keepOnError.lastPage,
           total: keepOnError.total,
+          summary: keepOnError.summary,
+          showStats: keepOnError.showStats,
           filterOptions: keepOnError.filterOptions,
           query: keepOnError.query,
         ));
@@ -277,6 +314,8 @@ class DiscountReportBloc
             currentPage: keepOnError.currentPage,
             lastPage: keepOnError.lastPage,
             total: keepOnError.total,
+            summary: keepOnError.summary,
+            showStats: keepOnError.showStats,
             isLoadingMore: false,
             isRefreshingList: false,
             filterOptions: keepOnError.filterOptions,
@@ -307,6 +346,8 @@ class DiscountReportBloc
         currentPage: keepOnError.currentPage,
         lastPage: keepOnError.lastPage,
         total: keepOnError.total,
+        summary: keepOnError.summary,
+        showStats: keepOnError.showStats,
         filterOptions: keepOnError.filterOptions,
         query: keepOnError.query,
       ));
@@ -316,6 +357,8 @@ class DiscountReportBloc
           currentPage: keepOnError.currentPage,
           lastPage: keepOnError.lastPage,
           total: keepOnError.total,
+          summary: keepOnError.summary,
+          showStats: keepOnError.showStats,
           isLoadingMore: false,
           isRefreshingList: false,
           filterOptions: keepOnError.filterOptions,
@@ -331,19 +374,31 @@ class DiscountReportBloc
     final relatedPage = relatedResult.isSuccess ? relatedResult.data : null;
     final related = relatedPage?.rows ?? <DiscountReportEntity>[];
 
-    emit(DiscountReportLoaded(
-      rows: _applyLocalDiscountFilter(
-        AppSearchRanker.pinMatchesThenRelated(
-          matches: matches,
-          related: related,
-          query: _query.search,
-          idOf: (row) => row.id,
-          fieldsOf: _searchFields,
-        ),
+    final rankedRows = _applyLocalDiscountFilter(
+      AppSearchRanker.pinMatchesThenRelated(
+        matches: matches,
+        related: related,
+        query: _query.search,
+        idOf: (row) => row.id,
+        fieldsOf: _searchFields,
       ),
+    );
+    final rankedTotal = relatedPage?.total ?? matches.length;
+
+    emit(DiscountReportLoaded(
+      rows: rankedRows,
       currentPage: relatedPage?.currentPage ?? 1,
       lastPage: relatedPage?.lastPage ?? 1,
-      total: relatedPage?.total ?? matches.length,
+      total: rankedTotal,
+      summary: _resolvedSummary(
+        incoming: relatedPage?.summary ??
+            (matchResult.isSuccess
+                ? matchResult.data.summary
+                : const DiscountReportSummaryEntity.empty()),
+        rows: rankedRows,
+        invoiceCount: rankedTotal,
+      ),
+      showStats: keepOnError.showStats,
       isLoadingMore: false,
       isRefreshingList: false,
       filterOptions: _filterOptions,
@@ -358,6 +413,8 @@ class _Snapshot {
     this.currentPage = 0,
     this.lastPage = 0,
     this.total = 0,
+    this.summary = const DiscountReportSummaryEntity.empty(),
+    this.showStats = false,
     this.filterOptions = const ReportFilterOptionsEntity.empty(),
     this.query = const DiscountReportQuery(),
   });
@@ -366,6 +423,8 @@ class _Snapshot {
   final int currentPage;
   final int lastPage;
   final int total;
+  final DiscountReportSummaryEntity summary;
+  final bool showStats;
   final ReportFilterOptionsEntity filterOptions;
   final DiscountReportQuery query;
 }

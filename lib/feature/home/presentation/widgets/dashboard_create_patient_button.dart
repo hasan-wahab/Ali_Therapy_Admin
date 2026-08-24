@@ -5,6 +5,7 @@ import 'package:ali_therapy_admin/core/routes/navigation_helper.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_sizes.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
+import 'package:ali_therapy_admin/core/utils/app_permission.dart';
 
 // ============================================================
 // DASHBOARD CREATE PATIENT BUTTON
@@ -17,6 +18,8 @@ class DashboardCreatePatientButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (!AppPermission.canAddPatient) return const SizedBox.shrink();
+
     return SizedBox(
       width: double.infinity,
       height: 50.h,

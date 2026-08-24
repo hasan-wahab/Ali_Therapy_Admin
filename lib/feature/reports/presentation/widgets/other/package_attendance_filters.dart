@@ -40,7 +40,6 @@ class _PackageAttendanceFiltersState extends State<PackageAttendanceFilters> {
   static const _allGenders = 'All Genders';
   static const _allTherapists = 'All Therapists';
   static const _genders = [_allGenders, 'Male', 'Female'];
-  static const _perPageLabels = ['15', '25', '50', '100'];
 
   late String _clinic;
   late String _gender;
@@ -84,7 +83,7 @@ class _PackageAttendanceFiltersState extends State<PackageAttendanceFilters> {
     _clinic = _nameForClinicId(q.clinicId);
     _gender = q.gender ?? _allGenders;
     _therapist = _nameForTherapistId(q.therapistId);
-    _perPage = q.perPage.toString();
+    _perPage = PackageAttendancePerPage.labelFor(q.perPage);
   }
 
   String _nameForClinicId(int? id) {
@@ -130,7 +129,7 @@ class _PackageAttendanceFiltersState extends State<PackageAttendanceFilters> {
       clinicId: _clinicIdForName(_clinic),
       gender: _genderValue(_gender),
       therapistId: _therapistIdForName(_therapist),
-      perPage: int.tryParse(_perPage) ?? 15,
+      perPage: PackageAttendancePerPage.valueForLabel(_perPage),
       page: 1,
     );
   }
@@ -234,9 +233,13 @@ class _PackageAttendanceFiltersState extends State<PackageAttendanceFilters> {
                 compact: true,
                 key: ValueKey('pa_per_page_$_resetToken'),
                 label: 'Per Page',
-                hintText: '15',
-                items: _perPageLabels,
-                value: _perPage,
+                hintText: PackageAttendancePerPage.defaultSize.toString(),
+                items: PackageAttendancePerPage.dropdownLabels,
+                value: PackageAttendancePerPage.dropdownLabels.contains(_perPage)
+                    ? _perPage
+                    : PackageAttendancePerPage.labelFor(
+                        PackageAttendancePerPage.defaultSize,
+                      ),
                 onChanged: (v) {
                   if (v == null) return;
                   setState(() => _perPage = v);

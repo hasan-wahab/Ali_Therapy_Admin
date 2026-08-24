@@ -8,14 +8,11 @@ import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
 // ============================================================
 // PATIENT CAMERA BUTTON
 // ------------------------------------------------------------
-// Green "Open Camera" button (UI only for now).
+// Green "Open Camera" button.
 // ============================================================
 
 class PatientCameraButton extends StatelessWidget {
-  const PatientCameraButton({
-    super.key,
-    this.onPressed,
-  });
+  const PatientCameraButton({super.key, this.onPressed});
 
   final VoidCallback? onPressed;
 
@@ -30,10 +27,7 @@ class PatientCameraButton extends StatelessWidget {
           size: AppSizes.iconMd,
           color: AppColors.textOnPrimary,
         ),
-        label: Text(
-          'Open Camera',
-          style: AppTextStyles.button,
-        ),
+        label: Text('Open Camera', style: AppTextStyles.button),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.success,
           foregroundColor: AppColors.textOnPrimary,

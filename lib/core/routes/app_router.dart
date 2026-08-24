@@ -7,6 +7,7 @@ import 'package:ali_therapy_admin/core/routes/route_names.dart';
 import 'package:ali_therapy_admin/core/routes/app_page.dart';
 import 'package:ali_therapy_admin/core/routes/auth_session_listenable.dart';
 import 'package:ali_therapy_admin/core/services/auth_local_storage.dart';
+import 'package:ali_therapy_admin/core/utils/app_permission.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_sizes.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
@@ -90,6 +91,11 @@ class AppRouter {
 
       // Logged in → skip login screen, go to dashboard.
       if (hasSession && location == AppRoutes.login) {
+        return AppRoutes.home;
+      }
+
+      // Logged in but this screen is not in their permission list.
+      if (hasSession && !AppPermission.canOpenRoute(location)) {
         return AppRoutes.home;
       }
 

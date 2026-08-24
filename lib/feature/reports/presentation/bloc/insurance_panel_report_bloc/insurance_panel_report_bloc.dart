@@ -113,6 +113,7 @@ class InsurancePanelReportBloc
         toDate: event.toDate,
         clinicId: event.clinicId,
         receptionistId: event.receptionistId,
+        perPage: event.perPage,
         clearFromDate: event.clearFromDate,
         clearToDate: event.clearToDate,
         clearClinicId: event.clearClinicId,

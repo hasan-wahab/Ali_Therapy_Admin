@@ -37,6 +37,7 @@ class AppTextField extends StatelessWidget {
     this.onChanged,
     this.onSubmitted,
     this.textInputAction,
+    this.hasError = false,
   });
 
   /// Label drawn ABOVE the field (profile forms style).
@@ -63,13 +64,30 @@ class AppTextField extends StatelessWidget {
   final ValueChanged<String>? onSubmitted;
   final TextInputAction? textInputAction;
 
+  /// Red border only — used by edit-employee step validation.
+  final bool hasError;
+
   /// Shared rounded InputDecoration for text / date / similar fields.
   static InputDecoration decoration({
     String? labelText,
     String? hintText,
     Widget? prefixIcon,
     Widget? suffixIcon,
+    bool hasError = false,
   }) {
+    final radius = BorderRadius.circular(12.r);
+    final normal = OutlineInputBorder(
+      borderRadius: radius,
+      borderSide: const BorderSide(color: AppColors.border),
+    );
+    final focused = OutlineInputBorder(
+      borderRadius: radius,
+      borderSide: BorderSide(color: AppColors.primary, width: 1.5.w),
+    );
+    final error = OutlineInputBorder(
+      borderRadius: radius,
+      borderSide: BorderSide(color: AppColors.error, width: 1.5.w),
+    );
     return InputDecoration(
       labelText: labelText,
       hintText: hintText,
@@ -80,28 +98,13 @@ class AppTextField extends StatelessWidget {
       prefixIcon: prefixIcon,
       suffixIcon: suffixIcon,
       contentPadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12.r),
-        borderSide: const BorderSide(color: AppColors.border),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12.r),
-        borderSide: const BorderSide(color: AppColors.border),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12.r),
-        borderSide: BorderSide(color: AppColors.primary, width: 1.5.w),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12.r),
-        borderSide: const BorderSide(color: AppColors.error),
-      ),
-      focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12.r),
-        borderSide: BorderSide(color: AppColors.error, width: 1.5.w),
-      ),
+      border: hasError ? error : normal,
+      enabledBorder: hasError ? error : normal,
+      focusedBorder: hasError ? error : focused,
+      errorBorder: error,
+      focusedErrorBorder: error,
       disabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12.r),
+        borderRadius: radius,
         borderSide: const BorderSide(color: AppColors.border),
       ),
     );
@@ -127,6 +130,7 @@ class AppTextField extends StatelessWidget {
         hintText: hintText,
         prefixIcon: prefixIcon,
         suffixIcon: suffixIcon,
+        hasError: hasError,
       ),
     );
 

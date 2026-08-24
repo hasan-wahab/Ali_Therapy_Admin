@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:intl/intl.dart';
 
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
@@ -24,10 +23,6 @@ class UserActivityReportCardList extends StatelessWidget {
   final List<UserActivityReportEntity> rows;
   final bool hasMore;
   final bool isLoadingMore;
-
-  static final NumberFormat _money = NumberFormat('#,##0.00', 'en_US');
-
-  static String pkr(double value) => 'PKR ${_money.format(value)}';
 
   @override
   Widget build(BuildContext context) {
@@ -70,9 +65,7 @@ class UserActivityReportCardList extends StatelessWidget {
           sessionsTotal: row.sessionsTotal,
           remaining: row.remaining,
           invoiceType: row.invoiceType,
-          paymentDate: row.paymentDate,
-          paymentMethod: row.paymentMethod,
-          amount: pkr(row.amount),
+          payments: row.payments,
         );
       },
     );

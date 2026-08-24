@@ -1,23 +1,37 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_sizes.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
-import 'package:ali_therapy_admin/core/utils/app_snackbar.dart';
 import 'package:ali_therapy_admin/core/widgets/app_field_label.dart';
 
 // ============================================================
 // EDIT DOCUMENT FILE FIELD
 // ------------------------------------------------------------
-// Compact preview + QR Upload for one document (UI only).
+// Compact preview + Choose File for one document image.
 // ============================================================
 
 class EditDocumentFileField extends StatelessWidget {
-  const EditDocumentFileField({super.key});
+  const EditDocumentFileField({
+    super.key,
+    this.fileName,
+    this.localBytes,
+    this.onChooseFile,
+  });
+
+  final String? fileName;
+  final List<int>? localBytes;
+  final VoidCallback? onChooseFile;
 
   @override
   Widget build(BuildContext context) {
+    final bytes = localBytes;
+    final hasLocal = bytes != null && bytes.isNotEmpty;
+    final chosenName = fileName?.trim() ?? '';
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -33,23 +47,34 @@ class EditDocumentFileField extends StatelessWidget {
           ),
           child: Row(
             children: [
-              Container(
-                width: 44.w,
-                height: 44.w,
-                decoration: BoxDecoration(
-                  color: AppColors.primaryLight,
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                child: Icon(
-                  Icons.insert_drive_file_outlined,
-                  size: AppSizes.iconMd,
-                  color: AppColors.primary,
-                ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8.r),
+                child: hasLocal
+                    ? Image.memory(
+                        Uint8List.fromList(bytes),
+                        width: 44.w,
+                        height: 44.w,
+                        fit: BoxFit.cover,
+                        gaplessPlayback: true,
+                      )
+                    : Container(
+                        width: 44.w,
+                        height: 44.w,
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryLight,
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                        child: Icon(
+                          Icons.insert_drive_file_outlined,
+                          size: AppSizes.iconMd,
+                          color: AppColors.primary,
+                        ),
+                      ),
               ),
               SizedBox(width: 10.w),
               Expanded(
                 child: Text(
-                  'No file chosen',
+                  chosenName.isNotEmpty ? chosenName : 'No file chosen',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.bodySmall.copyWith(
@@ -58,30 +83,23 @@ class EditDocumentFileField extends StatelessWidget {
                 ),
               ),
               SizedBox(width: 8.w),
-              SizedBox(
-                height: 36.h,
-                child: OutlinedButton.icon(
-                  onPressed: () => AppSnackbar.info(
-                    context,
-                    'QR Upload coming soon',
+              InkWell(
+                onTap: onChooseFile,
+                borderRadius: BorderRadius.circular(8.r),
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12.w,
+                    vertical: 8.h,
                   ),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.primary,
-                    side: BorderSide(color: AppColors.primary),
-                    padding: EdgeInsets.symmetric(horizontal: 10.w),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
+                  decoration: BoxDecoration(
+                    color: AppColors.softGray,
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
-                  icon: Icon(
-                    Icons.qr_code_2_rounded,
-                    size: AppSizes.iconSm,
-                  ),
-                  label: Text(
-                    'QR Upload',
-                    style: AppTextStyles.label.copyWith(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w700,
+                  child: Text(
+                    'Choose File',
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),

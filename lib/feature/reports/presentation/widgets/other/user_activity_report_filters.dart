@@ -40,7 +40,6 @@ class UserActivityReportFilters extends StatefulWidget {
 class _UserActivityReportFiltersState extends State<UserActivityReportFilters> {
   static const _allClinics = 'All Clinics';
   static const _allReceptionists = 'All Receptionists';
-  static const _perPageLabels = ['15', '25', '50', '100'];
 
   late String? _fromDateApi;
   late String? _toDateApi;
@@ -82,11 +81,15 @@ class _UserActivityReportFiltersState extends State<UserActivityReportFilters> {
   }
 
   void _syncFromQuery(UserActivityReportQuery q) {
-    _fromDateApi = q.fromDate;
-    _toDateApi = q.toDate;
+    _fromDateApi = (q.fromDate != null && q.fromDate!.trim().isNotEmpty)
+        ? q.fromDate
+        : UserActivityReportQuery.defaultFromDate;
+    _toDateApi = (q.toDate != null && q.toDate!.trim().isNotEmpty)
+        ? q.toDate
+        : UserActivityReportQuery.defaultToDate;
     _clinic = _nameForClinicId(q.clinicId);
     _receptionist = _nameForReceptionistId(q.receptionistId);
-    _perPage = q.perPage.toString();
+    _perPage = UserActivityReportPerPage.labelFor(q.perPage);
   }
 
   String _nameForClinicId(int? id) {
@@ -129,13 +132,19 @@ class _UserActivityReportFiltersState extends State<UserActivityReportFilters> {
   }
 
   Future<void> _pickFrom() async {
-    final picked = await ReportDateField.pickDate(context);
+    final picked = await ReportDateField.pickDate(
+      context,
+      currentApiDate: _fromDateApi,
+    );
     if (picked == null) return;
     setState(() => _fromDateApi = _toApiDate(picked));
   }
 
   Future<void> _pickTo() async {
-    final picked = await ReportDateField.pickDate(context);
+    final picked = await ReportDateField.pickDate(
+      context,
+      currentApiDate: _toDateApi,
+    );
     if (picked == null) return;
     setState(() => _toDateApi = _toApiDate(picked));
   }
@@ -153,14 +162,20 @@ class _UserActivityReportFiltersState extends State<UserActivityReportFilters> {
     }
   }
 
+  /// Draft used for Apply. API-default dates stay off the query
+  /// so the first call remains the bare URL.
   UserActivityReportQuery _draftQuery() {
+    final datesAreDefaults = UserActivityReportQuery.areApiDefaultDates(
+      _fromDateApi,
+      _toDateApi,
+    );
     return UserActivityReportQuery(
       search: widget.currentQuery.search,
-      fromDate: _fromDateApi,
-      toDate: _toDateApi,
+      fromDate: datesAreDefaults ? null : _fromDateApi,
+      toDate: datesAreDefaults ? null : _toDateApi,
       clinicId: _clinicIdForName(_clinic),
       receptionistId: _receptionistIdForName(_receptionist),
-      perPage: int.tryParse(_perPage) ?? 15,
+      perPage: UserActivityReportPerPage.valueForLabel(_perPage),
       page: 1,
     );
   }
@@ -267,9 +282,13 @@ class _UserActivityReportFiltersState extends State<UserActivityReportFilters> {
                 compact: true,
                 key: ValueKey('ua_per_page_$_resetToken'),
                 label: 'Per Page',
-                hintText: '15',
-                items: _perPageLabels,
-                value: _perPage,
+                hintText: UserActivityReportPerPage.defaultSize.toString(),
+                items: UserActivityReportPerPage.dropdownLabels,
+                value: UserActivityReportPerPage.dropdownLabels.contains(_perPage)
+                    ? _perPage
+                    : UserActivityReportPerPage.labelFor(
+                        UserActivityReportPerPage.defaultSize,
+                      ),
                 onChanged: (v) {
                   if (v == null) return;
                   setState(() => _perPage = v);

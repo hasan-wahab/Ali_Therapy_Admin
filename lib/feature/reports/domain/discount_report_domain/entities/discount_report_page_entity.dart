@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 import 'discount_report_entity.dart';
+import 'discount_report_summary_entity.dart';
 
 // ============================================================
 // DISCOUNT REPORT PAGE ENTITY (Domain)
@@ -14,15 +15,17 @@ class DiscountReportPageEntity extends Equatable {
     required this.currentPage,
     required this.lastPage,
     required this.total,
+    this.summary = const DiscountReportSummaryEntity.empty(),
   });
 
   final List<DiscountReportEntity> rows;
   final int currentPage;
   final int lastPage;
   final int total;
+  final DiscountReportSummaryEntity summary;
 
   bool get hasMore => currentPage < lastPage;
 
   @override
-  List<Object?> get props => [rows, currentPage, lastPage, total];
+  List<Object?> get props => [rows, currentPage, lastPage, total, summary];
 }

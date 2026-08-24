@@ -26,6 +26,7 @@ class AppPullRefresh extends StatefulWidget {
     required this.child,
     this.enabled = true,
     this.pullThreshold = 70,
+    this.showTopLoader = true,
   });
 
   /// Async work to run on pull (API / bloc refresh).
@@ -39,6 +40,10 @@ class AppPullRefresh extends StatefulWidget {
 
   /// How far user must overscroll at top to trigger refresh.
   final double pullThreshold;
+
+  /// Thin teal line at the top of [child]. Set false when the AppBar
+  /// already shows loading (dashboard).
+  final bool showTopLoader;
 
   @override
   State<AppPullRefresh> createState() => _AppPullRefreshState();
@@ -101,7 +106,7 @@ class _AppPullRefreshState extends State<AppPullRefresh> {
             child: widget.child,
           ),
         ),
-        if (_isRefreshing)
+        if (_isRefreshing && widget.showTopLoader)
           const Positioned(
             top: 0,
             left: 0,

@@ -3,13 +3,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/routes/navigation_helper.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
+import 'package:ali_therapy_admin/core/utils/app_permission.dart';
 import 'package:ali_therapy_admin/feature/home/presentation/widgets/dashboard_menu_item.dart';
 
 // ============================================================
 // DASHBOARD MENU LIST
 // ------------------------------------------------------------
-// Feature shortcuts. Add a new DashboardMenuItem here whenever
-// a new feature screen is ready.
+// Feature shortcuts. Hidden when the login permission is missing.
 // ============================================================
 
 class DashboardMenuList extends StatelessWidget {
@@ -17,16 +17,15 @@ class DashboardMenuList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
+    final items = <Widget>[
+      if (AppPermission.canViewEmployees)
         DashboardMenuItem(
           title: 'All Employees',
           subtitle: 'View and manage staff',
           icon: Icons.groups_outlined,
           onTap: () => AppNavigation.openAllEmployees(context),
         ),
-        SizedBox(height: 10.h),
+      if (AppPermission.canViewPatients)
         DashboardMenuItem(
           title: 'All Patients',
           subtitle: 'View and manage patients',
@@ -34,7 +33,7 @@ class DashboardMenuList extends StatelessWidget {
           iconColor: AppColors.info,
           onTap: () => AppNavigation.openAllPatients(context),
         ),
-        SizedBox(height: 10.h),
+      if (AppPermission.canViewReportsHub)
         DashboardMenuItem(
           title: 'Reports',
           subtitle: 'Open reports menu',
@@ -42,6 +41,17 @@ class DashboardMenuList extends StatelessWidget {
           iconColor: AppColors.warning,
           onTap: () => AppNavigation.openReports(context),
         ),
+    ];
+
+    if (items.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (var i = 0; i < items.length; i++) ...[
+          if (i > 0) SizedBox(height: 10.h),
+          items[i],
+        ],
       ],
     );
   }

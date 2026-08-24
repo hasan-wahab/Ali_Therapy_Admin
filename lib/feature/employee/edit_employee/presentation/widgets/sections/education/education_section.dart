@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:ali_therapy_admin/feature/employee/edit_employee/presentation/widgets/form/edit_employee_form_controllers.dart';
 import 'package:ali_therapy_admin/feature/employee/edit_employee/presentation/widgets/sections/education/education_form_fields.dart';
 
 // ============================================================
@@ -9,10 +10,15 @@ import 'package:ali_therapy_admin/feature/employee/edit_employee/presentation/wi
 // ============================================================
 
 class EditEducationSection extends StatelessWidget {
-  const EditEducationSection({super.key});
+  const EditEducationSection({
+    super.key,
+    required this.form,
+  });
+
+  final EditEmployeeFormControllers form;
 
   @override
   Widget build(BuildContext context) {
-    return const EditEducationFormFields();
+    return EditEducationFormFields(form: form);
   }
 }

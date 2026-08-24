@@ -41,7 +41,6 @@ class _ReceptionistReportFiltersPanelState
     extends State<ReceptionistReportFiltersPanel> {
   static const _allReceptionists = 'All Receptionists';
   static const _allClinics = 'All Clinics';
-  static const _perPageLabels = ['15', '25', '50', '100'];
 
   late String? _fromDateApi;
   late String? _toDateApi;
@@ -83,11 +82,11 @@ class _ReceptionistReportFiltersPanelState
   }
 
   void _syncFromQuery(ReceptionistReportQuery q) {
-    _fromDateApi = q.fromDate;
-    _toDateApi = q.toDate;
+    _fromDateApi = ReportDateField.orToday(q.fromDate);
+    _toDateApi = ReportDateField.orToday(q.toDate);
     _receptionist = _nameForReceptionistId(q.receptionistId);
     _clinic = _nameForClinicId(q.clinicId);
-    _perPage = q.perPage.toString();
+    _perPage = ReceptionistReportPerPage.labelFor(q.perPage);
   }
 
   String _nameForReceptionistId(int? id) {
@@ -130,13 +129,19 @@ class _ReceptionistReportFiltersPanelState
   }
 
   Future<void> _pickFrom() async {
-    final picked = await ReportDateField.pickDate(context);
+    final picked = await ReportDateField.pickDate(
+      context,
+      currentApiDate: _fromDateApi,
+    );
     if (picked == null) return;
     setState(() => _fromDateApi = _toApiDate(picked));
   }
 
   Future<void> _pickTo() async {
-    final picked = await ReportDateField.pickDate(context);
+    final picked = await ReportDateField.pickDate(
+      context,
+      currentApiDate: _toDateApi,
+    );
     if (picked == null) return;
     setState(() => _toDateApi = _toApiDate(picked));
   }
@@ -161,7 +166,7 @@ class _ReceptionistReportFiltersPanelState
       toDate: _toDateApi,
       receptionistId: _receptionistIdForName(_receptionist),
       clinicId: _clinicIdForName(_clinic),
-      perPage: int.tryParse(_perPage) ?? 15,
+      perPage: ReceptionistReportPerPage.valueForLabel(_perPage),
       page: 1,
     );
   }
@@ -293,9 +298,13 @@ class _ReceptionistReportFiltersPanelState
       compact: true,
       key: ValueKey('rec_per_page_$_resetToken'),
       label: 'Per Page',
-      hintText: '15',
-      items: _perPageLabels,
-      value: _perPage,
+      hintText: ReceptionistReportPerPage.defaultSize.toString(),
+      items: ReceptionistReportPerPage.dropdownLabels,
+      value: ReceptionistReportPerPage.dropdownLabels.contains(_perPage)
+          ? _perPage
+          : ReceptionistReportPerPage.labelFor(
+              ReceptionistReportPerPage.defaultSize,
+            ),
       onChanged: (v) {
         if (v == null) return;
         setState(() => _perPage = v);

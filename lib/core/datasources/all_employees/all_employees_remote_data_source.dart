@@ -1,6 +1,7 @@
 import 'package:ali_therapy_admin/feature/employee/all_employees/data/all_employees_data/models/assign_employee_biometric_id_model.dart';
 import 'package:ali_therapy_admin/feature/employee/all_employees/data/all_employees_data/models/assign_employee_device_id_model.dart';
 import 'package:ali_therapy_admin/feature/employee/all_employees/data/all_employees_data/models/change_employee_password_model.dart';
+import 'package:ali_therapy_admin/feature/employee/all_employees/data/all_employees_data/models/delete_employee_model.dart';
 import 'package:ali_therapy_admin/feature/employee/all_employees/data/all_employees_data/models/employees_filters_model.dart';
 import 'package:ali_therapy_admin/feature/employee/all_employees/data/all_employees_data/models/employees_page_model.dart';
 import 'package:ali_therapy_admin/feature/employee/all_employees/data/all_employees_data/models/terminate_employee_model.dart';
@@ -33,6 +34,11 @@ abstract class AllEmployeesRemoteDataSource {
     required String employeeId,
     required String reason,
     required String date,
+  });
+
+  /// DELETE /employees/{id}
+  Future<DeleteEmployeeModel> deleteEmployee({
+    required String employeeId,
   });
 
   /// POST /employees/{id}/change-password

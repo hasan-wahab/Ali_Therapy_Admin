@@ -60,10 +60,16 @@ class ProfileModel extends ProfileEntity {
       id: ProfileJsonHelpers.text(json['id']),
       name: ProfileJsonHelpers.text(json['name']),
       employeeId: ProfileJsonHelpers.textOf(json, [
+        'username',
         'employeeId',
         'employee_id',
       ]),
-      imageUrl: ProfileJsonHelpers.textOf(json, ['imageUrl', 'image_url']),
+      imageUrl: ProfileJsonHelpers.textOf(json, [
+        'profile_picture',
+        'profilePicture',
+        'imageUrl',
+        'image_url',
+      ]),
       role: ProfileJsonHelpers.text(json['role']),
       clinic: ProfileJsonHelpers.text(json['clinic']),
       gender: ProfileJsonHelpers.text(json['gender']),

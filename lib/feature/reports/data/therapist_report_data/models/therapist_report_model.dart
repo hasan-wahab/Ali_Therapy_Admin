@@ -1,5 +1,6 @@
 import '../../../domain/therapist_report_domain/entities/therapist_report_entity.dart';
 import '../../../domain/therapist_report_domain/entities/therapist_report_page_entity.dart';
+import '../../../domain/therapist_report_domain/entities/therapist_report_summary_entity.dart';
 
 // ============================================================
 // THERAPIST REPORT MODEL (Data)
@@ -67,6 +68,7 @@ class TherapistReportPageModel extends TherapistReportPageEntity {
     required super.currentPage,
     required super.lastPage,
     required super.total,
+    super.summary,
   });
 
   factory TherapistReportPageModel.fromJson(Map<String, dynamic> json) {
@@ -75,11 +77,17 @@ class TherapistReportPageModel extends TherapistReportPageEntity {
         ? TherapistReportModel.listFromJson(list)
         : <TherapistReportModel>[];
 
+    final total = (json['total'] as num?)?.toInt() ?? rows.length;
+
     return TherapistReportPageModel(
       rows: rows,
       currentPage: (json['current_page'] as num?)?.toInt() ?? 1,
       lastPage: (json['last_page'] as num?)?.toInt() ?? 1,
-      total: (json['total'] as num?)?.toInt() ?? rows.length,
+      total: total,
+      summary: TherapistReportSummaryModel.fromJson(
+        json,
+        sessionCount: total,
+      ),
     );
   }
 
@@ -88,5 +96,96 @@ class TherapistReportPageModel extends TherapistReportPageEntity {
         currentPage: currentPage,
         lastPage: lastPage,
         total: total,
+        summary: summary,
       );
+}
+
+class TherapistReportSummaryModel extends TherapistReportSummaryEntity {
+  const TherapistReportSummaryModel({
+    required super.totalSessions,
+    super.clinics,
+  });
+
+  factory TherapistReportSummaryModel.fromJson(
+    Map<String, dynamic> json, {
+    required int sessionCount,
+  }) {
+    final totals = _asMap(json['totals']) ??
+        _asMap(json['summary']) ??
+        _asMap(json['stats']) ??
+        json;
+
+    final sessions = _toInt(
+      totals['total_sessions'] ??
+          totals['sessions'] ??
+          totals['session_count'] ??
+          totals['total_visits'],
+    );
+    final clinics = _clinicsFrom(totals);
+
+    if (sessions == 0 && clinics.isEmpty) {
+      return const TherapistReportSummaryModel(
+        totalSessions: 0,
+        clinics: [],
+      );
+    }
+
+    return TherapistReportSummaryModel(
+      totalSessions: sessions == 0 ? sessionCount : sessions,
+      clinics: clinics,
+    );
+  }
+
+  static List<TherapistReportClinicCountEntity> _clinicsFrom(
+    Map<String, dynamic> json,
+  ) {
+    final raw = json['clinics'] ??
+        json['clinic_visits'] ??
+        json['by_clinic'] ??
+        json['clinic_stats'];
+    if (raw is List) {
+      final result = <TherapistReportClinicCountEntity>[];
+      for (final item in raw) {
+        final map = _asMap(item);
+        if (map == null) continue;
+        final name = (map['clinic_name'] ?? map['name'] ?? map['clinic'])
+            ?.toString()
+            .trim();
+        if (name == null || name.isEmpty) continue;
+        result.add(
+          TherapistReportClinicCountEntity(
+            name: name,
+            sessions: _toInt(
+              map['sessions'] ??
+                  map['visits'] ??
+                  map['count'] ??
+                  map['total'],
+            ),
+          ),
+        );
+      }
+      return result;
+    }
+    final map = _asMap(raw);
+    if (map == null) return const [];
+    return [
+      for (final entry in map.entries)
+        TherapistReportClinicCountEntity(
+          name: entry.key,
+          sessions: _toInt(entry.value),
+        ),
+    ];
+  }
+
+  static Map<String, dynamic>? _asMap(dynamic value) {
+    if (value is Map<String, dynamic>) return value;
+    if (value is Map) return Map<String, dynamic>.from(value);
+    return null;
+  }
+
+  static int _toInt(dynamic value) {
+    if (value == null) return 0;
+    if (value is num) return value.toInt();
+    return int.tryParse(value.toString()) ?? 0;
+  }
 }

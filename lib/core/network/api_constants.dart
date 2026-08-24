@@ -12,7 +12,11 @@ class ApiConstants {
   // BASE URL
   // Change this when you switch between staging / production.
   // ----------------------------------------------------------
+  /// Local Base Url
   static const String baseUrl = 'https://alitherapy.neonweb.tech/api/admin/';
+
+  /// Production Base Url
+  //static const String baseUrl = 'https://cms.dralitherapy.com/api/admin/';
   // // old for testing
   // static String imageBaseUrl = 'https://alitherapy.neonweb.tech';
   //static const String baseUrl = 'https://example.com/api/';
@@ -79,7 +83,7 @@ class ApiConstants {
   /// POST — create employee
   static const String employeeStore = 'employees/store';
 
-  /// POST — update employee
+  /// POST — update employee (docs: /api/admin/employees/update/{id})
   static String employeeUpdate(String id) => 'employees/update/$id';
 
   /// DELETE — delete employee
@@ -166,6 +170,9 @@ class ApiConstants {
 
   /// GET — paginated user activity report list
   static const String userActivityReport = 'reports/user-activity';
+
+  /// GET — dashboard overview (summary cards + extra stats)
+  static const String dashboardOverview = 'dashboard/overview';
 
   // ----------------------------------------------------------
   // ATTENDANCE ENDPOINTS

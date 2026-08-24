@@ -28,6 +28,9 @@ import 'package:ali_therapy_admin/injection.dart';
 class InsurancePanelReportPage extends StatelessWidget {
   const InsurancePanelReportPage({super.key});
 
+  /// API sends a summary object — Total button stays visible.
+  static const bool _showStatsFromApi = true;
+
   List<InsurancePanelReportEntity> _rowsOf(InsurancePanelReportState state) {
     if (state is InsurancePanelReportLoaded) return state.rows;
     if (state is InsurancePanelReportError) return state.rows;
@@ -94,7 +97,7 @@ class InsurancePanelReportPage extends StatelessWidget {
         parent: ClampingScrollPhysics(),
       ),
       slivers: [
-        if (!isFirstLoad)
+        if (!isFirstLoad && _showStatsFromApi)
           SliverPadding(
             padding: EdgeInsets.fromLTRB(hPad, 0, hPad, 12.h),
             sliver: SliverToBoxAdapter(

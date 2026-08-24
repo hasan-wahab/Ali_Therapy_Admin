@@ -7,6 +7,7 @@ import 'package:ali_therapy_admin/core/theme/app_sizes.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
 import 'package:ali_therapy_admin/core/utils/app_snackbar.dart';
 import 'package:ali_therapy_admin/core/utils/helpers.dart';
+import 'package:ali_therapy_admin/core/widgets/app_cupertino_date_picker.dart';
 import 'package:ali_therapy_admin/core/widgets/app_form_dialog.dart';
 import 'package:ali_therapy_admin/core/widgets/app_text_field.dart';
 
@@ -56,12 +57,17 @@ class _TerminateEmployeeDialogState extends State<TerminateEmployeeDialog> {
   }
 
   Future<void> _pickDate() async {
-    final now = DateTime.now();
-    final picked = await showDatePicker(
+    DateTime? initialDate;
+    try {
+      final text = _dateController.text.trim();
+      if (text.isNotEmpty) {
+        initialDate = _displayDateFormat.parseStrict(text);
+      }
+    } catch (_) {}
+
+    final picked = await showAppCupertinoDatePicker(
       context: context,
-      initialDate: now,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(now.year + 5),
+      initialDate: initialDate,
     );
     if (picked == null) return;
     _dateController.text = Helpers.formatDate(picked, pattern: 'MM/dd/yyyy');

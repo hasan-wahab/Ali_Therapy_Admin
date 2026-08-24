@@ -12,6 +12,7 @@ import '../../../domain/all_employees_domain/entities/employees_list_query.dart'
 import '../../../domain/all_employees_domain/usecases/assign_employee_biometric_id_usecase.dart';
 import '../../../domain/all_employees_domain/usecases/assign_employee_device_id_usecase.dart';
 import '../../../domain/all_employees_domain/usecases/change_employee_password_usecase.dart';
+import '../../../domain/all_employees_domain/usecases/delete_employee_usecase.dart';
 import '../../../domain/all_employees_domain/usecases/get_all_employees_usecase.dart';
 import '../../../domain/all_employees_domain/usecases/get_employees_filters_usecase.dart';
 import '../../../domain/all_employees_domain/usecases/terminate_employee_usecase.dart';
@@ -35,6 +36,7 @@ class AllEmployeesBloc extends Bloc<AllEmployeesEvent, AllEmployeesState> {
     required this.getEmployeesFiltersUseCase,
     required this.toggleEmployeeStatusUseCase,
     required this.terminateEmployeeUseCase,
+    required this.deleteEmployeeUseCase,
     required this.changeEmployeePasswordUseCase,
     required this.assignEmployeeDeviceIdUseCase,
     required this.assignEmployeeBiometricIdUseCase,
@@ -47,6 +49,7 @@ class AllEmployeesBloc extends Bloc<AllEmployeesEvent, AllEmployeesState> {
     on<AllEmployeesFiltersApplied>(_onFiltersApplied);
     on<AllEmployeesStatusToggled>(_onStatusToggled);
     on<AllEmployeesTerminated>(_onTerminated);
+    on<AllEmployeesDeleted>(_onDeleted);
     on<AllEmployeesPasswordChanged>(_onPasswordChanged);
     on<AllEmployeesDeviceIdAssigned>(_onDeviceIdAssigned);
     on<AllEmployeesBiometricIdAssigned>(_onBiometricIdAssigned);
@@ -56,6 +59,7 @@ class AllEmployeesBloc extends Bloc<AllEmployeesEvent, AllEmployeesState> {
   final GetEmployeesFiltersUseCase getEmployeesFiltersUseCase;
   final ToggleEmployeeStatusUseCase toggleEmployeeStatusUseCase;
   final TerminateEmployeeUseCase terminateEmployeeUseCase;
+  final DeleteEmployeeUseCase deleteEmployeeUseCase;
   final ChangeEmployeePasswordUseCase changeEmployeePasswordUseCase;
   final AssignEmployeeDeviceIdUseCase assignEmployeeDeviceIdUseCase;
   final AssignEmployeeBiometricIdUseCase assignEmployeeBiometricIdUseCase;
@@ -370,6 +374,66 @@ class AllEmployeesBloc extends Bloc<AllEmployeesEvent, AllEmployeesState> {
         emit(
           current.copyWith(
             terminatingEmployeeId: null,
+            successMessage: null,
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _onDeleted(
+    AllEmployeesDeleted event,
+    Emitter<AllEmployeesState> emit,
+  ) async {
+    final current = state;
+    if (current is! AllEmployeesLoaded) return;
+    if (current.deletingEmployeeId != null) return;
+
+    emit(
+      current.copyWith(
+        deletingEmployeeId: event.employeeId,
+        successMessage: null,
+      ),
+    );
+
+    final result = await deleteEmployeeUseCase(
+      DeleteEmployeeParams(employeeId: event.employeeId),
+    );
+
+    await result.when(
+      success: (data) async {
+        await _loadPage(
+          emit,
+          page: 1,
+          replace: true,
+          keepOnError: _snapshot(),
+        );
+        final after = state;
+        if (after is AllEmployeesLoaded) {
+          emit(
+            after.copyWith(
+              deletingEmployeeId: null,
+              successMessage: data.message,
+            ),
+          );
+        }
+      },
+      failure: (failure) async {
+        emit(
+          AllEmployeesError(
+            title: failure.title,
+            message: failure.message,
+            employees: current.employees,
+            currentPage: current.currentPage,
+            lastPage: current.lastPage,
+            total: current.total,
+            filters: current.filters,
+            query: current.query,
+          ),
+        );
+        emit(
+          current.copyWith(
+            deletingEmployeeId: null,
             successMessage: null,
           ),
         );

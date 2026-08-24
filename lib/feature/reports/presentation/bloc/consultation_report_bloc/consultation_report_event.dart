@@ -27,6 +27,11 @@ class ConsultationReportLoadMore extends ConsultationReportEvent {
   const ConsultationReportLoadMore();
 }
 
+/// Show Stats open/close (keeps current list).
+class ConsultationReportStatsToggled extends ConsultationReportEvent {
+  const ConsultationReportStatsToggled();
+}
+
 /// Search text changed (starts debounce).
 class ConsultationReportSearchChanged extends ConsultationReportEvent {
   const ConsultationReportSearchChanged(this.search);

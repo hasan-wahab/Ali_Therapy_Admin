@@ -3,7 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/widgets/app_dropdown_field.dart';
 import 'package:ali_therapy_admin/core/widgets/app_text_field.dart';
+import 'package:ali_therapy_admin/feature/employee/edit_employee/domain/edit_employee_domain/entities/edit_employee_options_entity.dart';
 import 'package:ali_therapy_admin/feature/employee/edit_employee/presentation/widgets/form/edit_date_field.dart';
+import 'package:ali_therapy_admin/feature/employee/edit_employee/presentation/widgets/form/edit_employee_form_controllers.dart';
 import 'package:ali_therapy_admin/feature/employee/edit_employee/presentation/widgets/form/edit_fields_row.dart';
 
 // ============================================================
@@ -12,272 +14,282 @@ import 'package:ali_therapy_admin/feature/employee/edit_employee/presentation/wi
 // Personal / employment details for edit employee step 2.
 // ============================================================
 
-class DetailsFormFields extends StatefulWidget {
-  const DetailsFormFields({super.key});
+class DetailsFormFields extends StatelessWidget {
+  const DetailsFormFields({
+    super.key,
+    required this.form,
+    required this.options,
+  });
 
-  @override
-  State<DetailsFormFields> createState() => _DetailsFormFieldsState();
-}
+  final EditEmployeeFormControllers form;
+  final EditEmployeeOptionsEntity options;
 
-class _DetailsFormFieldsState extends State<DetailsFormFields> {
-  static const _departments = [
-    'Physiotherapy',
-    'Administration',
-    'Reception',
-    'Finance',
-  ];
-
-  static const _designations = [
-    'CEO',
-    'Physiotherapist',
-    'Manager',
-    'Consultant',
-  ];
-
-  static const _shifts = [
-    'Morning Shift (8AM - 4PM)',
-    'Evening Shift (4PM - 12AM)',
-    'Night Shift',
-  ];
-
-  static const _genders = ['Male', 'Female', 'Other'];
-
-  static const _salaryTypes = ['Fixed', 'Commission', 'Hourly'];
-
-  late final TextEditingController _biometricController;
-  late final TextEditingController _phoneController;
-  late final TextEditingController _cnicController;
-  late final TextEditingController _emergencyNameController;
-  late final TextEditingController _emergencyRelationController;
-  late final TextEditingController _emergencyPhoneController;
-  late final TextEditingController _religionController;
-  late final TextEditingController _bloodGroupController;
-  late final TextEditingController _districtController;
-  late final TextEditingController _experienceController;
-  late final TextEditingController _salaryController;
-  late final TextEditingController _presentAddressController;
-  late final TextEditingController _permanentAddressController;
-  late final TextEditingController _biographyController;
-
-  @override
-  void initState() {
-    super.initState();
-    _biometricController = TextEditingController();
-    _phoneController = TextEditingController(text: '0332-0233322');
-    _cnicController = TextEditingController(text: '16204-0389530-1');
-    _emergencyNameController = TextEditingController(text: 'Dr Waqar');
-    _emergencyRelationController = TextEditingController(text: 'Brother');
-    _emergencyPhoneController = TextEditingController(text: '1231 3214231');
-    _religionController = TextEditingController(text: 'Islam');
-    _bloodGroupController = TextEditingController(text: 'O+');
-    _districtController = TextEditingController();
-    _experienceController = TextEditingController();
-    _salaryController = TextEditingController(text: '400000.00');
-    _presentAddressController = TextEditingController(text: 'F8 Islamabad');
-    _permanentAddressController = TextEditingController(text: 'F8 Islamabad');
-    _biographyController = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    _biometricController.dispose();
-    _phoneController.dispose();
-    _cnicController.dispose();
-    _emergencyNameController.dispose();
-    _emergencyRelationController.dispose();
-    _emergencyPhoneController.dispose();
-    _religionController.dispose();
-    _bloodGroupController.dispose();
-    _districtController.dispose();
-    _experienceController.dispose();
-    _salaryController.dispose();
-    _presentAddressController.dispose();
-    _permanentAddressController.dispose();
-    _biographyController.dispose();
-    super.dispose();
-  }
+  static const _genders = ['Male', 'Female'];
+  static const _salaryTypes = ['Fixed', 'Commission'];
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const EditFieldsRow(
+    return ListenableBuilder(
+      listenable: form,
+      builder: (context, _) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            AppDropdownField(
-              label: 'Department',
-              isRequired: true,
-              hintText: 'Select Department',
-              items: _departments,
-              value: 'Physiotherapy',
+            EditFieldsRow(
+              children: [
+                AppDropdownField(
+                  label: 'Department',
+                  isRequired: true,
+                  hintText: 'Select Department',
+                  items: options.departmentNames(current: form.departmentName),
+                  value:
+                      form.departmentName.isEmpty ? null : form.departmentName,
+                  hasError: form.isInvalid(
+                    EditEmployeeFormControllers.departmentKey,
+                  ),
+                  onChanged: (value) => form.setDepartment(
+                    value,
+                    options.idForDepartment(value),
+                  ),
+                ),
+                AppDropdownField(
+                  label: 'Designation',
+                  isRequired: true,
+                  hintText: 'Select Designation',
+                  items:
+                      options.designationNames(current: form.designationName),
+                  value: form.designationName.isEmpty
+                      ? null
+                      : form.designationName,
+                  hasError: form.isInvalid(
+                    EditEmployeeFormControllers.designationKey,
+                  ),
+                  onChanged: (value) => form.setDesignation(
+                    value,
+                    options.idForDesignation(value),
+                  ),
+                ),
+              ],
             ),
-            AppDropdownField(
-              label: 'Designation',
+            SizedBox(height: 12.h),
+            EditFieldsRow(
+              children: [
+                AppDropdownField(
+                  label: 'Shift',
+                  hintText: 'Select Shift',
+                  items: options.shiftNames(current: form.shiftName),
+                  value: form.shiftName.isEmpty ? null : form.shiftName,
+                  onChanged: (value) =>
+                      form.setShift(value, options.idForShift(value)),
+                ),
+                AppTextField(
+                  label: 'Biometric Device User ID',
+                  hintText: 'Biometric Device User ID..',
+                  controller: form.biometricId,
+                ),
+              ],
+            ),
+            SizedBox(height: 12.h),
+            EditFieldsRow(
+              children: [
+                AppDropdownField(
+                  label: 'Gender',
+                  isRequired: true,
+                  hintText: 'Select Gender',
+                  items: _withCurrent(_genders, form.gender),
+                  value: form.gender.isEmpty ? null : form.gender,
+                  hasError: form.isInvalid(
+                    EditEmployeeFormControllers.genderKey,
+                  ),
+                  onChanged: form.setGender,
+                ),
+                AppTextField(
+                  label: 'Phone',
+                  isRequired: true,
+                  hintText: 'Phone..',
+                  keyboardType: TextInputType.phone,
+                  controller: form.phone,
+                  hasError: form.isInvalid(
+                    EditEmployeeFormControllers.phoneKey,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 12.h),
+            EditFieldsRow(
+              children: [
+                AppTextField(
+                  label: 'CNIC',
+                  isRequired: true,
+                  hintText: 'CNIC..',
+                  keyboardType: TextInputType.number,
+                  controller: form.cnic,
+                  hasError: form.isInvalid(
+                    EditEmployeeFormControllers.cnicKey,
+                  ),
+                ),
+                EditDateField(
+                  label: 'Date of Birth',
+                  isRequired: true,
+                  value: form.dateOfBirth,
+                  hasError: form.isInvalid(
+                    EditEmployeeFormControllers.dateOfBirthKey,
+                  ),
+                  onChanged: form.setDateOfBirth,
+                ),
+              ],
+            ),
+            SizedBox(height: 12.h),
+            EditFieldsRow(
+              children: [
+                EditDateField(
+                  label: 'Joining Date',
+                  isRequired: true,
+                  value: form.joiningDate,
+                  hasError: form.isInvalid(
+                    EditEmployeeFormControllers.joiningDateKey,
+                  ),
+                  onChanged: form.setJoiningDate,
+                ),
+                AppTextField(
+                  label: 'Emergency Contact Name',
+                  isRequired: true,
+                  hintText: 'Name..',
+                  controller: form.emergencyName,
+                  hasError: form.isInvalid(
+                    EditEmployeeFormControllers.emergencyNameKey,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 12.h),
+            EditFieldsRow(
+              children: [
+                AppTextField(
+                  label: 'Emergency Contact Relationship',
+                  isRequired: true,
+                  hintText: 'Relationship..',
+                  controller: form.emergencyRelationship,
+                  hasError: form.isInvalid(
+                    EditEmployeeFormControllers.emergencyRelationshipKey,
+                  ),
+                ),
+                AppTextField(
+                  label: 'Emergency Contact',
+                  isRequired: true,
+                  hintText: 'Phone..',
+                  keyboardType: TextInputType.phone,
+                  controller: form.emergencyPhone,
+                  hasError: form.isInvalid(
+                    EditEmployeeFormControllers.emergencyPhoneKey,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 12.h),
+            EditFieldsRow(
+              children: [
+                AppTextField(
+                  label: 'Religion',
+                  isRequired: true,
+                  hintText: 'Religion..',
+                  controller: form.religion,
+                  hasError: form.isInvalid(
+                    EditEmployeeFormControllers.religionKey,
+                  ),
+                ),
+                AppTextField(
+                  label: 'Blood Group',
+                  isRequired: true,
+                  hintText: 'Blood group..',
+                  controller: form.bloodGroup,
+                  hasError: form.isInvalid(
+                    EditEmployeeFormControllers.bloodGroupKey,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 12.h),
+            EditFieldsRow(
+              children: [
+                AppTextField(
+                  label: 'District',
+                  hintText: 'District...',
+                  controller: form.district,
+                ),
+                AppTextField(
+                  label: 'Experience (years)',
+                  hintText: 'Experience in years..',
+                  keyboardType: TextInputType.number,
+                  controller: form.experienceYears,
+                ),
+              ],
+            ),
+            SizedBox(height: 12.h),
+            EditFieldsRow(
+              children: [
+                AppDropdownField(
+                  label: 'Salary Type',
+                  isRequired: true,
+                  hintText: 'Select Salary Type',
+                  items: _withCurrent(_salaryTypes, form.salaryType),
+                  value: form.salaryType.isEmpty ? null : form.salaryType,
+                  hasError: form.isInvalid(
+                    EditEmployeeFormControllers.salaryTypeKey,
+                  ),
+                  onChanged: form.setSalaryType,
+                ),
+                AppTextField(
+                  label: 'Salary Amount',
+                  isRequired: true,
+                  hintText: 'Amount..',
+                  keyboardType: TextInputType.number,
+                  controller: form.salary,
+                  hasError: form.isInvalid(
+                    EditEmployeeFormControllers.salaryKey,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 12.h),
+            AppTextField(
+              label: 'Present Address',
               isRequired: true,
-              hintText: 'Select Designation',
-              items: _designations,
-              value: 'CEO',
+              hintText: 'Present address..',
+              maxLines: 3,
+              controller: form.presentAddress,
+              hasError: form.isInvalid(
+                EditEmployeeFormControllers.presentAddressKey,
+              ),
+            ),
+            SizedBox(height: 12.h),
+            AppTextField(
+              label: 'Permanent Address',
+              isRequired: true,
+              hintText: 'Permanent address..',
+              maxLines: 3,
+              controller: form.permanentAddress,
+              hasError: form.isInvalid(
+                EditEmployeeFormControllers.permanentAddressKey,
+              ),
+            ),
+            SizedBox(height: 12.h),
+            AppTextField(
+              label: 'Biography',
+              hintText: 'Biography..',
+              maxLines: 4,
+              controller: form.biography,
             ),
           ],
-        ),
-        SizedBox(height: 12.h),
-        EditFieldsRow(
-          children: [
-            const AppDropdownField(
-              label: 'Shift',
-              isRequired: true,
-              hintText: 'Select Shift',
-              items: _shifts,
-              value: 'Morning Shift (8AM - 4PM)',
-            ),
-            AppTextField(
-              label: 'Biometric Device User ID',
-              hintText: 'Biometric Device User ID..',
-              controller: _biometricController,
-            ),
-          ],
-        ),
-        SizedBox(height: 12.h),
-        EditFieldsRow(
-          children: [
-            const AppDropdownField(
-              label: 'Gender',
-              isRequired: true,
-              hintText: 'Select Gender',
-              items: _genders,
-              value: 'Male',
-            ),
-            AppTextField(
-              label: 'Phone',
-              isRequired: true,
-              hintText: 'Phone..',
-              keyboardType: TextInputType.phone,
-              controller: _phoneController,
-            ),
-          ],
-        ),
-        SizedBox(height: 12.h),
-        EditFieldsRow(
-          children: [
-            AppTextField(
-              label: 'CNIC',
-              isRequired: true,
-              hintText: 'CNIC..',
-              keyboardType: TextInputType.number,
-              controller: _cnicController,
-            ),
-            const EditDateField(
-              label: 'Date of Birth',
-              isRequired: true,
-              value: '04/04/1994',
-            ),
-          ],
-        ),
-        SizedBox(height: 12.h),
-        EditFieldsRow(
-          children: [
-            const EditDateField(
-              label: 'Joining Date',
-              isRequired: true,
-              value: '08/02/2021',
-            ),
-            AppTextField(
-              label: 'Emergency Contact Name',
-              hintText: 'Name..',
-              controller: _emergencyNameController,
-            ),
-          ],
-        ),
-        SizedBox(height: 12.h),
-        EditFieldsRow(
-          children: [
-            AppTextField(
-              label: 'Emergency Contact Relationship',
-              hintText: 'Relationship..',
-              controller: _emergencyRelationController,
-            ),
-            AppTextField(
-              label: 'Emergency Contact',
-              hintText: 'Phone..',
-              keyboardType: TextInputType.phone,
-              controller: _emergencyPhoneController,
-            ),
-          ],
-        ),
-        SizedBox(height: 12.h),
-        EditFieldsRow(
-          children: [
-            AppTextField(
-              label: 'Religion',
-              hintText: 'Religion..',
-              controller: _religionController,
-            ),
-            AppTextField(
-              label: 'Blood Group',
-              hintText: 'Blood group..',
-              controller: _bloodGroupController,
-            ),
-          ],
-        ),
-        SizedBox(height: 12.h),
-        EditFieldsRow(
-          children: [
-            AppTextField(
-              label: 'District',
-              hintText: 'District...',
-              controller: _districtController,
-            ),
-            AppTextField(
-              label: 'Experience (years)',
-              hintText: 'Experience in years..',
-              keyboardType: TextInputType.number,
-              controller: _experienceController,
-            ),
-          ],
-        ),
-        SizedBox(height: 12.h),
-        EditFieldsRow(
-          children: [
-            const AppDropdownField(
-              label: 'Salary Type',
-              isRequired: true,
-              hintText: 'Select Salary Type',
-              items: _salaryTypes,
-              value: 'Fixed',
-            ),
-            AppTextField(
-              label: 'Salary Amount',
-              isRequired: true,
-              hintText: 'Amount..',
-              keyboardType: TextInputType.number,
-              controller: _salaryController,
-            ),
-          ],
-        ),
-        SizedBox(height: 12.h),
-        AppTextField(
-          label: 'Present Address',
-          isRequired: true,
-          hintText: 'Present address..',
-          maxLines: 3,
-          controller: _presentAddressController,
-        ),
-        SizedBox(height: 12.h),
-        AppTextField(
-          label: 'Permanent Address',
-          isRequired: true,
-          hintText: 'Permanent address..',
-          maxLines: 3,
-          controller: _permanentAddressController,
-        ),
-        SizedBox(height: 12.h),
-        AppTextField(
-          label: 'Biography',
-          hintText: 'Biography..',
-          maxLines: 4,
-          controller: _biographyController,
-        ),
-      ],
+        );
+      },
     );
+  }
+
+  List<String> _withCurrent(List<String> items, String current) {
+    if (current.isNotEmpty && !items.contains(current)) {
+      return [current, ...items];
+    }
+    return items;
   }
 }

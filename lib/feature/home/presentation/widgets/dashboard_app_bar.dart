@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'package:ali_therapy_admin/core/routes/navigation_helper.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_sizes.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
@@ -18,7 +17,13 @@ import 'package:ali_therapy_admin/feature/auth/presentation/bloc/login_bloc/auth
 // ============================================================
 
 class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const DashboardAppBar({super.key});
+  const DashboardAppBar({
+    super.key,
+    this.isLoading = false,
+  });
+
+  /// When true, rainbow underline → teal linear progress (All Employees).
+  final bool isLoading;
 
   @override
   Size get preferredSize =>
@@ -96,7 +101,7 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
             ),
           ],
-          bottom: AppAppBarUnderline.bar,
+          bottom: AppAppBarUnderline.forState(isLoading: isLoading),
         );
       },
     );

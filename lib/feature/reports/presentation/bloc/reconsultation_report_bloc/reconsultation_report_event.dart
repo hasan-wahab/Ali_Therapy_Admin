@@ -27,6 +27,11 @@ class ReconsultationReportLoadMore extends ReconsultationReportEvent {
   const ReconsultationReportLoadMore();
 }
 
+/// Show Stats open/close (keeps current list).
+class ReconsultationReportStatsToggled extends ReconsultationReportEvent {
+  const ReconsultationReportStatsToggled();
+}
+
 /// Search text changed (starts debounce).
 class ReconsultationReportSearchChanged extends ReconsultationReportEvent {
   const ReconsultationReportSearchChanged(this.search);

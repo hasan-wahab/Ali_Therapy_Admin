@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/utils/app_device.dart';
+import 'package:ali_therapy_admin/core/utils/app_permission.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/form/form_back_app_bar.dart';
 import 'package:ali_therapy_admin/feature/patient/patient_detail/presentation/widgets/other/patient_detail_tab.dart';
 import 'package:ali_therapy_admin/feature/patient/patient_detail/presentation/widgets/other/patient_detail_tab_bar.dart';
@@ -54,6 +55,7 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
         children: [
           PatientDetailTabBar(
             activeTab: _activeTab,
+            showSurvey: AppPermission.canViewSurvey,
             onTabSelected: (tab) {
               setState(() => _activeTab = tab);
             },

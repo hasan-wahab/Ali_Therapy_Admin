@@ -1,12 +1,13 @@
 import 'package:ali_therapy_admin/core/di/all_employees_module.dart';
 import 'package:ali_therapy_admin/core/di/auth_module.dart';
 import 'package:ali_therapy_admin/core/di/di_module.dart';
+import 'package:ali_therapy_admin/core/di/edit_employee_module.dart';
 import 'package:ali_therapy_admin/core/di/external_module.dart';
+import 'package:ali_therapy_admin/core/di/home_module.dart';
 import 'package:ali_therapy_admin/core/di/network_module.dart';
 import 'package:ali_therapy_admin/core/di/profile_module.dart';
 import 'package:ali_therapy_admin/core/di/reports_module.dart';
 import 'package:ali_therapy_admin/core/di/service_module.dart';
-// HomeModule: add when dashboard API + HomeBloc are wired (see home_data / home_domain).
 
 // ============================================================
 // DI SETUP
@@ -27,8 +28,10 @@ final List<DiModule> coreModules = [
   ServiceModule(),
   NetworkModule(),
   AuthModule(),
+  HomeModule(),
   AllEmployeesModule(),
   ProfileModule(),
+  EditEmployeeModule(),
   ReportsModule(),
 ];
 

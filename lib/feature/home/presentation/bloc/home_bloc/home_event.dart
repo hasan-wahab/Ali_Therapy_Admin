@@ -11,12 +11,17 @@ abstract class HomeEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-/// Load dashboard stats.
+/// First open — full-screen shimmer.
 class HomeDashboardRequested extends HomeEvent {
   const HomeDashboardRequested();
 }
 
-/// Refresh dashboard stats.
+/// Pull-to-refresh — list stays visible, AppBar loading only.
 class HomeDashboardRefreshed extends HomeEvent {
-  const HomeDashboardRefreshed();
+  const HomeDashboardRefreshed({required this.completer});
+
+  final Completer<void> completer;
+
+  @override
+  List<Object?> get props => [completer];
 }

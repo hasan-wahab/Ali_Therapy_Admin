@@ -27,6 +27,11 @@ class FreeConsultationReportLoadMore extends FreeConsultationReportEvent {
   const FreeConsultationReportLoadMore();
 }
 
+/// Show Stats open/close (keeps current list).
+class FreeConsultationReportStatsToggled extends FreeConsultationReportEvent {
+  const FreeConsultationReportStatsToggled();
+}
+
 /// Search text changed (starts debounce).
 class FreeConsultationReportSearchChanged extends FreeConsultationReportEvent {
   const FreeConsultationReportSearchChanged(this.search);

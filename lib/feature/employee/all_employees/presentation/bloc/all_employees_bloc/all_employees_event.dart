@@ -77,6 +77,16 @@ class AllEmployeesTerminated extends AllEmployeesEvent {
   List<Object?> get props => [employeeId, reason, date];
 }
 
+/// Confirm delete dialog → DELETE /employees/{id}
+class AllEmployeesDeleted extends AllEmployeesEvent {
+  const AllEmployeesDeleted({required this.employeeId});
+
+  final String employeeId;
+
+  @override
+  List<Object?> get props => [employeeId];
+}
+
 /// Change password dialog → POST /employees/{id}/change-password
 class AllEmployeesPasswordChanged extends AllEmployeesEvent {
   const AllEmployeesPasswordChanged({

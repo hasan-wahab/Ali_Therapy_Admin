@@ -49,8 +49,12 @@ class AuthLocalStorage {
 
   /// Restore last login (user + permissions + roles) if saved.
   Future<LoginModel?> getSavedLogin() async {
-    final token = await getToken();
-    if (token == null) return null;
+    return getSavedLoginSync();
+  }
+
+  /// Sync login read — used for permission checks (prefs already loaded).
+  LoginModel? getSavedLoginSync() {
+    if (!hasSessionSync()) return null;
 
     final raw = _prefs.getString(_loginJsonKey);
     if (raw == null || raw.isEmpty) return null;

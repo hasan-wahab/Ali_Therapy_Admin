@@ -1,18 +1,23 @@
 import 'package:equatable/equatable.dart';
 
+import 'edit_employee_form_entity.dart';
+import 'edit_employee_options_entity.dart';
+
 // ============================================================
-// EDITEMPLOYEE ENTITY (Domain)
+// EDIT EMPLOYEE ENTITY (Domain)
 // ------------------------------------------------------------
-// Pure business object — no Flutter / Dio / JSON here.
-// Fill fields when the API contract is known.
+// GET employees/{id}/edit (or show) — form values + dropdowns.
 // ============================================================
 
 class EditEmployeeEntity extends Equatable {
-  /// Placeholder id until real fields are defined.
-  final String id;
+  const EditEmployeeEntity({
+    required this.form,
+    required this.options,
+  });
 
-  const EditEmployeeEntity({required this.id});
+  final EditEmployeeFormEntity form;
+  final EditEmployeeOptionsEntity options;
 
   @override
-  List<Object?> get props => [id];
+  List<Object?> get props => [form, options];
 }

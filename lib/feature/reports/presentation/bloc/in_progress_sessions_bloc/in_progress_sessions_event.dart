@@ -24,6 +24,11 @@ class InProgressSessionsLoadMore extends InProgressSessionsEvent {
   const InProgressSessionsLoadMore();
 }
 
+/// Show Stats open/close (keeps current list).
+class InProgressSessionsStatsToggled extends InProgressSessionsEvent {
+  const InProgressSessionsStatsToggled();
+}
+
 class InProgressSessionsSearchChanged extends InProgressSessionsEvent {
   const InProgressSessionsSearchChanged(this.search);
 
@@ -49,6 +54,7 @@ class InProgressSessionsFiltersApplied extends InProgressSessionsEvent {
     this.staffId,
     this.fromDate,
     this.toDate,
+    this.perPage,
     this.clearClinicId = false,
     this.clearStaffId = false,
     this.clearFromDate = false,
@@ -61,6 +67,7 @@ class InProgressSessionsFiltersApplied extends InProgressSessionsEvent {
   final int? staffId;
   final String? fromDate;
   final String? toDate;
+  final int? perPage;
   final bool clearClinicId;
   final bool clearStaffId;
   final bool clearFromDate;
@@ -74,6 +81,7 @@ class InProgressSessionsFiltersApplied extends InProgressSessionsEvent {
         staffId,
         fromDate,
         toDate,
+        perPage,
         clearClinicId,
         clearStaffId,
         clearFromDate,

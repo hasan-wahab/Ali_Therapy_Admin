@@ -16,11 +16,13 @@ class FormBackAppBar extends StatelessWidget implements PreferredSizeWidget {
     required this.title,
     this.actions,
     this.isLoading = false,
+    this.onBack,
   });
 
   final String title;
   final List<Widget>? actions;
   final bool isLoading;
+  final VoidCallback? onBack;
 
   @override
   Size get preferredSize =>
@@ -32,6 +34,7 @@ class FormBackAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: title,
       actions: actions,
       isLoading: isLoading,
+      onBack: onBack,
     );
   }
 }

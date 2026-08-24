@@ -53,6 +53,8 @@ class ReportsPage extends StatelessWidget {
   }
 
   void _onReportSelected(BuildContext context, ReportType type) {
+    if (!type.isPermitted) return;
+
     final path = _routeFor(type);
 
     if (path == null) {

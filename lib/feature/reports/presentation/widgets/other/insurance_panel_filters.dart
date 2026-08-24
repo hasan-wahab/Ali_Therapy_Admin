@@ -15,7 +15,7 @@ import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/rep
 // ============================================================
 // INSURANCE PANEL FILTERS
 // ------------------------------------------------------------
-// From Date / To Date / Clinic / Receptionist.
+// From Date / To Date / Clinic / Receptionist / Per Page.
 // Dropdowns only update local draft.
 // API runs only after pressing "Apply".
 // ============================================================
@@ -44,6 +44,7 @@ class _InsurancePanelFiltersState extends State<InsurancePanelFilters> {
   late String? _toDateApi;
   late String _clinic;
   late String _receptionist;
+  late String _perPage;
   int _resetToken = 0;
 
   List<String> get _clinicItems => [
@@ -79,10 +80,11 @@ class _InsurancePanelFiltersState extends State<InsurancePanelFilters> {
   }
 
   void _syncFromQuery(InsurancePanelReportQuery q) {
-    _fromDateApi = q.fromDate;
-    _toDateApi = q.toDate;
+    _fromDateApi = ReportDateField.orToday(q.fromDate);
+    _toDateApi = ReportDateField.orToday(q.toDate);
     _clinic = _nameForClinicId(q.clinicId);
     _receptionist = _nameForReceptionistId(q.receptionistId);
+    _perPage = InsurancePanelReportPerPage.labelFor(q.perPage);
   }
 
   String _nameForClinicId(int? id) {
@@ -125,13 +127,19 @@ class _InsurancePanelFiltersState extends State<InsurancePanelFilters> {
   }
 
   Future<void> _pickFrom() async {
-    final picked = await ReportDateField.pickDate(context);
+    final picked = await ReportDateField.pickDate(
+      context,
+      currentApiDate: _fromDateApi,
+    );
     if (picked == null) return;
     setState(() => _fromDateApi = _toApiDate(picked));
   }
 
   Future<void> _pickTo() async {
-    final picked = await ReportDateField.pickDate(context);
+    final picked = await ReportDateField.pickDate(
+      context,
+      currentApiDate: _toDateApi,
+    );
     if (picked == null) return;
     setState(() => _toDateApi = _toApiDate(picked));
   }
@@ -156,6 +164,7 @@ class _InsurancePanelFiltersState extends State<InsurancePanelFilters> {
       toDate: _toDateApi,
       clinicId: _clinicIdForName(_clinic),
       receptionistId: _receptionistIdForName(_receptionist),
+      perPage: InsurancePanelReportPerPage.valueForLabel(_perPage),
     );
   }
 
@@ -165,6 +174,7 @@ class _InsurancePanelFiltersState extends State<InsurancePanelFilters> {
         toDate: widget.currentQuery.toDate,
         clinicId: widget.currentQuery.clinicId,
         receptionistId: widget.currentQuery.receptionistId,
+        perPage: widget.currentQuery.perPage,
       );
 
   bool get _hasPendingChanges => _draftQuery() != _normalizedApplied;
@@ -177,6 +187,7 @@ class _InsurancePanelFiltersState extends State<InsurancePanelFilters> {
             toDate: draft.toDate,
             clinicId: draft.clinicId,
             receptionistId: draft.receptionistId,
+            perPage: draft.perPage,
             clearFromDate: draft.fromDate == null,
             clearToDate: draft.toDate == null,
             clearClinicId: draft.clinicId == null,
@@ -252,6 +263,23 @@ class _InsurancePanelFiltersState extends State<InsurancePanelFilters> {
                 onChanged: (v) {
                   if (v == null) return;
                   setState(() => _receptionist = v);
+                },
+              ),
+              AppDropdownField(
+                compact: true,
+                key: ValueKey('ins_per_page_$_resetToken'),
+                label: 'Per Page',
+                hintText: InsurancePanelReportPerPage.defaultSize.toString(),
+                items: InsurancePanelReportPerPage.dropdownLabels,
+                value: InsurancePanelReportPerPage.dropdownLabels
+                        .contains(_perPage)
+                    ? _perPage
+                    : InsurancePanelReportPerPage.labelFor(
+                        InsurancePanelReportPerPage.defaultSize,
+                      ),
+                onChanged: (v) {
+                  if (v == null) return;
+                  setState(() => _perPage = v);
                 },
               ),
             ],

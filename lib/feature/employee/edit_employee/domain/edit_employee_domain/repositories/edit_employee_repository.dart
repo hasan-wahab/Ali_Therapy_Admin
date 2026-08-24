@@ -1,13 +1,23 @@
 import 'package:ali_therapy_admin/core/utils/typedefs.dart';
-import '../entities/edit_employee_entity.dart';
+import 'package:ali_therapy_admin/feature/employee/edit_employee/domain/edit_employee_domain/entities/edit_employee_entity.dart';
+import 'package:ali_therapy_admin/feature/employee/edit_employee/domain/edit_employee_domain/entities/edit_employee_form_entity.dart';
+import 'package:ali_therapy_admin/feature/employee/edit_employee/domain/edit_employee_domain/entities/edit_employee_options_entity.dart';
+import 'package:ali_therapy_admin/feature/employee/edit_employee/domain/edit_employee_domain/entities/update_employee_entity.dart';
 
 // ============================================================
-// EDITEMPLOYEE REPOSITORY CONTRACT (Domain)
-// ------------------------------------------------------------
-// Domain only knows WHAT we need — not HOW (no Dio here).
+// EDIT EMPLOYEE REPOSITORY CONTRACT (Domain)
 // ============================================================
 
 abstract class EditEmployeeRepository {
-  /// Load data for this feature. Replace with real methods later.
-  ResultFuture<EditEmployeeEntity> getEditEmployee();
+  /// GET employees/{id}/edit (falls back to show).
+  ResultFuture<EditEmployeeEntity> getEditEmployee({
+    required String employeeId,
+  });
+
+  /// POST employees/update/{id}
+  ResultFuture<UpdateEmployeeEntity> updateEmployee({
+    required String employeeId,
+    required EditEmployeeFormEntity form,
+    required EditEmployeeOptionsEntity options,
+  });
 }

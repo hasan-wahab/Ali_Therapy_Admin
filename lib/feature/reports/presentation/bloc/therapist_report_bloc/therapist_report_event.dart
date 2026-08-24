@@ -27,6 +27,11 @@ class TherapistReportLoadMore extends TherapistReportEvent {
   const TherapistReportLoadMore();
 }
 
+/// Show Stats open/close (keeps current list).
+class TherapistReportStatsToggled extends TherapistReportEvent {
+  const TherapistReportStatsToggled();
+}
+
 /// Search text changed (starts debounce).
 class TherapistReportSearchChanged extends TherapistReportEvent {
   const TherapistReportSearchChanged(this.search);

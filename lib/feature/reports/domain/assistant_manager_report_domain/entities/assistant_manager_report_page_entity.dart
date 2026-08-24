@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 import 'assistant_manager_report_entity.dart';
+import 'assistant_manager_report_summary_entity.dart';
 
 // ============================================================
 // ASSISTANT MANAGER REPORT PAGE ENTITY (Domain)
@@ -14,15 +15,17 @@ class AssistantManagerReportPageEntity extends Equatable {
     required this.currentPage,
     required this.lastPage,
     required this.total,
+    this.summary = const AssistantManagerReportSummaryEntity.empty(),
   });
 
   final List<AssistantManagerReportEntity> rows;
   final int currentPage;
   final int lastPage;
   final int total;
+  final AssistantManagerReportSummaryEntity summary;
 
   bool get hasMore => currentPage < lastPage;
 
   @override
-  List<Object?> get props => [rows, currentPage, lastPage, total];
+  List<Object?> get props => [rows, currentPage, lastPage, total, summary];
 }

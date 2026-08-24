@@ -42,7 +42,6 @@ class _PatientReportFiltersState extends State<PatientReportFilters> {
   static const _allTherapists = 'All Therapists';
   static const _allAssistantManagers = 'All Assistant Managers';
   static const _allReceptionists = 'All Receptionists';
-  static const _perPageLabels = ['15', '25', '50', '100'];
 
   late String? _fromDateApi;
   late String? _toDateApi;
@@ -108,14 +107,14 @@ class _PatientReportFiltersState extends State<PatientReportFilters> {
   }
 
   void _syncFromQuery(PatientReportQuery q) {
-    _fromDateApi = q.fromDate;
-    _toDateApi = q.toDate;
+    _fromDateApi = ReportDateField.orToday(q.fromDate);
+    _toDateApi = ReportDateField.orToday(q.toDate);
     _clinic = _nameForClinicId(q.clinicId);
     _consultant = _nameForConsultantId(q.consultantId);
     _therapist = _nameForTherapistId(q.therapistId);
     _assistantManager = _nameForAssistantManagerId(q.assistantManagerId);
     _receptionist = _nameForReceptionistId(q.receptionistId);
-    _perPage = q.perPage.toString();
+    _perPage = PatientReportPerPage.labelFor(q.perPage);
   }
 
   String _nameForClinicId(int? id) {
@@ -206,13 +205,19 @@ class _PatientReportFiltersState extends State<PatientReportFilters> {
   }
 
   Future<void> _pickFrom() async {
-    final picked = await ReportDateField.pickDate(context);
+    final picked = await ReportDateField.pickDate(
+      context,
+      currentApiDate: _fromDateApi,
+    );
     if (picked == null) return;
     setState(() => _fromDateApi = _toApiDate(picked));
   }
 
   Future<void> _pickTo() async {
-    final picked = await ReportDateField.pickDate(context);
+    final picked = await ReportDateField.pickDate(
+      context,
+      currentApiDate: _toDateApi,
+    );
     if (picked == null) return;
     setState(() => _toDateApi = _toApiDate(picked));
   }
@@ -240,7 +245,7 @@ class _PatientReportFiltersState extends State<PatientReportFilters> {
       therapistId: _therapistIdForName(_therapist),
       assistantManagerId: _assistantManagerIdForName(_assistantManager),
       receptionistId: _receptionistIdForName(_receptionist),
-      perPage: int.tryParse(_perPage) ?? 15,
+      perPage: PatientReportPerPage.valueForLabel(_perPage),
       page: 1,
     );
   }
@@ -395,9 +400,13 @@ class _PatientReportFiltersState extends State<PatientReportFilters> {
                 compact: true,
                 key: ValueKey('pr_per_page_$_resetToken'),
                 label: 'Per Page',
-                hintText: '15',
-                items: _perPageLabels,
-                value: _perPage,
+                hintText: PatientReportPerPage.defaultSize.toString(),
+                items: PatientReportPerPage.dropdownLabels,
+                value: PatientReportPerPage.dropdownLabels.contains(_perPage)
+                    ? _perPage
+                    : PatientReportPerPage.labelFor(
+                        PatientReportPerPage.defaultSize,
+                      ),
                 onChanged: (v) {
                   if (v == null) return;
                   setState(() => _perPage = v);

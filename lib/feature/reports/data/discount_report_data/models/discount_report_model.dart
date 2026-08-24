@@ -1,5 +1,6 @@
 import 'package:ali_therapy_admin/feature/reports/domain/discount_report_domain/entities/discount_report_entity.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/discount_report_domain/entities/discount_report_page_entity.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/discount_report_domain/entities/discount_report_summary_entity.dart';
 
 // ============================================================
 // DISCOUNT REPORT MODEL (Data)
@@ -73,6 +74,7 @@ class DiscountReportPageModel extends DiscountReportPageEntity {
     required super.currentPage,
     required super.lastPage,
     required super.total,
+    super.summary,
   });
 
   factory DiscountReportPageModel.fromJson(Map<String, dynamic> json) {
@@ -86,12 +88,14 @@ class DiscountReportPageModel extends DiscountReportPageEntity {
     final lastPage = json['last_page'] != null
         ? _toInt(json['last_page'], fallback: currentPage)
         : (nextPageUrl.isNotEmpty ? currentPage + 1 : currentPage);
+    final total = _toInt(json['total'], fallback: rows.length);
 
     return DiscountReportPageModel(
       rows: rows,
       currentPage: currentPage,
       lastPage: lastPage,
-      total: _toInt(json['total'], fallback: rows.length),
+      total: total,
+      summary: DiscountReportSummaryModel.fromJson(json, invoiceCount: total),
     );
   }
 
@@ -100,7 +104,71 @@ class DiscountReportPageModel extends DiscountReportPageEntity {
         currentPage: currentPage,
         lastPage: lastPage,
         total: total,
+        summary: summary,
       );
+}
+
+class DiscountReportSummaryModel extends DiscountReportSummaryEntity {
+  const DiscountReportSummaryModel({
+    required super.discountedInvoices,
+    required super.totalGrossBilled,
+    required super.totalDiscountGiven,
+    required super.netBilledAmount,
+  });
+
+  factory DiscountReportSummaryModel.fromJson(
+    Map<String, dynamic> json, {
+    required int invoiceCount,
+  }) {
+    final totals = _asMap(json['totals']) ??
+        _asMap(json['summary']) ??
+        _asMap(json['stats']) ??
+        json;
+
+    final invoices = _toInt(
+      totals['discounted_invoices'] ??
+          totals['total_invoices'] ??
+          totals['invoice_count'],
+      fallback: 0,
+    );
+    final gross = _money(
+      totals['total_gross_billed'] ??
+          totals['gross_billed'] ??
+          totals['gross_amount'],
+    );
+    final discount = _money(
+      totals['total_discount_given'] ??
+          totals['total_discount'] ??
+          totals['discount'],
+    );
+    final net = _money(
+      totals['net_billed_amount'] ??
+          totals['net_amount'] ??
+          totals['net_billed'],
+    );
+
+    if (invoices == 0 && gross == 0 && discount == 0 && net == 0) {
+      return const DiscountReportSummaryModel(
+        discountedInvoices: 0,
+        totalGrossBilled: 0,
+        totalDiscountGiven: 0,
+        netBilledAmount: 0,
+      );
+    }
+
+    return DiscountReportSummaryModel(
+      discountedInvoices: invoices == 0 ? invoiceCount : invoices,
+      totalGrossBilled: gross,
+      totalDiscountGiven: discount,
+      netBilledAmount: net,
+    );
+  }
+
+  static Map<String, dynamic>? _asMap(dynamic value) {
+    if (value is Map<String, dynamic>) return value;
+    if (value is Map) return Map<String, dynamic>.from(value);
+    return null;
+  }
 }
 
 String _text(dynamic value) {

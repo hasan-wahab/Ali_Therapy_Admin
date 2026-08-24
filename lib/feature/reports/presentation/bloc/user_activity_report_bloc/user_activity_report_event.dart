@@ -42,6 +42,10 @@ class UserActivityReportSearchSubmitted extends UserActivityReportEvent {
   List<Object?> get props => [search];
 }
 
+class UserActivityReportStatsToggled extends UserActivityReportEvent {
+  const UserActivityReportStatsToggled();
+}
+
 class UserActivityReportFiltersApplied extends UserActivityReportEvent {
   const UserActivityReportFiltersApplied({
     this.fromDate,

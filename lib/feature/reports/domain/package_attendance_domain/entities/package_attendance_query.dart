@@ -6,13 +6,46 @@ import 'package:equatable/equatable.dart';
 // Query params for GET /api/admin/reports/package-attendance
 // ============================================================
 
+/// Per-page dropdown (matches the web package attendance report).
+class PackageAttendancePerPage {
+  PackageAttendancePerPage._();
+
+  static const int defaultSize = 50;
+
+  /// Large page size when user picks "All".
+  static const int all = 10000;
+
+  static const String allLabel = 'All';
+
+  static List<String> get dropdownLabels => [
+        '50',
+        '100',
+        '200',
+        '500',
+        '1,000',
+        allLabel,
+      ];
+
+  static String labelFor(int perPage) {
+    if (perPage >= all) return allLabel;
+    if (perPage == 1000) return '1,000';
+    return perPage.toString();
+  }
+
+  static int valueForLabel(String label) {
+    if (label == allLabel) return all;
+    final normalized = label.replaceAll(',', '');
+    return int.tryParse(normalized) ?? defaultSize;
+  }
+}
+
 class PackageAttendanceQuery extends Equatable {
   const PackageAttendanceQuery({
     this.search = '',
     this.clinicId,
     this.gender,
     this.therapistId,
-    this.perPage = 15,
+    this.perPage = PackageAttendancePerPage.defaultSize,
     this.page = 1,
   });
 
@@ -58,10 +91,11 @@ class PackageAttendanceQuery extends Equatable {
   }
 
   Map<String, dynamic> toQueryParameters() {
-    final params = <String, dynamic>{
-      'page': page,
-      'per_page': perPage,
-    };
+    final params = <String, dynamic>{};
+    if (page > 1) params['page'] = page;
+    if (perPage != PackageAttendancePerPage.defaultSize) {
+      params['per_page'] = perPage;
+    }
     final s = search.trim();
     if (s.isNotEmpty) params['search'] = s;
     if (clinicId != null) params['clinic_id'] = clinicId;

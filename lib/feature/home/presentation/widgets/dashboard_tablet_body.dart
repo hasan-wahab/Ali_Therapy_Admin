@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/utils/app_device.dart';
+import 'package:ali_therapy_admin/core/utils/app_permission.dart';
 import 'package:ali_therapy_admin/feature/home/presentation/widgets/dashboard_create_patient_button.dart';
 import 'package:ali_therapy_admin/feature/home/presentation/widgets/dashboard_menu_list.dart';
 import 'package:ali_therapy_admin/feature/home/presentation/widgets/dashboard_section_title.dart';
@@ -31,6 +32,9 @@ class DashboardTabletBody extends StatelessWidget {
       child: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: maxWidth),
         child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: ClampingScrollPhysics(),
+          ),
           padding: EdgeInsets.fromLTRB(hPad, vPad, hPad, 28.h),
           child: landscape ? _landscape() : _portrait(),
         ),
@@ -40,52 +44,69 @@ class DashboardTabletBody extends StatelessWidget {
 
   /// Matches tablet Figma: Overview → Quick Access → Create button.
   Widget _portrait() {
+    final showOverview = AppPermission.canViewDashboardOverview;
+    final showQuickAccess = AppPermission.canViewQuickAccess;
+    final showCreate = AppPermission.canAddPatient;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const DashboardSectionTitle(title: 'Overview'),
-        SizedBox(height: 12.h),
-        const DashboardStatsGrid(),
-        SizedBox(height: 28.h),
-        const DashboardSectionTitle(title: 'Quick Access'),
-        SizedBox(height: 12.h),
-        const DashboardMenuList(),
-        SizedBox(height: 28.h),
-        const DashboardCreatePatientButton(),
+        if (showOverview) ...[
+          const DashboardSectionTitle(title: 'Overview'),
+          SizedBox(height: 12.h),
+          const DashboardStatsGrid(),
+          if (showQuickAccess || showCreate) SizedBox(height: 28.h),
+        ],
+        if (showQuickAccess) ...[
+          const DashboardSectionTitle(title: 'Quick Access'),
+          SizedBox(height: 12.h),
+          const DashboardMenuList(),
+          if (showCreate) SizedBox(height: 28.h),
+        ],
+        if (showCreate) const DashboardCreatePatientButton(),
       ],
     );
   }
 
   /// Landscape: use width — Overview left, Quick Access + CTA right.
   Widget _landscape() {
+    final showOverview = AppPermission.canViewDashboardOverview;
+    final showQuickAccess = AppPermission.canViewQuickAccess;
+    final showCreate = AppPermission.canAddPatient;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          flex: 5,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const DashboardSectionTitle(title: 'Overview'),
-              SizedBox(height: 12.h),
-              const DashboardStatsGrid(),
-            ],
+        if (showOverview)
+          Expanded(
+            flex: 5,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const DashboardSectionTitle(title: 'Overview'),
+                SizedBox(height: 12.h),
+                const DashboardStatsGrid(),
+              ],
+            ),
           ),
-        ),
-        SizedBox(width: 24.w),
-        Expanded(
-          flex: 4,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const DashboardSectionTitle(title: 'Quick Access'),
-              SizedBox(height: 12.h),
-              const DashboardMenuList(),
-              SizedBox(height: 24.h),
-              const DashboardCreatePatientButton(),
-            ],
+        if (showOverview && (showQuickAccess || showCreate))
+          SizedBox(width: 24.w),
+        if (showQuickAccess || showCreate)
+          Expanded(
+            flex: 4,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (showQuickAccess) ...[
+                  const DashboardSectionTitle(title: 'Quick Access'),
+                  SizedBox(height: 12.h),
+                  const DashboardMenuList(),
+                  if (showCreate) SizedBox(height: 24.h),
+                ],
+                if (showCreate) const DashboardCreatePatientButton(),
+              ],
+            ),
           ),
-        ),
       ],
     );
   }

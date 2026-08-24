@@ -7,6 +7,7 @@ import 'package:ali_therapy_admin/core/usecase/usecase.dart';
 import 'package:ali_therapy_admin/core/utils/app_search_ranker.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/in_progress_sessions_domain/entities/in_progress_sessions_entity.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/in_progress_sessions_domain/entities/in_progress_sessions_query.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/in_progress_sessions_domain/entities/in_progress_sessions_summary_entity.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/in_progress_sessions_domain/usecases/get_in_progress_sessions_usecase.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/report_filter_options_domain/entities/report_filter_options_entity.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/report_filter_options_domain/usecases/get_report_filter_options_usecase.dart';
@@ -34,6 +35,7 @@ class InProgressSessionsBloc
     on<InProgressSessionsSearchChanged>(_onSearchChanged);
     on<InProgressSessionsSearchSubmitted>(_onSearchSubmitted);
     on<InProgressSessionsFiltersApplied>(_onFiltersApplied);
+    on<InProgressSessionsStatsToggled>(_onStatsToggled);
   }
 
   final GetInProgressSessionsUseCase getInProgressSessionsUseCase;
@@ -136,6 +138,7 @@ class InProgressSessionsBloc
         staffId: event.staffId,
         fromDate: event.fromDate,
         toDate: event.toDate,
+        perPage: event.perPage,
         clearClinicId: event.clearClinicId,
         clearStaffId: event.clearStaffId,
         clearFromDate: event.clearFromDate,
@@ -145,6 +148,16 @@ class InProgressSessionsBloc
     }
 
     await _reloadList(emit);
+  }
+
+  void _onStatsToggled(
+    InProgressSessionsStatsToggled event,
+    Emitter<InProgressSessionsState> emit,
+  ) {
+    final current = state;
+    if (current is InProgressSessionsLoaded) {
+      emit(current.copyWith(showStats: !current.showStats));
+    }
   }
 
   Future<void> _reloadList(Emitter<InProgressSessionsState> emit) async {
@@ -174,6 +187,8 @@ class InProgressSessionsBloc
         currentPage: s.currentPage,
         lastPage: s.lastPage,
         total: s.total,
+        summary: s.summary,
+        showStats: s.showStats,
         filterOptions: s.filterOptions,
         query: s.query,
       );
@@ -184,11 +199,36 @@ class InProgressSessionsBloc
         currentPage: s.currentPage,
         lastPage: s.lastPage,
         total: s.total,
+        summary: s.summary,
+        showStats: s.showStats,
         filterOptions: s.filterOptions,
         query: s.query,
       );
     }
     return _Snapshot(filterOptions: _filterOptions, query: _query);
+  }
+
+  InProgressSessionsSummaryEntity _resolvedSummary({
+    required InProgressSessionsSummaryEntity incoming,
+    required List<InProgressSessionsEntity> rows,
+    required int sessionCount,
+  }) {
+    final fallback = InProgressSessionsSummaryEntity.fromRows(
+      rows,
+      sessionCount: sessionCount,
+    );
+    if (incoming.isEmpty) return fallback;
+    if (incoming.consultationsActive == 0 &&
+        incoming.therapyActive == 0 &&
+        incoming.clinicsActive == 0) {
+      return InProgressSessionsSummaryEntity(
+        totalInProgress: incoming.totalInProgress,
+        consultationsActive: fallback.consultationsActive,
+        therapyActive: fallback.therapyActive,
+        clinicsActive: fallback.clinicsActive,
+      );
+    }
+    return incoming;
   }
 
   List<String> _searchFields(InProgressSessionsEntity row) => [
@@ -244,6 +284,12 @@ class InProgressSessionsBloc
           currentPage: pageData.currentPage,
           lastPage: pageData.lastPage,
           total: pageData.total,
+          summary: _resolvedSummary(
+            incoming: pageData.summary,
+            rows: merged,
+            sessionCount: pageData.total,
+          ),
+          showStats: keepOnError.showStats,
           isLoadingMore: false,
           isRefreshingList: false,
           filterOptions: _filterOptions,
@@ -258,6 +304,8 @@ class InProgressSessionsBloc
           currentPage: keepOnError.currentPage,
           lastPage: keepOnError.lastPage,
           total: keepOnError.total,
+          summary: keepOnError.summary,
+          showStats: keepOnError.showStats,
           filterOptions: keepOnError.filterOptions,
           query: keepOnError.query,
         ));
@@ -267,6 +315,8 @@ class InProgressSessionsBloc
             currentPage: keepOnError.currentPage,
             lastPage: keepOnError.lastPage,
             total: keepOnError.total,
+            summary: keepOnError.summary,
+            showStats: keepOnError.showStats,
             isLoadingMore: false,
             isRefreshingList: false,
             filterOptions: keepOnError.filterOptions,
@@ -297,6 +347,8 @@ class InProgressSessionsBloc
         currentPage: keepOnError.currentPage,
         lastPage: keepOnError.lastPage,
         total: keepOnError.total,
+        summary: keepOnError.summary,
+        showStats: keepOnError.showStats,
         filterOptions: keepOnError.filterOptions,
         query: keepOnError.query,
       ));
@@ -306,6 +358,8 @@ class InProgressSessionsBloc
           currentPage: keepOnError.currentPage,
           lastPage: keepOnError.lastPage,
           total: keepOnError.total,
+          summary: keepOnError.summary,
+          showStats: keepOnError.showStats,
           isLoadingMore: false,
           isRefreshingList: false,
           filterOptions: keepOnError.filterOptions,
@@ -321,17 +375,29 @@ class InProgressSessionsBloc
     final relatedPage = relatedResult.isSuccess ? relatedResult.data : null;
     final related = relatedPage?.rows ?? <InProgressSessionsEntity>[];
 
+    final rankedRows = AppSearchRanker.pinMatchesThenRelated(
+      matches: matches,
+      related: related,
+      query: _query.search,
+      idOf: (row) => row.id,
+      fieldsOf: _searchFields,
+    );
+    final rankedTotal = relatedPage?.total ?? matches.length;
+
     emit(InProgressSessionsLoaded(
-      rows: AppSearchRanker.pinMatchesThenRelated(
-        matches: matches,
-        related: related,
-        query: _query.search,
-        idOf: (row) => row.id,
-        fieldsOf: _searchFields,
-      ),
+      rows: rankedRows,
       currentPage: relatedPage?.currentPage ?? 1,
       lastPage: relatedPage?.lastPage ?? 1,
-      total: relatedPage?.total ?? matches.length,
+      total: rankedTotal,
+      summary: _resolvedSummary(
+        incoming: relatedPage?.summary ??
+            (matchResult.isSuccess
+                ? matchResult.data.summary
+                : const InProgressSessionsSummaryEntity.empty()),
+        rows: rankedRows,
+        sessionCount: rankedTotal,
+      ),
+      showStats: keepOnError.showStats,
       isLoadingMore: false,
       isRefreshingList: false,
       filterOptions: _filterOptions,
@@ -346,6 +412,8 @@ class _Snapshot {
     this.currentPage = 0,
     this.lastPage = 0,
     this.total = 0,
+    this.summary = const InProgressSessionsSummaryEntity.empty(),
+    this.showStats = false,
     this.filterOptions = const ReportFilterOptionsEntity.empty(),
     this.query = const InProgressSessionsQuery(),
   });
@@ -354,6 +422,8 @@ class _Snapshot {
   final int currentPage;
   final int lastPage;
   final int total;
+  final InProgressSessionsSummaryEntity summary;
+  final bool showStats;
   final ReportFilterOptionsEntity filterOptions;
   final InProgressSessionsQuery query;
 }

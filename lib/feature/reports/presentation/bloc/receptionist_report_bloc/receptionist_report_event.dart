@@ -27,6 +27,11 @@ class ReceptionistReportLoadMore extends ReceptionistReportEvent {
   const ReceptionistReportLoadMore();
 }
 
+/// Show Stats open/close (keeps current list).
+class ReceptionistReportStatsToggled extends ReceptionistReportEvent {
+  const ReceptionistReportStatsToggled();
+}
+
 /// Search text changed (starts debounce).
 class ReceptionistReportSearchChanged extends ReceptionistReportEvent {
   const ReceptionistReportSearchChanged(this.search);

@@ -97,7 +97,7 @@ class ReportsRemoteDataSourceImpl implements ReportsRemoteDataSource {
     try {
       final response = await dioClient.get(
         ApiConstants.patientDues,
-        queryParameters: query.toQueryParameters(),
+        queryParameters: _optionalQuery(query.toQueryParameters()),
       );
 
       final body = _asMap(response.data);
@@ -205,7 +205,7 @@ class ReportsRemoteDataSourceImpl implements ReportsRemoteDataSource {
     try {
       final response = await dioClient.get(
         ApiConstants.consultationReport,
-        queryParameters: query.toQueryParameters(),
+        queryParameters: _optionalQuery(query.toQueryParameters()),
       );
 
       final body = _asMap(response.data);
@@ -226,7 +226,14 @@ class ReportsRemoteDataSourceImpl implements ReportsRemoteDataSource {
 
       final raw = body['data'] is Map
           ? Map<String, dynamic>.from(body['data'] as Map)
-          : body;
+          : Map<String, dynamic>.from(body);
+
+      // Totals may sit next to `data` on the root body.
+      for (final key in ['summary', 'totals', 'stats']) {
+        if (raw[key] == null && body[key] != null) {
+          raw[key] = body[key];
+        }
+      }
 
       return ConsultationReportPageModel.fromJson(raw);
     } on DioException catch (e) {
@@ -257,7 +264,7 @@ class ReportsRemoteDataSourceImpl implements ReportsRemoteDataSource {
     try {
       final response = await dioClient.get(
         ApiConstants.therapistReport,
-        queryParameters: query.toQueryParameters(),
+        queryParameters: _optionalQuery(query.toQueryParameters()),
       );
 
       final body = _asMap(response.data);
@@ -278,7 +285,14 @@ class ReportsRemoteDataSourceImpl implements ReportsRemoteDataSource {
 
       final raw = body['data'] is Map
           ? Map<String, dynamic>.from(body['data'] as Map)
-          : body;
+          : Map<String, dynamic>.from(body);
+
+      // Totals may sit next to `data` on the root body.
+      for (final key in ['summary', 'totals', 'stats']) {
+        if (raw[key] == null && body[key] != null) {
+          raw[key] = body[key];
+        }
+      }
 
       return TherapistReportPageModel.fromJson(raw);
     } on DioException catch (e) {
@@ -309,7 +323,7 @@ class ReportsRemoteDataSourceImpl implements ReportsRemoteDataSource {
     try {
       final response = await dioClient.get(
         ApiConstants.reconsultationReport,
-        queryParameters: query.toQueryParameters(),
+        queryParameters: _optionalQuery(query.toQueryParameters()),
       );
 
       final body = _asMap(response.data);
@@ -330,7 +344,14 @@ class ReportsRemoteDataSourceImpl implements ReportsRemoteDataSource {
 
       final raw = body['data'] is Map
           ? Map<String, dynamic>.from(body['data'] as Map)
-          : body;
+          : Map<String, dynamic>.from(body);
+
+      // Totals may sit next to `data` on the root body.
+      for (final key in ['summary', 'totals', 'stats']) {
+        if (raw[key] == null && body[key] != null) {
+          raw[key] = body[key];
+        }
+      }
 
       return ReconsultationReportPageModel.fromJson(raw);
     } on DioException catch (e) {
@@ -361,7 +382,7 @@ class ReportsRemoteDataSourceImpl implements ReportsRemoteDataSource {
     try {
       final response = await dioClient.get(
         ApiConstants.freeConsultationReport,
-        queryParameters: query.toQueryParameters(),
+        queryParameters: _optionalQuery(query.toQueryParameters()),
       );
 
       final body = _asMap(response.data);
@@ -382,7 +403,14 @@ class ReportsRemoteDataSourceImpl implements ReportsRemoteDataSource {
 
       final raw = body['data'] is Map
           ? Map<String, dynamic>.from(body['data'] as Map)
-          : body;
+          : Map<String, dynamic>.from(body);
+
+      // Totals may sit next to `data` on the root body.
+      for (final key in ['summary', 'totals', 'stats']) {
+        if (raw[key] == null && body[key] != null) {
+          raw[key] = body[key];
+        }
+      }
 
       return FreeConsultationReportPageModel.fromJson(raw);
     } on DioException catch (e) {
@@ -414,7 +442,7 @@ class ReportsRemoteDataSourceImpl implements ReportsRemoteDataSource {
     try {
       final response = await dioClient.get(
         ApiConstants.assistantManagerReport,
-        queryParameters: query.toQueryParameters(),
+        queryParameters: _optionalQuery(query.toQueryParameters()),
       );
 
       final body = _asMap(response.data);
@@ -435,7 +463,14 @@ class ReportsRemoteDataSourceImpl implements ReportsRemoteDataSource {
 
       final raw = body['data'] is Map
           ? Map<String, dynamic>.from(body['data'] as Map)
-          : body;
+          : Map<String, dynamic>.from(body);
+
+      // Totals may sit next to `data` on the root body.
+      for (final key in ['summary', 'totals', 'stats']) {
+        if (raw[key] == null && body[key] != null) {
+          raw[key] = body[key];
+        }
+      }
 
       return AssistantManagerReportPageModel.fromJson(raw);
     } on DioException catch (e) {
@@ -467,7 +502,7 @@ class ReportsRemoteDataSourceImpl implements ReportsRemoteDataSource {
     try {
       final response = await dioClient.get(
         ApiConstants.receptionistReport,
-        queryParameters: query.toQueryParameters(),
+        queryParameters: _optionalQuery(query.toQueryParameters()),
       );
 
       final body = _asMap(response.data);
@@ -488,7 +523,14 @@ class ReportsRemoteDataSourceImpl implements ReportsRemoteDataSource {
 
       final raw = body['data'] is Map
           ? Map<String, dynamic>.from(body['data'] as Map)
-          : body;
+          : Map<String, dynamic>.from(body);
+
+      // Totals may sit next to `data` on the root body.
+      for (final key in ['summary', 'totals', 'stats']) {
+        if (raw[key] == null && body[key] != null) {
+          raw[key] = body[key];
+        }
+      }
 
       return ReceptionistReportPageModel.fromJson(raw);
     } on DioException catch (e) {
@@ -519,7 +561,7 @@ class ReportsRemoteDataSourceImpl implements ReportsRemoteDataSource {
     try {
       final response = await dioClient.get(
         ApiConstants.patientReport,
-        queryParameters: query.toQueryParameters(),
+        queryParameters: _optionalQuery(query.toQueryParameters()),
       );
 
       final body = _asMap(response.data);
@@ -571,7 +613,7 @@ class ReportsRemoteDataSourceImpl implements ReportsRemoteDataSource {
     try {
       final response = await dioClient.get(
         ApiConstants.packageAttendance,
-        queryParameters: query.toQueryParameters(),
+        queryParameters: _optionalQuery(query.toQueryParameters()),
       );
 
       final body = _asMap(response.data);
@@ -674,7 +716,7 @@ class ReportsRemoteDataSourceImpl implements ReportsRemoteDataSource {
     try {
       final response = await dioClient.get(
         ApiConstants.referByReport,
-        queryParameters: query.toQueryParameters(),
+        queryParameters: _optionalQuery(query.toQueryParameters()),
       );
 
       final body = _asMap(response.data);
@@ -732,7 +774,7 @@ class ReportsRemoteDataSourceImpl implements ReportsRemoteDataSource {
     try {
       final response = await dioClient.get(
         ApiConstants.insurancePanelReport,
-        queryParameters: query.toQueryParameters(),
+        queryParameters: _optionalQuery(query.toQueryParameters()),
       );
 
       final body = _asMap(response.data);
@@ -804,7 +846,7 @@ class ReportsRemoteDataSourceImpl implements ReportsRemoteDataSource {
     try {
       final response = await dioClient.get(
         ApiConstants.inProgressSessions,
-        queryParameters: query.toQueryParameters(),
+        queryParameters: _optionalQuery(query.toQueryParameters()),
       );
 
       final body = _asMap(response.data);
@@ -825,7 +867,14 @@ class ReportsRemoteDataSourceImpl implements ReportsRemoteDataSource {
 
       final raw = body['data'] is Map
           ? Map<String, dynamic>.from(body['data'] as Map)
-          : body;
+          : Map<String, dynamic>.from(body);
+
+      // Totals may sit next to `data` on the root body.
+      for (final key in ['summary', 'totals', 'stats']) {
+        if (raw[key] == null && body[key] != null) {
+          raw[key] = body[key];
+        }
+      }
 
       return InProgressSessionsPageModel.fromJson(raw);
     } on DioException catch (e) {
@@ -856,7 +905,7 @@ class ReportsRemoteDataSourceImpl implements ReportsRemoteDataSource {
     try {
       final response = await dioClient.get(
         ApiConstants.discountReport,
-        queryParameters: query.toQueryParameters(),
+        queryParameters: _optionalQuery(query.toQueryParameters()),
       );
 
       final body = _asMap(response.data);
@@ -908,7 +957,7 @@ class ReportsRemoteDataSourceImpl implements ReportsRemoteDataSource {
     try {
       final response = await dioClient.get(
         ApiConstants.userActivityReport,
-        queryParameters: query.toQueryParameters(),
+        queryParameters: _optionalQuery(query.toQueryParameters()),
       );
 
       final body = _asMap(response.data);
@@ -957,5 +1006,10 @@ class ReportsRemoteDataSourceImpl implements ReportsRemoteDataSource {
     if (value is Map<String, dynamic>) return value;
     if (value is Map) return Map<String, dynamic>.from(value);
     return null;
+  }
+
+  /// Empty map → omit query string so first load is the bare URL.
+  Map<String, dynamic>? _optionalQuery(Map<String, dynamic> params) {
+    return params.isEmpty ? null : params;
   }
 }

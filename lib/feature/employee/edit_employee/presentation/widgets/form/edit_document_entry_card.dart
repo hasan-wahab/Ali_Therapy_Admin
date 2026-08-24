@@ -20,12 +20,20 @@ class EditDocumentEntryCard extends StatelessWidget {
     required this.descriptionController,
     required this.onDelete,
     this.expiryValue,
+    this.onExpiryChanged,
+    this.fileName,
+    this.fileBytes,
+    this.onChooseFile,
   });
 
   final TextEditingController titleController;
   final TextEditingController descriptionController;
   final VoidCallback onDelete;
   final String? expiryValue;
+  final ValueChanged<String>? onExpiryChanged;
+  final String? fileName;
+  final List<int>? fileBytes;
+  final VoidCallback? onChooseFile;
 
   @override
   Widget build(BuildContext context) {
@@ -83,12 +91,17 @@ class EditDocumentEntryCard extends StatelessWidget {
             controller: descriptionController,
           ),
           SizedBox(height: 10.h),
-          const EditDocumentFileField(),
+          EditDocumentFileField(
+            fileName: fileName,
+            localBytes: fileBytes,
+            onChooseFile: onChooseFile,
+          ),
           SizedBox(height: 10.h),
           EditDateField(
             label: 'Expiry',
             value: expiryValue,
             hintText: 'mm/dd/yyyy',
+            onChanged: onExpiryChanged,
           ),
         ],
       ),

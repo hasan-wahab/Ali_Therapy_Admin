@@ -52,6 +52,7 @@ class _InProgressSessionsFiltersState extends State<InProgressSessionsFilters> {
   late String _staff;
   late String? _fromDateApi;
   late String? _toDateApi;
+  late String _perPage;
   int _resetToken = 0;
 
   List<String> get _clinicItems => [
@@ -97,8 +98,9 @@ class _InProgressSessionsFiltersState extends State<InProgressSessionsFilters> {
     );
     _clinic = _nameForClinicId(q.clinicId);
     _staff = _nameForStaffId(q.staffId);
-    _fromDateApi = q.fromDate;
-    _toDateApi = q.toDate;
+    _fromDateApi = ReportDateField.orToday(q.fromDate);
+    _toDateApi = ReportDateField.orToday(q.toDate);
+    _perPage = InProgressSessionsPerPage.labelFor(q.perPage);
   }
 
   String _nameForClinicId(int? id) {
@@ -160,13 +162,19 @@ class _InProgressSessionsFiltersState extends State<InProgressSessionsFilters> {
   }
 
   Future<void> _pickFrom() async {
-    final picked = await ReportDateField.pickDate(context);
+    final picked = await ReportDateField.pickDate(
+      context,
+      currentApiDate: _fromDateApi,
+    );
     if (picked == null) return;
     setState(() => _fromDateApi = _toApiDate(picked));
   }
 
   Future<void> _pickTo() async {
-    final picked = await ReportDateField.pickDate(context);
+    final picked = await ReportDateField.pickDate(
+      context,
+      currentApiDate: _toDateApi,
+    );
     if (picked == null) return;
     setState(() => _toDateApi = _toApiDate(picked));
   }
@@ -179,6 +187,7 @@ class _InProgressSessionsFiltersState extends State<InProgressSessionsFilters> {
       staffId: _staffIdForName(_staff),
       fromDate: _fromDateApi,
       toDate: _toDateApi,
+      perPage: InProgressSessionsPerPage.valueForLabel(_perPage),
       page: 1,
     );
   }
@@ -190,6 +199,7 @@ class _InProgressSessionsFiltersState extends State<InProgressSessionsFilters> {
         staffId: widget.currentQuery.staffId,
         fromDate: widget.currentQuery.fromDate,
         toDate: widget.currentQuery.toDate,
+        perPage: widget.currentQuery.perPage,
         page: 1,
       );
 
@@ -204,6 +214,7 @@ class _InProgressSessionsFiltersState extends State<InProgressSessionsFilters> {
             staffId: draft.staffId,
             fromDate: draft.fromDate,
             toDate: draft.toDate,
+            perPage: draft.perPage,
             clearClinicId: draft.clinicId == null,
             clearStaffId: draft.staffId == null,
             clearFromDate: draft.fromDate == null,
@@ -297,6 +308,22 @@ class _InProgressSessionsFiltersState extends State<InProgressSessionsFilters> {
                 label: 'To Date',
                 valueText: _displayDate(_toDateApi),
                 onTap: _pickTo,
+              ),
+              AppDropdownField(
+                compact: true,
+                key: ValueKey('ips_per_page_$_resetToken'),
+                label: 'Per Page',
+                hintText: InProgressSessionsPerPage.defaultSize.toString(),
+                items: InProgressSessionsPerPage.dropdownLabels,
+                value: InProgressSessionsPerPage.dropdownLabels.contains(_perPage)
+                    ? _perPage
+                    : InProgressSessionsPerPage.labelFor(
+                        InProgressSessionsPerPage.defaultSize,
+                      ),
+                onChanged: (v) {
+                  if (v == null) return;
+                  setState(() => _perPage = v);
+                },
               ),
             ],
           ),

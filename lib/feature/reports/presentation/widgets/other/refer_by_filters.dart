@@ -15,7 +15,7 @@ import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/rep
 // ============================================================
 // REFER BY FILTERS
 // ------------------------------------------------------------
-// From Date / To Date / Clinic / Receptionist / Referral Type.
+// From Date / To Date / Clinic / Receptionist / Referral Type / Per Page.
 // Dropdowns only update local draft.
 // API runs only after pressing "Apply".
 // ============================================================
@@ -56,6 +56,7 @@ class _ReferByFiltersState extends State<ReferByFilters> {
   late String _clinic;
   late String _receptionist;
   late String _referralType;
+  late String _perPage;
   int _resetToken = 0;
 
   List<String> get _clinicsItems => [
@@ -91,11 +92,12 @@ class _ReferByFiltersState extends State<ReferByFilters> {
   }
 
   void _syncFromQuery(ReferByReportQuery q) {
-    _fromDateApi = q.fromDate;
-    _toDateApi = q.toDate;
+    _fromDateApi = ReportDateField.orToday(q.fromDate);
+    _toDateApi = ReportDateField.orToday(q.toDate);
     _clinic = _nameForClinicId(q.clinicId);
     _receptionist = _nameForReceptionistId(q.receptionistId);
     _referralType = q.referralType ?? _allReferralTypes;
+    _perPage = ReferByReportPerPage.labelFor(q.perPage);
   }
 
   String _nameForClinicId(int? id) {
@@ -143,13 +145,19 @@ class _ReferByFiltersState extends State<ReferByFilters> {
   }
 
   Future<void> _pickFrom() async {
-    final picked = await ReportDateField.pickDate(context);
+    final picked = await ReportDateField.pickDate(
+      context,
+      currentApiDate: _fromDateApi,
+    );
     if (picked == null) return;
     setState(() => _fromDateApi = _toApiDate(picked));
   }
 
   Future<void> _pickTo() async {
-    final picked = await ReportDateField.pickDate(context);
+    final picked = await ReportDateField.pickDate(
+      context,
+      currentApiDate: _toDateApi,
+    );
     if (picked == null) return;
     setState(() => _toDateApi = _toApiDate(picked));
   }
@@ -175,6 +183,7 @@ class _ReferByFiltersState extends State<ReferByFilters> {
       clinicId: _clinicIdForName(_clinic),
       receptionistId: _receptionistIdForName(_receptionist),
       referralType: _referralTypeValue(_referralType),
+      perPage: ReferByReportPerPage.valueForLabel(_perPage),
     );
   }
 
@@ -185,6 +194,7 @@ class _ReferByFiltersState extends State<ReferByFilters> {
         clinicId: widget.currentQuery.clinicId,
         receptionistId: widget.currentQuery.receptionistId,
         referralType: widget.currentQuery.referralType,
+        perPage: widget.currentQuery.perPage,
       );
 
   bool get _hasPendingChanges => _draftQuery() != _normalizedApplied;
@@ -198,6 +208,7 @@ class _ReferByFiltersState extends State<ReferByFilters> {
             clinicId: draft.clinicId,
             receptionistId: draft.receptionistId,
             referralType: draft.referralType,
+            perPage: draft.perPage,
             clearFromDate: draft.fromDate == null,
             clearToDate: draft.toDate == null,
             clearClinicId: draft.clinicId == null,
@@ -287,6 +298,22 @@ class _ReferByFiltersState extends State<ReferByFilters> {
                 onChanged: (v) {
                   if (v == null) return;
                   setState(() => _referralType = v);
+                },
+              ),
+              AppDropdownField(
+                compact: true,
+                key: ValueKey('rb_per_page_$_resetToken'),
+                label: 'Per Page',
+                hintText: ReferByReportPerPage.defaultSize.toString(),
+                items: ReferByReportPerPage.dropdownLabels,
+                value: ReferByReportPerPage.dropdownLabels.contains(_perPage)
+                    ? _perPage
+                    : ReferByReportPerPage.labelFor(
+                        ReferByReportPerPage.defaultSize,
+                      ),
+                onChanged: (v) {
+                  if (v == null) return;
+                  setState(() => _perPage = v);
                 },
               ),
             ],

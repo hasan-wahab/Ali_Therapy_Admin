@@ -1,21 +1,56 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'package:ali_therapy_admin/core/services/image_picker_service.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
+import 'package:ali_therapy_admin/core/utils/app_snackbar.dart';
 import 'package:ali_therapy_admin/core/widgets/app_field_label.dart';
+import 'package:ali_therapy_admin/injection.dart';
 
 // ============================================================
 // FORM FILE FIELD
 // ------------------------------------------------------------
-// Choose File UI (Image or PDF). Action wired later.
+// Choose File for a document image (gallery).
 // ============================================================
 
-class FormFileField extends StatelessWidget {
+class FormFileField extends StatefulWidget {
   const FormFileField({super.key});
 
   @override
+  State<FormFileField> createState() => _FormFileFieldState();
+}
+
+class _FormFileFieldState extends State<FormFileField> {
+  String _fileName = '';
+  List<int> _bytes = const [];
+
+  Future<void> _pickFile() async {
+    try {
+      final file = await sl<ImagePickerService>().pickFromGallery();
+      if (file == null) return;
+      final bytes = await file.readAsBytes();
+      if (bytes.isEmpty) return;
+      if (!mounted) return;
+      setState(() {
+        _fileName = file.name;
+        _bytes = bytes;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      AppSnackbar.error(
+        context,
+        'Could not pick image. Please try again.',
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final hasLocal = _bytes.isNotEmpty;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -31,24 +66,42 @@ class FormFileField extends StatelessWidget {
           ),
           child: Row(
             children: [
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-                decoration: BoxDecoration(
-                  color: AppColors.softGray,
+              if (hasLocal) ...[
+                ClipRRect(
                   borderRadius: BorderRadius.circular(8.r),
+                  child: Image.memory(
+                    Uint8List.fromList(_bytes),
+                    width: 36.w,
+                    height: 36.w,
+                    fit: BoxFit.cover,
+                    gaplessPlayback: true,
+                  ),
                 ),
-                child: Text(
-                  'Choose File',
-                  style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w600,
+                SizedBox(width: 8.w),
+              ],
+              InkWell(
+                onTap: _pickFile,
+                borderRadius: BorderRadius.circular(8.r),
+                child: Container(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                  decoration: BoxDecoration(
+                    color: AppColors.softGray,
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Text(
+                    'Choose File',
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
               SizedBox(width: 10.w),
               Expanded(
                 child: Text(
-                  'No file chosen',
+                  _fileName.isNotEmpty ? _fileName : 'No file chosen',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.bodySmall.copyWith(
@@ -61,7 +114,7 @@ class FormFileField extends StatelessWidget {
         ),
         SizedBox(height: 6.h),
         Text(
-          'Image or PDF',
+          'Image',
           style: AppTextStyles.bodySmall.copyWith(color: AppColors.textMuted),
         ),
       ],

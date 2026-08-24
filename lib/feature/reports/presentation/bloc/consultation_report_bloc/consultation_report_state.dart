@@ -22,6 +22,8 @@ class ConsultationReportLoaded extends ConsultationReportState {
     required this.currentPage,
     required this.lastPage,
     required this.total,
+    this.summary = const ConsultationReportSummaryEntity.empty(),
+    this.showStats = false,
     this.isLoadingMore = false,
     this.isRefreshingList = false,
     this.filterOptions = const ReportFilterOptionsEntity.empty(),
@@ -32,6 +34,8 @@ class ConsultationReportLoaded extends ConsultationReportState {
   final int currentPage;
   final int lastPage;
   final int total;
+  final ConsultationReportSummaryEntity summary;
+  final bool showStats;
   final bool isLoadingMore;
   final bool isRefreshingList;
   final ReportFilterOptionsEntity filterOptions;
@@ -44,6 +48,8 @@ class ConsultationReportLoaded extends ConsultationReportState {
     int? currentPage,
     int? lastPage,
     int? total,
+    ConsultationReportSummaryEntity? summary,
+    bool? showStats,
     bool? isLoadingMore,
     bool? isRefreshingList,
     ReportFilterOptionsEntity? filterOptions,
@@ -54,6 +60,8 @@ class ConsultationReportLoaded extends ConsultationReportState {
       currentPage: currentPage ?? this.currentPage,
       lastPage: lastPage ?? this.lastPage,
       total: total ?? this.total,
+      summary: summary ?? this.summary,
+      showStats: showStats ?? this.showStats,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
       isRefreshingList: isRefreshingList ?? this.isRefreshingList,
       filterOptions: filterOptions ?? this.filterOptions,
@@ -67,6 +75,8 @@ class ConsultationReportLoaded extends ConsultationReportState {
         currentPage,
         lastPage,
         total,
+        summary,
+        showStats,
         isLoadingMore,
         isRefreshingList,
         filterOptions,
@@ -82,6 +92,8 @@ class ConsultationReportError extends ConsultationReportState {
     this.currentPage = 0,
     this.lastPage = 0,
     this.total = 0,
+    this.summary = const ConsultationReportSummaryEntity.empty(),
+    this.showStats = false,
     this.filterOptions = const ReportFilterOptionsEntity.empty(),
     this.query = const ConsultationReportQuery(),
   });
@@ -92,6 +104,8 @@ class ConsultationReportError extends ConsultationReportState {
   final int currentPage;
   final int lastPage;
   final int total;
+  final ConsultationReportSummaryEntity summary;
+  final bool showStats;
   final ReportFilterOptionsEntity filterOptions;
   final ConsultationReportQuery query;
 
@@ -103,6 +117,8 @@ class ConsultationReportError extends ConsultationReportState {
         currentPage,
         lastPage,
         total,
+        summary,
+        showStats,
         filterOptions,
         query,
       ];

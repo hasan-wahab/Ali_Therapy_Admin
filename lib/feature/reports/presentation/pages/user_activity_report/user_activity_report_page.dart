@@ -10,10 +10,12 @@ import 'package:ali_therapy_admin/core/widgets/app_shimmer.dart';
 import 'package:ali_therapy_admin/core/widgets/app_tablet_safe_area.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/form/form_back_app_bar.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/user_activity_report_domain/entities/user_activity_report_entity.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/user_activity_report_domain/entities/user_activity_report_summary_entity.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/bloc/user_activity_report_bloc/user_activity_report_bloc.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/user_activity_report_card_list.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/user_activity_report_card_skeleton.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/user_activity_report_search_filter_section.dart';
+import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/user_activity_report_totals.dart';
 import 'package:ali_therapy_admin/injection.dart';
 
 // ============================================================
@@ -26,6 +28,9 @@ import 'package:ali_therapy_admin/injection.dart';
 class UserActivityReportPage extends StatelessWidget {
   const UserActivityReportPage({super.key});
 
+  /// API sends summary_cards — Show Stats stays visible.
+  static const bool _showStatsFromApi = true;
+
   static const int _prefetchRemainingCards = 2;
 
   double get _approxCardHeight => 300.h;
@@ -34,6 +39,18 @@ class UserActivityReportPage extends StatelessWidget {
     if (state is UserActivityReportLoaded) return state.rows;
     if (state is UserActivityReportError) return state.rows;
     return const [];
+  }
+
+  UserActivityReportSummaryEntity _summaryOf(UserActivityReportState state) {
+    if (state is UserActivityReportLoaded) return state.summary;
+    if (state is UserActivityReportError) return state.summary;
+    return const UserActivityReportSummaryEntity.empty();
+  }
+
+  bool _showStatsOf(UserActivityReportState state) {
+    if (state is UserActivityReportLoaded) return state.showStats;
+    if (state is UserActivityReportError) return state.showStats;
+    return false;
   }
 
   bool _isLoading(UserActivityReportState state) {
@@ -74,6 +91,21 @@ class UserActivityReportPage extends StatelessWidget {
           parent: ClampingScrollPhysics(),
         ),
         slivers: [
+          if (!isFirstLoad && _showStatsFromApi)
+            SliverPadding(
+              padding: EdgeInsets.fromLTRB(hPad, 0, hPad, 12.h),
+              sliver: SliverToBoxAdapter(
+                child: UserActivityReportTotals(
+                  summary: _summaryOf(state),
+                  expanded: _showStatsOf(state),
+                  onToggle: () {
+                    context.read<UserActivityReportBloc>().add(
+                          const UserActivityReportStatsToggled(),
+                        );
+                  },
+                ),
+              ),
+            ),
           SliverPadding(
             padding: EdgeInsets.fromLTRB(hPad, 0, hPad, 8.h),
             sliver: isFirstLoad

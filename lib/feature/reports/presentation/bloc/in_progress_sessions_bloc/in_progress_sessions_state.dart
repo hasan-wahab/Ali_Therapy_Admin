@@ -21,6 +21,8 @@ class InProgressSessionsLoaded extends InProgressSessionsState {
     required this.currentPage,
     required this.lastPage,
     required this.total,
+    this.summary = const InProgressSessionsSummaryEntity.empty(),
+    this.showStats = false,
     this.isLoadingMore = false,
     this.isRefreshingList = false,
     this.filterOptions = const ReportFilterOptionsEntity.empty(),
@@ -31,6 +33,8 @@ class InProgressSessionsLoaded extends InProgressSessionsState {
   final int currentPage;
   final int lastPage;
   final int total;
+  final InProgressSessionsSummaryEntity summary;
+  final bool showStats;
   final bool isLoadingMore;
   final bool isRefreshingList;
   final ReportFilterOptionsEntity filterOptions;
@@ -43,6 +47,8 @@ class InProgressSessionsLoaded extends InProgressSessionsState {
     int? currentPage,
     int? lastPage,
     int? total,
+    InProgressSessionsSummaryEntity? summary,
+    bool? showStats,
     bool? isLoadingMore,
     bool? isRefreshingList,
     ReportFilterOptionsEntity? filterOptions,
@@ -53,6 +59,8 @@ class InProgressSessionsLoaded extends InProgressSessionsState {
       currentPage: currentPage ?? this.currentPage,
       lastPage: lastPage ?? this.lastPage,
       total: total ?? this.total,
+      summary: summary ?? this.summary,
+      showStats: showStats ?? this.showStats,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
       isRefreshingList: isRefreshingList ?? this.isRefreshingList,
       filterOptions: filterOptions ?? this.filterOptions,
@@ -66,6 +74,8 @@ class InProgressSessionsLoaded extends InProgressSessionsState {
         currentPage,
         lastPage,
         total,
+        summary,
+        showStats,
         isLoadingMore,
         isRefreshingList,
         filterOptions,
@@ -81,6 +91,8 @@ class InProgressSessionsError extends InProgressSessionsState {
     this.currentPage = 0,
     this.lastPage = 0,
     this.total = 0,
+    this.summary = const InProgressSessionsSummaryEntity.empty(),
+    this.showStats = false,
     this.filterOptions = const ReportFilterOptionsEntity.empty(),
     this.query = const InProgressSessionsQuery(),
   });
@@ -91,6 +103,8 @@ class InProgressSessionsError extends InProgressSessionsState {
   final int currentPage;
   final int lastPage;
   final int total;
+  final InProgressSessionsSummaryEntity summary;
+  final bool showStats;
   final ReportFilterOptionsEntity filterOptions;
   final InProgressSessionsQuery query;
 
@@ -102,6 +116,8 @@ class InProgressSessionsError extends InProgressSessionsState {
         currentPage,
         lastPage,
         total,
+        summary,
+        showStats,
         filterOptions,
         query,
       ];

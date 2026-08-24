@@ -33,8 +33,14 @@ class ApiInterceptor extends Interceptor {
     RequestInterceptorHandler handler,
   ) async {
     // Add JSON headers on every request.
-    options.headers[Headers.contentTypeHeader] = ApiConstants.contentType;
     options.headers[Headers.acceptHeader] = ApiConstants.accept;
+
+    // JSON by default. FormData (profile picture) must keep its own boundary.
+    if (options.data is FormData) {
+      options.headers.remove(Headers.contentTypeHeader);
+    } else {
+      options.headers[Headers.contentTypeHeader] = ApiConstants.contentType;
+    }
 
     // If we have a token, attach it as: Authorization: Bearer <token>
     if (getToken != null) {
@@ -122,6 +128,12 @@ class ApiInterceptor extends Interceptor {
         return ForbiddenException(message: apiMessage ?? 'Access denied.');
       case 404:
         return NotFoundException(message: apiMessage ?? 'Data not found.');
+      case 422:
+        return BadRequestException(
+          message: _readValidationMessage(data) ??
+              apiMessage ??
+              'Validation Failed',
+        );
       case 500:
       case 502:
       case 503:
@@ -146,6 +158,25 @@ class ApiInterceptor extends Interceptor {
       if (message is String && message.isNotEmpty) return message;
     }
     return null;
+  }
+
+  /// Laravel 422: { "errors": { "email": ["The email has already been taken."] } }
+  String? _readValidationMessage(dynamic data) {
+    if (data is! Map) return null;
+    final errors = data['errors'];
+    if (errors is! Map) return null;
+
+    final parts = <String>[];
+    for (final value in errors.values) {
+      if (value is List && value.isNotEmpty) {
+        final first = value.first?.toString().trim() ?? '';
+        if (first.isNotEmpty) parts.add(first);
+      } else if (value is String && value.trim().isNotEmpty) {
+        parts.add(value.trim());
+      }
+    }
+    if (parts.isEmpty) return null;
+    return parts.join('\n');
   }
 }
 

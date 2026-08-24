@@ -5,6 +5,7 @@ import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_sizes.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
 import 'package:ali_therapy_admin/core/routes/navigation_helper.dart';
+import 'package:ali_therapy_admin/core/utils/app_permission.dart';
 
 // ============================================================
 // REFERRED PATIENTS ITEM CARD
@@ -166,10 +167,11 @@ class ReferredPatientsItemCard extends StatelessWidget {
             ],
           ),
           SizedBox(height: 10.h),
-          Align(
-            alignment: Alignment.centerRight,
-            child: OutlinedButton.icon(
-              onPressed: () => AppNavigation.openPatientDetail(context),
+          if (AppPermission.canViewPatients)
+            Align(
+              alignment: Alignment.centerRight,
+              child: OutlinedButton.icon(
+                onPressed: () => AppNavigation.openPatientDetail(context),
               icon: Icon(
                 Icons.visibility_outlined,
                 size: AppSizes.iconSm,

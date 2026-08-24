@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 import 'reconsultation_report_entity.dart';
+import 'reconsultation_report_summary_entity.dart';
 
 // ============================================================
 // RECONSULTATION REPORT PAGE ENTITY (Domain)
@@ -14,15 +15,17 @@ class ReconsultationReportPageEntity extends Equatable {
     required this.currentPage,
     required this.lastPage,
     required this.total,
+    this.summary = const ReconsultationReportSummaryEntity.empty(),
   });
 
   final List<ReconsultationReportEntity> rows;
   final int currentPage;
   final int lastPage;
   final int total;
+  final ReconsultationReportSummaryEntity summary;
 
   bool get hasMore => currentPage < lastPage;
 
   @override
-  List<Object?> get props => [rows, currentPage, lastPage, total];
+  List<Object?> get props => [rows, currentPage, lastPage, total, summary];
 }

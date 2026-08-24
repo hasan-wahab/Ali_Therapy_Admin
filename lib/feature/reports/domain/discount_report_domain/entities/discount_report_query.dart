@@ -4,9 +4,45 @@ import 'package:equatable/equatable.dart';
 // DISCOUNT REPORT QUERY (Domain)
 // ------------------------------------------------------------
 // Query params for GET /api/admin/reports/discount
-// clinic_id, consultant_id, receptionist_id, from_date, to_date, search
+// clinic_id, consultant_id, receptionist_id, from_date, to_date,
+// search, per_page
 // discountPercent is UI-only (not sent to the API).
 // ============================================================
+
+/// Per-page dropdown (matches the web discount report).
+class DiscountReportPerPage {
+  DiscountReportPerPage._();
+
+  static const int defaultSize = 10;
+
+  /// Large page size when user picks "All".
+  static const int all = 10000;
+
+  static const String allLabel = 'All';
+
+  static List<String> get dropdownLabels => [
+        '10',
+        '25',
+        '50',
+        '100',
+        '250',
+        '500',
+        '1,000',
+        allLabel,
+      ];
+
+  static String labelFor(int perPage) {
+    if (perPage >= all) return allLabel;
+    if (perPage == 1000) return '1,000';
+    return perPage.toString();
+  }
+
+  static int valueForLabel(String label) {
+    if (label == allLabel) return all;
+    final normalized = label.replaceAll(',', '');
+    return int.tryParse(normalized) ?? defaultSize;
+  }
+}
 
 class DiscountReportQuery extends Equatable {
   const DiscountReportQuery({
@@ -17,6 +53,7 @@ class DiscountReportQuery extends Equatable {
     this.fromDate,
     this.toDate,
     this.discountPercent,
+    this.perPage = DiscountReportPerPage.defaultSize,
     this.page = 1,
   });
 
@@ -27,6 +64,7 @@ class DiscountReportQuery extends Equatable {
   final String? fromDate; // yyyy-MM-dd
   final String? toDate;
   final int? discountPercent;
+  final int perPage;
   final int page;
 
   DiscountReportQuery copyWith({
@@ -37,6 +75,7 @@ class DiscountReportQuery extends Equatable {
     String? fromDate,
     String? toDate,
     int? discountPercent,
+    int? perPage,
     int? page,
     bool clearClinicId = false,
     bool clearConsultantId = false,
@@ -57,11 +96,16 @@ class DiscountReportQuery extends Equatable {
       discountPercent: clearDiscountPercent
           ? null
           : (discountPercent ?? this.discountPercent),
+      perPage: perPage ?? this.perPage,
       page: page ?? this.page,
     );
   }
 
-  DiscountReportQuery resetFilters() => DiscountReportQuery(search: search);
+  DiscountReportQuery resetFilters() => DiscountReportQuery(
+        search: search,
+        perPage: perPage,
+        page: 1,
+      );
 
   bool get hasActiveFilters =>
       clinicId != null ||
@@ -72,7 +116,11 @@ class DiscountReportQuery extends Equatable {
       discountPercent != null;
 
   Map<String, dynamic> toQueryParameters() {
-    final params = <String, dynamic>{'page': page};
+    final params = <String, dynamic>{};
+    if (page > 1) params['page'] = page;
+    if (perPage != DiscountReportPerPage.defaultSize) {
+      params['per_page'] = perPage;
+    }
     final s = search.trim();
     if (s.isNotEmpty) params['search'] = s;
     if (clinicId != null) params['clinic_id'] = clinicId;
@@ -92,6 +140,7 @@ class DiscountReportQuery extends Equatable {
         fromDate,
         toDate,
         discountPercent,
+        perPage,
         page,
       ];
 }

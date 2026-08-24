@@ -37,6 +37,9 @@ class AllEmployeesLoaded extends AllEmployeesState {
   /// Employee id currently being terminated (null = none in progress).
   final String? terminatingEmployeeId;
 
+  /// Employee id currently being deleted (null = none in progress).
+  final String? deletingEmployeeId;
+
   /// Employee id whose password is being changed (null = none in progress).
   final String? changingPasswordEmployeeId;
 
@@ -46,7 +49,7 @@ class AllEmployeesLoaded extends AllEmployeesState {
   /// Employee id currently assigning a biometric ID (null = none in progress).
   final String? assigningBiometricEmployeeId;
 
-  /// One-shot success text after terminate / change password / assign IDs.
+  /// One-shot success text after terminate / delete / change password / assign IDs.
   final String? successMessage;
 
   const AllEmployeesLoaded({
@@ -60,6 +63,7 @@ class AllEmployeesLoaded extends AllEmployeesState {
     this.isRefreshingList = false,
     this.togglingEmployeeId,
     this.terminatingEmployeeId,
+    this.deletingEmployeeId,
     this.changingPasswordEmployeeId,
     this.assigningDeviceEmployeeId,
     this.assigningBiometricEmployeeId,
@@ -80,6 +84,7 @@ class AllEmployeesLoaded extends AllEmployeesState {
     // Pass null explicitly to clear togglingEmployeeId.
     Object? togglingEmployeeId = _keep,
     Object? terminatingEmployeeId = _keep,
+    Object? deletingEmployeeId = _keep,
     Object? changingPasswordEmployeeId = _keep,
     Object? assigningDeviceEmployeeId = _keep,
     Object? assigningBiometricEmployeeId = _keep,
@@ -100,6 +105,9 @@ class AllEmployeesLoaded extends AllEmployeesState {
       terminatingEmployeeId: terminatingEmployeeId == _keep
           ? this.terminatingEmployeeId
           : terminatingEmployeeId as String?,
+      deletingEmployeeId: deletingEmployeeId == _keep
+          ? this.deletingEmployeeId
+          : deletingEmployeeId as String?,
       changingPasswordEmployeeId: changingPasswordEmployeeId == _keep
           ? this.changingPasswordEmployeeId
           : changingPasswordEmployeeId as String?,
@@ -127,6 +135,7 @@ class AllEmployeesLoaded extends AllEmployeesState {
         isRefreshingList,
         togglingEmployeeId,
         terminatingEmployeeId,
+        deletingEmployeeId,
         changingPasswordEmployeeId,
         assigningDeviceEmployeeId,
         assigningBiometricEmployeeId,

@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/routes/navigation_helper.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
+import 'package:ali_therapy_admin/core/utils/app_permission.dart';
 import 'package:ali_therapy_admin/core/utils/app_snackbar.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/domain/profile_domain/entities/profile_entity.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/other/profile_education_item.dart';
@@ -30,7 +31,9 @@ class EducationSection extends StatelessWidget {
 
     return ProfileSectionCard(
       title: 'Education',
-      onAddTap: () => AppNavigation.openAddEducation(context),
+      onAddTap: AppPermission.canEditEducation
+          ? () => AppNavigation.openAddEducation(context)
+          : null,
       child: educations.isEmpty
           ? Text('No education records', style: AppTextStyles.bodySmall)
           : Column(
@@ -42,10 +45,12 @@ class EducationSection extends StatelessWidget {
                       educations[i].degree,
                       educations[i].university,
                     ),
-                    onDelete: () => AppSnackbar.warning(
-                      context,
-                      'Delete education',
-                    ),
+                    onDelete: AppPermission.canEditEducation
+                        ? () => AppSnackbar.warning(
+                              context,
+                              'Delete education',
+                            )
+                        : null,
                   ),
                 ],
               ],

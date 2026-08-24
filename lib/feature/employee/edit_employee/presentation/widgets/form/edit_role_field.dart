@@ -10,69 +10,38 @@ import 'package:ali_therapy_admin/core/widgets/app_field_label.dart';
 // ============================================================
 // EDIT ROLE FIELD
 // ------------------------------------------------------------
-// Role dropdown (not free text). Selected roles show as chips.
+// Role dropdown. Selected roles show as chips.
 // ============================================================
 
-class EditRoleField extends StatefulWidget {
+class EditRoleField extends StatelessWidget {
   const EditRoleField({
     super.key,
-    this.initialRoles = const [],
+    required this.options,
+    required this.selected,
+    required this.onAdd,
+    required this.onRemove,
   });
 
-  final List<String> initialRoles;
-
-  static const roleOptions = [
-    'Super Admin',
-    'Admin',
-    'Assistant Manager',
-    'Consultant',
-    'History Taker',
-    'Dry Needling',
-    'Accountant',
-    'Physiotherapist',
-    'Receptionist',
-    'Therapist',
-  ];
-
-  @override
-  State<EditRoleField> createState() => _EditRoleFieldState();
-}
-
-class _EditRoleFieldState extends State<EditRoleField> {
-  late List<String> _selected;
-
-  @override
-  void initState() {
-    super.initState();
-    _selected = List<String>.from(widget.initialRoles);
-  }
-
-  List<String> get _available => EditRoleField.roleOptions
-      .where((role) => !_selected.contains(role))
-      .toList();
-
-  void _addRole(String? role) {
-    if (role == null || _selected.contains(role)) return;
-    setState(() => _selected = [..._selected, role]);
-  }
-
-  void _removeRole(String role) {
-    setState(() => _selected = _selected.where((r) => r != role).toList());
-  }
+  final List<String> options;
+  final List<String> selected;
+  final ValueChanged<String> onAdd;
+  final ValueChanged<String> onRemove;
 
   @override
   Widget build(BuildContext context) {
+    final available = options.where((role) => !selected.contains(role)).toList();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const AppFieldLabel(label: 'Role', isRequired: true),
+        const AppFieldLabel(label: 'Role'),
         SizedBox(height: 8.h),
-        if (_selected.isNotEmpty) ...[
+        if (selected.isNotEmpty) ...[
           Wrap(
             spacing: 6.w,
             runSpacing: 6.h,
             children: [
-              for (final role in _selected)
+              for (final role in selected)
                 Container(
                   padding: EdgeInsets.fromLTRB(10.w, 5.h, 6.w, 5.h),
                   decoration: BoxDecoration(
@@ -91,7 +60,7 @@ class _EditRoleFieldState extends State<EditRoleField> {
                       ),
                       SizedBox(width: 2.w),
                       InkWell(
-                        onTap: () => _removeRole(role),
+                        onTap: () => onRemove(role),
                         borderRadius: BorderRadius.circular(12.r),
                         child: Icon(
                           Icons.close_rounded,
@@ -106,9 +75,9 @@ class _EditRoleFieldState extends State<EditRoleField> {
           ),
           SizedBox(height: 8.h),
         ],
-        if (_available.isEmpty)
+        if (available.isEmpty)
           Text(
-            'All roles selected',
+            selected.isEmpty ? 'No roles available' : 'All roles selected',
             style: AppTextStyles.bodySmall.copyWith(
               color: AppColors.textMuted,
               fontWeight: FontWeight.w500,
@@ -116,10 +85,13 @@ class _EditRoleFieldState extends State<EditRoleField> {
           )
         else
           AppDropdownField(
-            key: ValueKey(_available.join('|')),
+            key: ValueKey(available.join('|')),
             hintText: 'Select Role',
-            items: _available,
-            onChanged: _addRole,
+            items: available,
+            onChanged: (role) {
+              if (role == null) return;
+              onAdd(role);
+            },
           ),
       ],
     );

@@ -40,7 +40,6 @@ class PatientDuesFiltersPanel extends StatefulWidget {
 class _PatientDuesFiltersPanelState extends State<PatientDuesFiltersPanel> {
   static const _allClinics = 'All Clinics';
   static const _allReceptionists = 'All Receptionists';
-  static const _perPageLabels = ['15', '25', '50', '100'];
 
   late String? _dateFromApi;
   late String? _dateToApi;
@@ -82,11 +81,11 @@ class _PatientDuesFiltersPanelState extends State<PatientDuesFiltersPanel> {
   }
 
   void _syncFromQuery(PatientDuesQuery q) {
-    _dateFromApi = q.dateFrom;
-    _dateToApi = q.dateTo;
+    _dateFromApi = ReportDateField.orToday(q.dateFrom);
+    _dateToApi = ReportDateField.orToday(q.dateTo);
     _clinic = _nameForClinicId(q.clinicId);
     _receptionist = _nameForReceptionistId(q.receptionistId);
-    _perPage = q.perPage.toString();
+    _perPage = PatientDuesPerPage.labelFor(q.perPage);
   }
 
   String _nameForClinicId(int? id) {
@@ -129,13 +128,19 @@ class _PatientDuesFiltersPanelState extends State<PatientDuesFiltersPanel> {
   }
 
   Future<void> _pickFrom() async {
-    final picked = await ReportDateField.pickDate(context);
+    final picked = await ReportDateField.pickDate(
+      context,
+      currentApiDate: _dateFromApi,
+    );
     if (picked == null) return;
     setState(() => _dateFromApi = _toApiDate(picked));
   }
 
   Future<void> _pickTo() async {
-    final picked = await ReportDateField.pickDate(context);
+    final picked = await ReportDateField.pickDate(
+      context,
+      currentApiDate: _dateToApi,
+    );
     if (picked == null) return;
     setState(() => _dateToApi = _toApiDate(picked));
   }
@@ -160,7 +165,7 @@ class _PatientDuesFiltersPanelState extends State<PatientDuesFiltersPanel> {
       dateTo: _dateToApi,
       clinicId: _clinicIdForName(_clinic),
       receptionistId: _receptionistIdForName(_receptionist),
-      perPage: int.tryParse(_perPage) ?? 15,
+      perPage: PatientDuesPerPage.valueForLabel(_perPage),
       page: 1,
     );
   }
@@ -340,9 +345,11 @@ class _PatientDuesFiltersPanelState extends State<PatientDuesFiltersPanel> {
       compact: true,
       key: ValueKey('pd_per_page_$_resetToken'),
       label: 'Per Page',
-      hintText: '15',
-      items: _perPageLabels,
-      value: _perPage,
+      hintText: PatientDuesPerPage.defaultSize.toString(),
+      items: PatientDuesPerPage.dropdownLabels,
+      value: PatientDuesPerPage.dropdownLabels.contains(_perPage)
+          ? _perPage
+          : PatientDuesPerPage.labelFor(PatientDuesPerPage.defaultSize),
       onChanged: (v) {
         if (v == null) return;
         setState(() => _perPage = v);

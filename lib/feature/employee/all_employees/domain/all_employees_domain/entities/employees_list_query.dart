@@ -22,13 +22,13 @@ class EmployeesListPerPage {
   static const String allLabel = 'All';
 
   static List<String> get dropdownLabels => [
-        '50',
-        '100',
-        '200',
-        '500',
-        '1,000',
-        allLabel,
-      ];
+    '50',
+    '100',
+    '200',
+    '500',
+    '1,000',
+    allLabel,
+  ];
 
   static String labelFor(int perPage) {
     if (perPage >= all) return allLabel;
@@ -90,10 +90,12 @@ class EmployeesListQuery extends Equatable {
       search: search ?? this.search,
       status: status ?? this.status,
       clinicId: clearClinicId ? null : (clinicId ?? this.clinicId),
-      departmentId:
-          clearDepartmentId ? null : (departmentId ?? this.departmentId),
-      designationId:
-          clearDesignationId ? null : (designationId ?? this.designationId),
+      departmentId: clearDepartmentId
+          ? null
+          : (departmentId ?? this.departmentId),
+      designationId: clearDesignationId
+          ? null
+          : (designationId ?? this.designationId),
       shiftId: clearShiftId ? null : (shiftId ?? this.shiftId),
       roleId: clearRoleId ? null : (roleId ?? this.roleId),
       perPage: perPage ?? this.perPage,
@@ -119,19 +121,20 @@ class EmployeesListQuery extends Equatable {
       shiftId != null ||
       roleId != null;
 
-  /// Dio query map — empty / null optionals are omitted.
+  /// Dio query map — first load is the bare URL (no filters).
   Map<String, dynamic> toQueryParameters() {
-    final params = <String, dynamic>{
-      'page': page,
-      'per_page': perPage,
-    };
+    final params = <String, dynamic>{};
+    if (page > 1) params['page'] = page;
+    if (perPage != EmployeesListPerPage.defaultSize) {
+      params['per_page'] = perPage;
+    }
 
     final trimmedSearch = search.trim();
     if (trimmedSearch.isNotEmpty) {
       params['search'] = trimmedSearch;
     }
 
-    if (status.isNotEmpty) {
+    if (status.isNotEmpty && status != 'all') {
       params['status'] = status;
     }
 
@@ -146,14 +149,14 @@ class EmployeesListQuery extends Equatable {
 
   @override
   List<Object?> get props => [
-        search,
-        status,
-        clinicId,
-        departmentId,
-        designationId,
-        shiftId,
-        roleId,
-        perPage,
-        page,
-      ];
+    search,
+    status,
+    clinicId,
+    departmentId,
+    designationId,
+    shiftId,
+    roleId,
+    perPage,
+    page,
+  ];
 }

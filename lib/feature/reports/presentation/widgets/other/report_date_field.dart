@@ -5,6 +5,7 @@ import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_sizes.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
 import 'package:ali_therapy_admin/core/utils/helpers.dart';
+import 'package:ali_therapy_admin/core/widgets/app_cupertino_date_picker.dart';
 import 'package:ali_therapy_admin/core/widgets/app_field_label.dart';
 import 'package:ali_therapy_admin/core/widgets/app_text_field.dart';
 
@@ -91,17 +92,25 @@ class ReportDateField extends StatelessWidget {
     );
   }
 
-  /// Shared date picker → mm/dd/yyyy.
+  /// Today's date as yyyy-MM-dd. Shown in filters; sent only after Apply.
+  static String todayApiDate() => Helpers.todayApiDate();
+
+  /// Keep an applied date, otherwise default to today.
+  static String orToday(String? apiDate) {
+    if (apiDate == null || apiDate.trim().isEmpty) return todayApiDate();
+    return apiDate;
+  }
+
+  /// Shared scrolling date picker → mm/dd/yyyy.
+  /// Default selected date is today when none is passed.
   static Future<String?> pickDate(
     BuildContext context, {
     DateTime? initialDate,
+    String? currentApiDate,
   }) async {
-    final now = DateTime.now();
-    final picked = await showDatePicker(
+    final picked = await showAppCupertinoDatePicker(
       context: context,
-      initialDate: initialDate ?? now,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(now.year + 5),
+      initialDate: initialDate ?? DateTime.tryParse(currentApiDate ?? ''),
     );
     if (picked == null) return null;
     return Helpers.formatDate(picked, pattern: 'MM/dd/yyyy');

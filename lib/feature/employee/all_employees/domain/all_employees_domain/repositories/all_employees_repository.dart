@@ -1,6 +1,7 @@
 import 'package:ali_therapy_admin/feature/employee/all_employees/domain/all_employees_domain/entities/assign_employee_biometric_id_entity.dart';
 import 'package:ali_therapy_admin/feature/employee/all_employees/domain/all_employees_domain/entities/assign_employee_device_id_entity.dart';
 import 'package:ali_therapy_admin/feature/employee/all_employees/domain/all_employees_domain/entities/change_employee_password_entity.dart';
+import 'package:ali_therapy_admin/feature/employee/all_employees/domain/all_employees_domain/entities/delete_employee_entity.dart';
 import 'package:ali_therapy_admin/feature/employee/all_employees/domain/all_employees_domain/entities/employees_filters_entity.dart';
 import 'package:ali_therapy_admin/feature/employee/all_employees/domain/all_employees_domain/entities/employees_list_query.dart';
 import 'package:ali_therapy_admin/feature/employee/all_employees/domain/all_employees_domain/entities/employees_page_entity.dart';
@@ -35,6 +36,11 @@ abstract class AllEmployeesRepository {
     required String employeeId,
     required String reason,
     required String date,
+  });
+
+  /// Delete one employee.
+  ResultFuture<DeleteEmployeeEntity> deleteEmployee({
+    required String employeeId,
   });
 
   /// Change one employee's password.

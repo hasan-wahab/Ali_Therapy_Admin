@@ -40,7 +40,6 @@ class TherapistReportFiltersPanel extends StatefulWidget {
 class _TherapistReportFiltersPanelState extends State<TherapistReportFiltersPanel> {
   static const _allTherapists = 'All Therapists';
   static const _allClinics = 'All Clinics';
-  static const _perPageLabels = ['15', '25', '50', '100'];
 
   late String? _fromDateApi;
   late String? _toDateApi;
@@ -82,11 +81,11 @@ class _TherapistReportFiltersPanelState extends State<TherapistReportFiltersPane
   }
 
   void _syncFromQuery(TherapistReportQuery q) {
-    _fromDateApi = q.fromDate;
-    _toDateApi = q.toDate;
+    _fromDateApi = ReportDateField.orToday(q.fromDate);
+    _toDateApi = ReportDateField.orToday(q.toDate);
     _therapist = _nameForTherapistId(q.therapistId);
     _clinic = _nameForClinicId(q.clinicId);
-    _perPage = q.perPage.toString();
+    _perPage = TherapistReportPerPage.labelFor(q.perPage);
   }
 
   String _nameForTherapistId(int? id) {
@@ -129,13 +128,19 @@ class _TherapistReportFiltersPanelState extends State<TherapistReportFiltersPane
   }
 
   Future<void> _pickFrom() async {
-    final picked = await ReportDateField.pickDate(context);
+    final picked = await ReportDateField.pickDate(
+      context,
+      currentApiDate: _fromDateApi,
+    );
     if (picked == null) return;
     setState(() => _fromDateApi = _toApiDate(picked));
   }
 
   Future<void> _pickTo() async {
-    final picked = await ReportDateField.pickDate(context);
+    final picked = await ReportDateField.pickDate(
+      context,
+      currentApiDate: _toDateApi,
+    );
     if (picked == null) return;
     setState(() => _toDateApi = _toApiDate(picked));
   }
@@ -160,7 +165,7 @@ class _TherapistReportFiltersPanelState extends State<TherapistReportFiltersPane
       toDate: _toDateApi,
       therapistId: _therapistIdForName(_therapist),
       clinicId: _clinicIdForName(_clinic),
-      perPage: int.tryParse(_perPage) ?? 15,
+      perPage: TherapistReportPerPage.valueForLabel(_perPage),
       page: 1,
     );
   }
@@ -292,9 +297,13 @@ class _TherapistReportFiltersPanelState extends State<TherapistReportFiltersPane
       compact: true,
       key: ValueKey('tr_per_page_$_resetToken'),
       label: 'Per Page',
-      hintText: '15',
-      items: _perPageLabels,
-      value: _perPage,
+      hintText: TherapistReportPerPage.defaultSize.toString(),
+      items: TherapistReportPerPage.dropdownLabels,
+      value: TherapistReportPerPage.dropdownLabels.contains(_perPage)
+          ? _perPage
+          : TherapistReportPerPage.labelFor(
+              TherapistReportPerPage.defaultSize,
+            ),
       onChanged: (v) {
         if (v == null) return;
         setState(() => _perPage = v);

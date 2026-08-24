@@ -98,8 +98,8 @@ class _PatientsFiltersPanelState extends State<PatientsFiltersPanel> {
   void _syncFromApplied() {
     _clinic = widget.clinic;
     _receptionist = widget.receptionist;
-    _fromDate = widget.fromDate;
-    _toDate = widget.toDate;
+    _fromDate = PatientsFilterDateField.orToday(widget.fromDate);
+    _toDate = PatientsFilterDateField.orToday(widget.toDate);
   }
 
   bool get _hasPendingChanges =>
@@ -112,8 +112,8 @@ class _PatientsFiltersPanelState extends State<PatientsFiltersPanel> {
     setState(() {
       _clinic = PatientsFiltersPanel.allClinics;
       _receptionist = PatientsFiltersPanel.allReceptionists;
-      _fromDate = null;
-      _toDate = null;
+      _fromDate = PatientsFilterDateField.orToday(null);
+      _toDate = PatientsFilterDateField.orToday(null);
       _resetToken++;
     });
   }

@@ -9,6 +9,7 @@ import 'package:ali_therapy_admin/feature/employee/all_employees/domain/all_empl
 import 'package:ali_therapy_admin/feature/employee/all_employees/domain/all_employees_domain/usecases/assign_employee_biometric_id_usecase.dart';
 import 'package:ali_therapy_admin/feature/employee/all_employees/domain/all_employees_domain/usecases/assign_employee_device_id_usecase.dart';
 import 'package:ali_therapy_admin/feature/employee/all_employees/domain/all_employees_domain/usecases/change_employee_password_usecase.dart';
+import 'package:ali_therapy_admin/feature/employee/all_employees/domain/all_employees_domain/usecases/delete_employee_usecase.dart';
 import 'package:ali_therapy_admin/feature/employee/all_employees/domain/all_employees_domain/usecases/get_all_employees_usecase.dart';
 import 'package:ali_therapy_admin/feature/employee/all_employees/domain/all_employees_domain/usecases/get_employees_filters_usecase.dart';
 import 'package:ali_therapy_admin/feature/employee/all_employees/domain/all_employees_domain/usecases/terminate_employee_usecase.dart';
@@ -51,6 +52,9 @@ class AllEmployeesModule implements DiModule {
       () => TerminateEmployeeUseCase(sl<AllEmployeesRepository>()),
     );
     sl.registerLazySingleton(
+      () => DeleteEmployeeUseCase(sl<AllEmployeesRepository>()),
+    );
+    sl.registerLazySingleton(
       () => ChangeEmployeePasswordUseCase(sl<AllEmployeesRepository>()),
     );
     sl.registerLazySingleton(
@@ -67,6 +71,7 @@ class AllEmployeesModule implements DiModule {
         getEmployeesFiltersUseCase: sl<GetEmployeesFiltersUseCase>(),
         toggleEmployeeStatusUseCase: sl<ToggleEmployeeStatusUseCase>(),
         terminateEmployeeUseCase: sl<TerminateEmployeeUseCase>(),
+        deleteEmployeeUseCase: sl<DeleteEmployeeUseCase>(),
         changeEmployeePasswordUseCase: sl<ChangeEmployeePasswordUseCase>(),
         assignEmployeeDeviceIdUseCase: sl<AssignEmployeeDeviceIdUseCase>(),
         assignEmployeeBiometricIdUseCase:

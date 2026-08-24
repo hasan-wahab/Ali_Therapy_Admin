@@ -59,6 +59,7 @@ class _DiscountReportFiltersState extends State<DiscountReportFilters> {
   late String _consultant;
   late String _receptionist;
   late String _discountRange;
+  late String _perPage;
   late String? _fromDateApi;
   late String? _toDateApi;
   int _resetToken = 0;
@@ -109,8 +110,9 @@ class _DiscountReportFiltersState extends State<DiscountReportFilters> {
     _discountRange = q.discountPercent == null
         ? DiscountReportFilters.allDiscounts
         : '${q.discountPercent}%';
-    _fromDateApi = q.fromDate;
-    _toDateApi = q.toDate;
+    _perPage = DiscountReportPerPage.labelFor(q.perPage);
+    _fromDateApi = ReportDateField.orToday(q.fromDate);
+    _toDateApi = ReportDateField.orToday(q.toDate);
   }
 
   String _nameForClinicId(int? id) {
@@ -187,13 +189,19 @@ class _DiscountReportFiltersState extends State<DiscountReportFilters> {
   }
 
   Future<void> _pickFrom() async {
-    final picked = await ReportDateField.pickDate(context);
+    final picked = await ReportDateField.pickDate(
+      context,
+      currentApiDate: _fromDateApi,
+    );
     if (picked == null) return;
     setState(() => _fromDateApi = _toApiDate(picked));
   }
 
   Future<void> _pickTo() async {
-    final picked = await ReportDateField.pickDate(context);
+    final picked = await ReportDateField.pickDate(
+      context,
+      currentApiDate: _toDateApi,
+    );
     if (picked == null) return;
     setState(() => _toDateApi = _toApiDate(picked));
   }
@@ -207,6 +215,7 @@ class _DiscountReportFiltersState extends State<DiscountReportFilters> {
       fromDate: _fromDateApi,
       toDate: _toDateApi,
       discountPercent: _percentForLabel(_discountRange),
+      perPage: DiscountReportPerPage.valueForLabel(_perPage),
       page: 1,
     );
   }
@@ -219,6 +228,7 @@ class _DiscountReportFiltersState extends State<DiscountReportFilters> {
         fromDate: widget.currentQuery.fromDate,
         toDate: widget.currentQuery.toDate,
         discountPercent: widget.currentQuery.discountPercent,
+        perPage: widget.currentQuery.perPage,
         page: 1,
       );
 
@@ -234,6 +244,7 @@ class _DiscountReportFiltersState extends State<DiscountReportFilters> {
             fromDate: draft.fromDate,
             toDate: draft.toDate,
             discountPercent: draft.discountPercent,
+            perPage: draft.perPage,
             clearClinicId: draft.clinicId == null,
             clearConsultantId: draft.consultantId == null,
             clearReceptionistId: draft.receptionistId == null,
@@ -348,6 +359,22 @@ class _DiscountReportFiltersState extends State<DiscountReportFilters> {
                 label: 'To Date',
                 valueText: _displayDate(_toDateApi),
                 onTap: _pickTo,
+              ),
+              AppDropdownField(
+                compact: true,
+                key: ValueKey('dr_per_page_$_resetToken'),
+                label: 'Per Page',
+                hintText: DiscountReportPerPage.defaultSize.toString(),
+                items: DiscountReportPerPage.dropdownLabels,
+                value: DiscountReportPerPage.dropdownLabels.contains(_perPage)
+                    ? _perPage
+                    : DiscountReportPerPage.labelFor(
+                        DiscountReportPerPage.defaultSize,
+                      ),
+                onChanged: (v) {
+                  if (v == null) return;
+                  setState(() => _perPage = v);
+                },
               ),
             ],
           ),

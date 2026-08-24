@@ -10,10 +10,12 @@ import 'package:ali_therapy_admin/core/widgets/app_shimmer.dart';
 import 'package:ali_therapy_admin/core/widgets/app_tablet_safe_area.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/form/form_back_app_bar.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/assistant_manager_report_domain/entities/assistant_manager_report_entity.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/assistant_manager_report_domain/entities/assistant_manager_report_summary_entity.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/bloc/assistant_manager_report_bloc/assistant_manager_report_bloc.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/assistant_manager_report_card_list.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/assistant_manager_report_card_skeleton.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/assistant_manager_report_search_filter_section.dart';
+import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/assistant_manager_report_totals.dart';
 import 'package:ali_therapy_admin/injection.dart';
 
 // ============================================================
@@ -26,6 +28,9 @@ import 'package:ali_therapy_admin/injection.dart';
 class AssistantManagerReportPage extends StatelessWidget {
   const AssistantManagerReportPage({super.key});
 
+  /// Hidden until this report API sends Show Stats.
+  static const bool _showStatsFromApi = false;
+
   static const int _prefetchRemainingCards = 2;
 
   double get _approxCardHeight => 280.h;
@@ -36,6 +41,20 @@ class AssistantManagerReportPage extends StatelessWidget {
     if (state is AssistantManagerReportLoaded) return state.rows;
     if (state is AssistantManagerReportError) return state.rows;
     return const [];
+  }
+
+  AssistantManagerReportSummaryEntity _summaryOf(
+    AssistantManagerReportState state,
+  ) {
+    if (state is AssistantManagerReportLoaded) return state.summary;
+    if (state is AssistantManagerReportError) return state.summary;
+    return const AssistantManagerReportSummaryEntity.empty();
+  }
+
+  bool _showStatsOf(AssistantManagerReportState state) {
+    if (state is AssistantManagerReportLoaded) return state.showStats;
+    if (state is AssistantManagerReportError) return state.showStats;
+    return false;
   }
 
   bool _isLoading(AssistantManagerReportState state) {
@@ -76,6 +95,21 @@ class AssistantManagerReportPage extends StatelessWidget {
           parent: ClampingScrollPhysics(),
         ),
         slivers: [
+          if (!isFirstLoad && _showStatsFromApi)
+            SliverPadding(
+              padding: EdgeInsets.fromLTRB(hPad, 0, hPad, 12.h),
+              sliver: SliverToBoxAdapter(
+                child: AssistantManagerReportTotals(
+                  summary: _summaryOf(state),
+                  expanded: _showStatsOf(state),
+                  onToggle: () {
+                    context.read<AssistantManagerReportBloc>().add(
+                          const AssistantManagerReportStatsToggled(),
+                        );
+                  },
+                ),
+              ),
+            ),
           SliverPadding(
             padding: EdgeInsets.fromLTRB(hPad, 0, hPad, 8.h),
             sliver: isFirstLoad

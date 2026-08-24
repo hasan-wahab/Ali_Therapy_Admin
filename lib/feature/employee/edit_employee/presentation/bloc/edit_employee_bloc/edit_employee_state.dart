@@ -15,11 +15,46 @@ class EditEmployeeLoading extends EditEmployeeState {
   const EditEmployeeLoading();
 }
 
-class EditEmployeeError extends EditEmployeeState {
-  final String message;
+class EditEmployeeLoaded extends EditEmployeeState {
+  const EditEmployeeLoaded({
+    required this.page,
+    this.isSaving = false,
+    this.successMessage,
+  });
 
-  const EditEmployeeError(this.message);
+  final EditEmployeeEntity page;
+  final bool isSaving;
+  final String? successMessage;
+
+  EditEmployeeLoaded copyWith({
+    EditEmployeeEntity? page,
+    bool? isSaving,
+    Object? successMessage = _keep,
+  }) {
+    return EditEmployeeLoaded(
+      page: page ?? this.page,
+      isSaving: isSaving ?? this.isSaving,
+      successMessage: successMessage == _keep
+          ? this.successMessage
+          : successMessage as String?,
+    );
+  }
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [page, isSaving, successMessage];
 }
+
+class EditEmployeeError extends EditEmployeeState {
+  const EditEmployeeError({
+    required this.title,
+    required this.message,
+  });
+
+  final String title;
+  final String message;
+
+  @override
+  List<Object?> get props => [title, message];
+}
+
+const Object _keep = Object();

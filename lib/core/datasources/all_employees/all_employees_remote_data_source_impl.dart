@@ -7,6 +7,7 @@ import 'package:ali_therapy_admin/core/network/dio_client.dart';
 import 'package:ali_therapy_admin/feature/employee/all_employees/data/all_employees_data/models/assign_employee_biometric_id_model.dart';
 import 'package:ali_therapy_admin/feature/employee/all_employees/data/all_employees_data/models/assign_employee_device_id_model.dart';
 import 'package:ali_therapy_admin/feature/employee/all_employees/data/all_employees_data/models/change_employee_password_model.dart';
+import 'package:ali_therapy_admin/feature/employee/all_employees/data/all_employees_data/models/delete_employee_model.dart';
 import 'package:ali_therapy_admin/feature/employee/all_employees/data/all_employees_data/models/employee_model.dart';
 import 'package:ali_therapy_admin/feature/employee/all_employees/data/all_employees_data/models/employees_filters_model.dart';
 import 'package:ali_therapy_admin/feature/employee/all_employees/data/all_employees_data/models/employees_page_model.dart';
@@ -31,9 +32,10 @@ class AllEmployeesRemoteDataSourceImpl implements AllEmployeesRemoteDataSource {
     required EmployeesListQuery query,
   }) async {
     try {
+      final params = query.toQueryParameters();
       final response = await dioClient.get(
         ApiConstants.employeesList,
-        queryParameters: query.toQueryParameters(),
+        queryParameters: params.isEmpty ? null : params,
       );
 
       return _parsePage(response.data, requestedPage: query.page);
@@ -223,10 +225,7 @@ class AllEmployeesRemoteDataSourceImpl implements AllEmployeesRemoteDataSource {
     try {
       final response = await dioClient.post(
         ApiConstants.employeeTerminate(employeeId),
-        data: {
-          'termination_reason': reason,
-          'termination_date': date,
-        },
+        data: {'termination_reason': reason, 'termination_date': date},
       );
 
       final body = _asStringKeyMap(response.data);
@@ -264,6 +263,56 @@ class AllEmployeesRemoteDataSourceImpl implements AllEmployeesRemoteDataSource {
     } catch (e) {
       throw UnknownException(
         message: 'Something went wrong while terminating the employee.',
+        debugMessage: e.toString(),
+      );
+    }
+  }
+
+  @override
+  Future<DeleteEmployeeModel> deleteEmployee({
+    required String employeeId,
+  }) async {
+    try {
+      final response = await dioClient.delete(
+        ApiConstants.employeeDelete(employeeId),
+      );
+
+      final body = _asStringKeyMap(response.data);
+      if (body == null) {
+        // 204 / empty body still counts as a successful delete.
+        return const DeleteEmployeeModel(
+          message: 'Employee deleted successfully.',
+        );
+      }
+
+      if (body['success'] == false) {
+        final message = body['message']?.toString();
+        throw BadRequestException(
+          message: (message != null && message.isNotEmpty)
+              ? message
+              : 'Could not delete employee. Please try again.',
+        );
+      }
+
+      return DeleteEmployeeModel.fromJson(body);
+    } on DioException catch (e) {
+      if (e.error is AppException) {
+        throw e.error as AppException;
+      }
+      throw UnknownException(
+        message: 'Could not delete employee. Please try again.',
+        debugMessage: e.message,
+      );
+    } on AppException {
+      rethrow;
+    } on FormatException catch (e) {
+      throw ServerException(
+        message: 'Could not read delete employee response.',
+        debugMessage: e.message,
+      );
+    } catch (e) {
+      throw UnknownException(
+        message: 'Something went wrong while deleting the employee.',
         debugMessage: e.toString(),
       );
     }

@@ -7,6 +7,39 @@ import 'package:equatable/equatable.dart';
 // session_type: all | consultant | therapist
 // ============================================================
 
+/// Per-page dropdown (matches the web in-progress sessions report).
+class InProgressSessionsPerPage {
+  InProgressSessionsPerPage._();
+
+  static const int defaultSize = 50;
+
+  /// Large page size when user picks "All".
+  static const int all = 10000;
+
+  static const String allLabel = 'All';
+
+  static List<String> get dropdownLabels => [
+        '50',
+        '100',
+        '200',
+        '500',
+        '1,000',
+        allLabel,
+      ];
+
+  static String labelFor(int perPage) {
+    if (perPage >= all) return allLabel;
+    if (perPage == 1000) return '1,000';
+    return perPage.toString();
+  }
+
+  static int valueForLabel(String label) {
+    if (label == allLabel) return all;
+    final normalized = label.replaceAll(',', '');
+    return int.tryParse(normalized) ?? defaultSize;
+  }
+}
+
 class InProgressSessionsQuery extends Equatable {
   const InProgressSessionsQuery({
     this.search = '',
@@ -15,6 +48,7 @@ class InProgressSessionsQuery extends Equatable {
     this.staffId,
     this.fromDate,
     this.toDate,
+    this.perPage = InProgressSessionsPerPage.defaultSize,
     this.page = 1,
   });
 
@@ -28,6 +62,7 @@ class InProgressSessionsQuery extends Equatable {
   final int? staffId;
   final String? fromDate; // yyyy-MM-dd
   final String? toDate;
+  final int perPage;
   final int page;
 
   InProgressSessionsQuery copyWith({
@@ -37,6 +72,7 @@ class InProgressSessionsQuery extends Equatable {
     int? staffId,
     String? fromDate,
     String? toDate,
+    int? perPage,
     int? page,
     bool clearClinicId = false,
     bool clearStaffId = false,
@@ -50,12 +86,14 @@ class InProgressSessionsQuery extends Equatable {
       staffId: clearStaffId ? null : (staffId ?? this.staffId),
       fromDate: clearFromDate ? null : (fromDate ?? this.fromDate),
       toDate: clearToDate ? null : (toDate ?? this.toDate),
+      perPage: perPage ?? this.perPage,
       page: page ?? this.page,
     );
   }
 
   InProgressSessionsQuery resetFilters() => InProgressSessionsQuery(
         search: search,
+        perPage: perPage,
       );
 
   bool get hasActiveFilters {
@@ -94,12 +132,15 @@ class InProgressSessionsQuery extends Equatable {
   }
 
   Map<String, dynamic> toQueryParameters() {
-    final params = <String, dynamic>{
-      'page': page,
-      'session_type': sessionType.trim().isEmpty
-          ? sessionTypeAll
-          : sessionType.trim(),
-    };
+    final params = <String, dynamic>{};
+    if (page > 1) params['page'] = page;
+    if (perPage != InProgressSessionsPerPage.defaultSize) {
+      params['per_page'] = perPage;
+    }
+    final type = sessionType.trim();
+    if (type.isNotEmpty && type != sessionTypeAll) {
+      params['session_type'] = type;
+    }
     final s = search.trim();
     if (s.isNotEmpty) params['search'] = s;
     if (clinicId != null) params['clinic_id'] = clinicId;
@@ -117,6 +158,7 @@ class InProgressSessionsQuery extends Equatable {
         staffId,
         fromDate,
         toDate,
+        perPage,
         page,
       ];
 }

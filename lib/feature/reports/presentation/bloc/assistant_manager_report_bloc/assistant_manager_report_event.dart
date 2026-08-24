@@ -27,6 +27,11 @@ class AssistantManagerReportLoadMore extends AssistantManagerReportEvent {
   const AssistantManagerReportLoadMore();
 }
 
+/// Show Stats open/close (keeps current list).
+class AssistantManagerReportStatsToggled extends AssistantManagerReportEvent {
+  const AssistantManagerReportStatsToggled();
+}
+
 /// Search text changed (starts debounce).
 class AssistantManagerReportSearchChanged extends AssistantManagerReportEvent {
   const AssistantManagerReportSearchChanged(this.search);

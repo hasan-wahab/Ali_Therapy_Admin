@@ -7,7 +7,24 @@ abstract class EditEmployeeEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-/// Page opened / first load.
+/// Page opened — load GET employees/{id}/edit
 class EditEmployeeStarted extends EditEmployeeEvent {
-  const EditEmployeeStarted();
+  const EditEmployeeStarted({required this.employeeId});
+
+  final String employeeId;
+
+  @override
+  List<Object?> get props => [employeeId];
+}
+
+/// Last-step Submit — POST /employees/update/{id}
+class EditEmployeeSubmitted extends EditEmployeeEvent {
+  const EditEmployeeSubmitted({
+    required this.form,
+  });
+
+  final EditEmployeeFormEntity form;
+
+  @override
+  List<Object?> get props => [form];
 }

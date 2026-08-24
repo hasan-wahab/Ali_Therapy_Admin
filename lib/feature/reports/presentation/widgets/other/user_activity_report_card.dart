@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
 import 'package:ali_therapy_admin/core/widgets/app_expandable_card.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/user_activity_report_domain/entities/user_activity_report_entity.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/patient_report_detail_row.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/user_activity_package_block.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/user_activity_payment_block.dart';
@@ -25,9 +26,7 @@ class UserActivityReportCard extends StatelessWidget {
     required this.sessionsTotal,
     required this.remaining,
     required this.invoiceType,
-    required this.paymentDate,
-    required this.paymentMethod,
-    required this.amount,
+    required this.payments,
     this.initiallyExpanded = false,
   });
 
@@ -39,9 +38,7 @@ class UserActivityReportCard extends StatelessWidget {
   final int sessionsTotal;
   final int remaining;
   final String invoiceType;
-  final String paymentDate;
-  final String paymentMethod;
-  final String amount;
+  final List<UserActivityPaymentEntity> payments;
 
   final bool initiallyExpanded;
   @override
@@ -125,11 +122,7 @@ class UserActivityReportCard extends StatelessWidget {
               label: 'Invoice Type',
               value: invoiceType,
             ),
-            UserActivityPaymentBlock(
-              paymentDate: paymentDate,
-              method: paymentMethod,
-              amount: amount,
-            ),
+            UserActivityPaymentBlock(payments: payments),
           ],
         ),
       ),

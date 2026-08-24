@@ -44,6 +44,7 @@ class InsurancePanelReportFiltersApplied extends InsurancePanelReportEvent {
     this.toDate,
     this.clinicId,
     this.receptionistId,
+    this.perPage,
     this.clearFromDate = false,
     this.clearToDate = false,
     this.clearClinicId = false,
@@ -55,6 +56,7 @@ class InsurancePanelReportFiltersApplied extends InsurancePanelReportEvent {
   final String? toDate;
   final int? clinicId;
   final int? receptionistId;
+  final int? perPage;
 
   final bool clearFromDate;
   final bool clearToDate;
@@ -68,6 +70,7 @@ class InsurancePanelReportFiltersApplied extends InsurancePanelReportEvent {
         toDate,
         clinicId,
         receptionistId,
+        perPage,
         clearFromDate,
         clearToDate,
         clearClinicId,

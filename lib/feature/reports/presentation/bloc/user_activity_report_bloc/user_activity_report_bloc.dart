@@ -9,6 +9,7 @@ import 'package:ali_therapy_admin/feature/reports/domain/report_filter_options_d
 import 'package:ali_therapy_admin/feature/reports/domain/report_filter_options_domain/usecases/get_report_filter_options_usecase.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/user_activity_report_domain/entities/user_activity_report_entity.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/user_activity_report_domain/entities/user_activity_report_query.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/user_activity_report_domain/entities/user_activity_report_summary_entity.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/user_activity_report_domain/usecases/get_user_activity_report_usecase.dart';
 
 part 'user_activity_report_event.dart';
@@ -32,6 +33,7 @@ class UserActivityReportBloc
     on<UserActivityReportSearchChanged>(_onSearchChanged);
     on<UserActivityReportSearchSubmitted>(_onSearchSubmitted);
     on<UserActivityReportFiltersApplied>(_onFiltersApplied);
+    on<UserActivityReportStatsToggled>(_onStatsToggled);
   }
 
   final GetUserActivityReportUseCase getUserActivityReportUseCase;
@@ -145,6 +147,16 @@ class UserActivityReportBloc
     await _reloadList(emit);
   }
 
+  void _onStatsToggled(
+    UserActivityReportStatsToggled event,
+    Emitter<UserActivityReportState> emit,
+  ) {
+    final current = state;
+    if (current is UserActivityReportLoaded) {
+      emit(current.copyWith(showStats: !current.showStats));
+    }
+  }
+
   Future<void> _reloadList(Emitter<UserActivityReportState> emit) async {
     final current = state;
     if (current is UserActivityReportLoaded) {
@@ -172,6 +184,8 @@ class UserActivityReportBloc
         currentPage: s.currentPage,
         lastPage: s.lastPage,
         total: s.total,
+        summary: s.summary,
+        showStats: s.showStats,
         filterOptions: s.filterOptions,
         query: s.query,
       );
@@ -182,6 +196,8 @@ class UserActivityReportBloc
         currentPage: s.currentPage,
         lastPage: s.lastPage,
         total: s.total,
+        summary: s.summary,
+        showStats: s.showStats,
         filterOptions: s.filterOptions,
         query: s.query,
       );
@@ -189,13 +205,15 @@ class UserActivityReportBloc
     return _Snapshot(filterOptions: _filterOptions, query: _query);
   }
 
-  List<String> _searchFields(UserActivityReportEntity row) => [
-        row.patientName,
-        row.patientCnic,
-        row.packageName,
-        row.invoiceType,
-        row.paymentMethod,
-      ];
+  List<String> _searchFields(UserActivityReportEntity row) => row.searchFields;
+
+  UserActivityReportSummaryEntity _resolvedSummary({
+    required UserActivityReportSummaryEntity incoming,
+    required List<UserActivityReportEntity> rows,
+  }) {
+    if (!incoming.isEmpty) return incoming;
+    return UserActivityReportSummaryEntity.fromRows(rows);
+  }
 
   Future<void> _loadPage(
     Emitter<UserActivityReportState> emit, {
@@ -240,6 +258,11 @@ class UserActivityReportBloc
           currentPage: pageData.currentPage,
           lastPage: pageData.lastPage,
           total: pageData.total,
+          summary: _resolvedSummary(
+            incoming: pageData.summary,
+            rows: merged,
+          ),
+          showStats: keepOnError.showStats,
           isLoadingMore: false,
           isRefreshingList: false,
           filterOptions: _filterOptions,
@@ -254,6 +277,8 @@ class UserActivityReportBloc
           currentPage: keepOnError.currentPage,
           lastPage: keepOnError.lastPage,
           total: keepOnError.total,
+          summary: keepOnError.summary,
+          showStats: keepOnError.showStats,
           filterOptions: keepOnError.filterOptions,
           query: keepOnError.query,
         ));
@@ -263,6 +288,8 @@ class UserActivityReportBloc
             currentPage: keepOnError.currentPage,
             lastPage: keepOnError.lastPage,
             total: keepOnError.total,
+            summary: keepOnError.summary,
+            showStats: keepOnError.showStats,
             isLoadingMore: false,
             isRefreshingList: false,
             filterOptions: keepOnError.filterOptions,
@@ -293,6 +320,8 @@ class UserActivityReportBloc
         currentPage: keepOnError.currentPage,
         lastPage: keepOnError.lastPage,
         total: keepOnError.total,
+        summary: keepOnError.summary,
+        showStats: keepOnError.showStats,
         filterOptions: keepOnError.filterOptions,
         query: keepOnError.query,
       ));
@@ -302,6 +331,8 @@ class UserActivityReportBloc
           currentPage: keepOnError.currentPage,
           lastPage: keepOnError.lastPage,
           total: keepOnError.total,
+          summary: keepOnError.summary,
+          showStats: keepOnError.showStats,
           isLoadingMore: false,
           isRefreshingList: false,
           filterOptions: keepOnError.filterOptions,
@@ -316,18 +347,27 @@ class UserActivityReportBloc
         : <UserActivityReportEntity>[];
     final relatedPage = relatedResult.isSuccess ? relatedResult.data : null;
     final related = relatedPage?.rows ?? <UserActivityReportEntity>[];
+    final rankedRows = AppSearchRanker.pinMatchesThenRelated(
+      matches: matches,
+      related: related,
+      query: _query.search,
+      idOf: (row) => row.id,
+      fieldsOf: _searchFields,
+    );
 
     emit(UserActivityReportLoaded(
-      rows: AppSearchRanker.pinMatchesThenRelated(
-        matches: matches,
-        related: related,
-        query: _query.search,
-        idOf: (row) => row.id,
-        fieldsOf: _searchFields,
-      ),
+      rows: rankedRows,
       currentPage: relatedPage?.currentPage ?? 1,
       lastPage: relatedPage?.lastPage ?? 1,
       total: relatedPage?.total ?? matches.length,
+      summary: _resolvedSummary(
+        incoming: relatedPage?.summary ??
+            (matchResult.isSuccess
+                ? matchResult.data.summary
+                : const UserActivityReportSummaryEntity.empty()),
+        rows: rankedRows,
+      ),
+      showStats: keepOnError.showStats,
       isLoadingMore: false,
       isRefreshingList: false,
       filterOptions: _filterOptions,
@@ -342,6 +382,8 @@ class _Snapshot {
     this.currentPage = 0,
     this.lastPage = 0,
     this.total = 0,
+    this.summary = const UserActivityReportSummaryEntity.empty(),
+    this.showStats = false,
     this.filterOptions = const ReportFilterOptionsEntity.empty(),
     this.query = const UserActivityReportQuery(),
   });
@@ -350,6 +392,8 @@ class _Snapshot {
   final int currentPage;
   final int lastPage;
   final int total;
+  final UserActivityReportSummaryEntity summary;
+  final bool showStats;
   final ReportFilterOptionsEntity filterOptions;
   final UserActivityReportQuery query;
 }

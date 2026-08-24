@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:ali_therapy_admin/core/utils/app_permission.dart';
+
 // ============================================================
 // REPORT TYPE
 // ------------------------------------------------------------
@@ -8,18 +10,18 @@ import 'package:flutter/material.dart';
 
 enum ReportType {
   patientDues,
+  patientReport,
   referByReport,
   insurancePanelReport,
-  patientReport,
   packageAttendance,
   consultationReport,
   reconsultationReport,
   freeConsultationReport,
+  inProgressSessions,
   therapistReport,
   assistantManagerReport,
   receptionistReport,
   userActivityReport,
-  inProgressSessions,
   discountReport,
 }
 
@@ -87,6 +89,39 @@ extension ReportTypeUi on ReportType {
         return Icons.pending_actions_outlined;
       case ReportType.discountReport:
         return Icons.local_offer_outlined;
+    }
+  }
+
+  bool get isPermitted {
+    switch (this) {
+      case ReportType.patientDues:
+        return AppPermission.canViewPatientDuesReport;
+      case ReportType.referByReport:
+        return AppPermission.canViewReferByReport;
+      case ReportType.insurancePanelReport:
+        return AppPermission.canViewInsurancePanelReport;
+      case ReportType.patientReport:
+        return AppPermission.canViewPatientReport;
+      case ReportType.consultationReport:
+        return AppPermission.canViewConsultantReport;
+      case ReportType.reconsultationReport:
+        return AppPermission.canViewUnnamedReport;
+      case ReportType.freeConsultationReport:
+        return AppPermission.canViewUnnamedReport;
+      case ReportType.therapistReport:
+        return AppPermission.canViewTherapistReport;
+      case ReportType.assistantManagerReport:
+        return AppPermission.canViewAssistantManagerReport;
+      case ReportType.receptionistReport:
+        return AppPermission.canViewReceptionistReport;
+      case ReportType.userActivityReport:
+        return AppPermission.canViewUserActivityReport;
+      case ReportType.packageAttendance:
+        return AppPermission.canViewUnnamedReport;
+      case ReportType.inProgressSessions:
+        return AppPermission.canViewUnnamedReport;
+      case ReportType.discountReport:
+        return AppPermission.canViewUnnamedReport;
     }
   }
 }

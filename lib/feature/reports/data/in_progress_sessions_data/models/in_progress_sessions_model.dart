@@ -1,5 +1,6 @@
 import 'package:ali_therapy_admin/feature/reports/domain/in_progress_sessions_domain/entities/in_progress_sessions_entity.dart';
 import 'package:ali_therapy_admin/feature/reports/domain/in_progress_sessions_domain/entities/in_progress_sessions_page_entity.dart';
+import 'package:ali_therapy_admin/feature/reports/domain/in_progress_sessions_domain/entities/in_progress_sessions_summary_entity.dart';
 
 // ============================================================
 // IN-PROGRESS SESSIONS MODEL (Data)
@@ -66,6 +67,7 @@ class InProgressSessionsPageModel extends InProgressSessionsPageEntity {
     required super.currentPage,
     required super.lastPage,
     required super.total,
+    super.summary,
   });
 
   factory InProgressSessionsPageModel.fromJson(Map<String, dynamic> json) {
@@ -79,12 +81,17 @@ class InProgressSessionsPageModel extends InProgressSessionsPageEntity {
     final lastPage = json['last_page'] != null
         ? _toInt(json['last_page'], fallback: currentPage)
         : (nextPageUrl.isNotEmpty ? currentPage + 1 : currentPage);
+    final total = _toInt(json['total'], fallback: rows.length);
 
     return InProgressSessionsPageModel(
       rows: rows,
       currentPage: currentPage,
       lastPage: lastPage,
-      total: _toInt(json['total'], fallback: rows.length),
+      total: total,
+      summary: InProgressSessionsSummaryModel.fromJson(
+        json,
+        sessionCount: total,
+      ),
     );
   }
 
@@ -93,7 +100,70 @@ class InProgressSessionsPageModel extends InProgressSessionsPageEntity {
         currentPage: currentPage,
         lastPage: lastPage,
         total: total,
+        summary: summary,
       );
+}
+
+class InProgressSessionsSummaryModel extends InProgressSessionsSummaryEntity {
+  const InProgressSessionsSummaryModel({
+    required super.totalInProgress,
+    required super.consultationsActive,
+    required super.therapyActive,
+    required super.clinicsActive,
+  });
+
+  factory InProgressSessionsSummaryModel.fromJson(
+    Map<String, dynamic> json, {
+    required int sessionCount,
+  }) {
+    final totals = _asMap(json['totals']) ??
+        _asMap(json['summary']) ??
+        _asMap(json['stats']) ??
+        json;
+
+    final total = _toInt(
+      totals['total_in_progress'] ??
+          totals['in_progress'] ??
+          totals['live_sessions'],
+    );
+    final consultations = _toInt(
+      totals['consultations_active'] ??
+          totals['consultations'] ??
+          totals['consultation_count'],
+    );
+    final therapy = _toInt(
+      totals['therapy_active'] ??
+          totals['therapy'] ??
+          totals['therapy_count'],
+    );
+    final clinics = _toInt(
+      totals['clinics_active'] ??
+          totals['active_clinics'] ??
+          totals['clinic_count'],
+    );
+
+    if (total == 0 && consultations == 0 && therapy == 0 && clinics == 0) {
+      return const InProgressSessionsSummaryModel(
+        totalInProgress: 0,
+        consultationsActive: 0,
+        therapyActive: 0,
+        clinicsActive: 0,
+      );
+    }
+
+    return InProgressSessionsSummaryModel(
+      totalInProgress: total == 0 ? sessionCount : total,
+      consultationsActive: consultations,
+      therapyActive: therapy,
+      clinicsActive: clinics,
+    );
+  }
+
+  static Map<String, dynamic>? _asMap(dynamic value) {
+    if (value is Map<String, dynamic>) return value;
+    if (value is Map) return Map<String, dynamic>.from(value);
+    return null;
+  }
 }
 
 String _text(dynamic value) {

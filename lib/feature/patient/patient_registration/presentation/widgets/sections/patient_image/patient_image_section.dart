@@ -11,7 +11,18 @@ import 'package:ali_therapy_admin/feature/patient/patient_registration/presentat
 // ============================================================
 
 class PatientImageSection extends StatelessWidget {
-  const PatientImageSection({super.key});
+  const PatientImageSection({
+    super.key,
+    this.photoBytes,
+    this.fileName,
+    this.onPickCamera,
+    this.onPickGallery,
+  });
+
+  final List<int>? photoBytes;
+  final String? fileName;
+  final VoidCallback? onPickCamera;
+  final VoidCallback? onPickGallery;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +36,12 @@ class PatientImageSection extends StatelessWidget {
           style: AppTextStyles.bodySmall,
         ),
         SizedBox(height: 20.h),
-        const PatientImageFormFields(),
+        PatientImageFormFields(
+          photoBytes: photoBytes,
+          fileName: fileName,
+          onPickCamera: onPickCamera,
+          onPickGallery: onPickGallery,
+        ),
       ],
     );
   }

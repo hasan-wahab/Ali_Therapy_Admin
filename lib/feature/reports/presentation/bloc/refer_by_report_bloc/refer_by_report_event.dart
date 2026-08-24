@@ -45,6 +45,7 @@ class ReferByReportFiltersApplied extends ReferByReportEvent {
     this.clinicId,
     this.receptionistId,
     this.referralType,
+    this.perPage,
     this.clearFromDate = false,
     this.clearToDate = false,
     this.clearClinicId = false,
@@ -58,6 +59,7 @@ class ReferByReportFiltersApplied extends ReferByReportEvent {
   final int? clinicId;
   final int? receptionistId;
   final String? referralType;
+  final int? perPage;
 
   final bool clearFromDate;
   final bool clearToDate;
@@ -73,6 +75,7 @@ class ReferByReportFiltersApplied extends ReferByReportEvent {
         clinicId,
         receptionistId,
         referralType,
+        perPage,
         clearFromDate,
         clearToDate,
         clearClinicId,

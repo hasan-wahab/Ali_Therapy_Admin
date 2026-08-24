@@ -6,6 +6,7 @@ import 'package:ali_therapy_admin/core/routes/navigation_helper.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
 import 'package:ali_therapy_admin/core/utils/app_device.dart';
+import 'package:ali_therapy_admin/core/utils/app_permission.dart';
 import 'package:ali_therapy_admin/core/utils/app_snackbar.dart';
 import 'package:ali_therapy_admin/feature/employee/all_employees/presentation/bloc/all_employees_bloc/all_employees_bloc.dart';
 import 'package:ali_therapy_admin/feature/employee/all_employees/presentation/widgets/employees_card/assign_biometric_id_dialog.dart';
@@ -49,7 +50,7 @@ class EmployeeCard extends StatelessWidget {
     this.initiallyExpanded = false,
   });
 
-  /// API row id — used for View / Edit / terminate / password / IDs.
+  /// API row id — used for View / Edit / terminate / delete / password / IDs.
   final String id;
   final String name;
   final String email;
@@ -84,7 +85,7 @@ class EmployeeCard extends StatelessWidget {
     }
 
     if (type == EmployeeActionType.edit) {
-      AppNavigation.openEditEmployee(context);
+      AppNavigation.openEditEmployee(context, employeeId: id);
       return;
     }
 
@@ -109,7 +110,7 @@ class EmployeeCard extends StatelessWidget {
     }
 
     if (type == EmployeeActionType.delete) {
-      showDeleteEmployeeDialog(context, employeeName: name);
+      _submitDelete(context);
       return;
     }
 
@@ -130,6 +131,18 @@ class EmployeeCard extends StatelessWidget {
         reason: result.reason,
         date: result.date,
       ),
+    );
+  }
+
+  Future<void> _submitDelete(BuildContext context) async {
+    final confirmed = await showDeleteEmployeeDialog(
+      context,
+      employeeName: name,
+    );
+    if (!confirmed || !context.mounted) return;
+
+    context.read<AllEmployeesBloc>().add(
+      AllEmployeesDeleted(employeeId: id),
     );
   }
 
@@ -293,29 +306,31 @@ class EmployeeCard extends StatelessWidget {
                   label: isActive ? 'Active' : 'Inactive',
                   isActive: isActive,
                 ),
-                SizedBox(width: 4.w),
-                if (isTogglingStatus)
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8.w),
-                    child: SizedBox(
-                      width: 18.w,
-                      height: 18.w,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: AppColors.primary,
+                if (AppPermission.canManageEmployee) ...[
+                  SizedBox(width: 4.w),
+                  if (isTogglingStatus)
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8.w),
+                      child: SizedBox(
+                        width: 18.w,
+                        height: 18.w,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    )
+                  else
+                    Transform.scale(
+                      scale: 0.8,
+                      child: Switch.adaptive(
+                        value: isActive,
+                        activeTrackColor: AppColors.primary,
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        onChanged: onStatusChanged ?? (_) {},
                       ),
                     ),
-                  )
-                else
-                  Transform.scale(
-                    scale: 0.8,
-                    child: Switch.adaptive(
-                      value: isActive,
-                      activeTrackColor: AppColors.primary,
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      onChanged: onStatusChanged ?? (_) {},
-                    ),
-                  ),
+                ],
                 const Spacer(),
                 Text(
                   'By $createdBy',

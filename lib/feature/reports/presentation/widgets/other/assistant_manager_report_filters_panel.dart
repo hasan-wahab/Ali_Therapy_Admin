@@ -41,7 +41,6 @@ class _AssistantManagerReportFiltersPanelState
     extends State<AssistantManagerReportFiltersPanel> {
   static const _allAssistantManagers = 'All Assistant Managers';
   static const _allClinics = 'All Clinics';
-  static const _perPageLabels = ['15', '25', '50', '100'];
 
   late String? _fromDateApi;
   late String? _toDateApi;
@@ -83,11 +82,11 @@ class _AssistantManagerReportFiltersPanelState
   }
 
   void _syncFromQuery(AssistantManagerReportQuery q) {
-    _fromDateApi = q.fromDate;
-    _toDateApi = q.toDate;
+    _fromDateApi = ReportDateField.orToday(q.fromDate);
+    _toDateApi = ReportDateField.orToday(q.toDate);
     _assistantManager = _nameForAssistantManagerId(q.assistantManagerId);
     _clinic = _nameForClinicId(q.clinicId);
-    _perPage = q.perPage.toString();
+    _perPage = AssistantManagerReportPerPage.labelFor(q.perPage);
   }
 
   String _nameForAssistantManagerId(int? id) {
@@ -130,13 +129,19 @@ class _AssistantManagerReportFiltersPanelState
   }
 
   Future<void> _pickFrom() async {
-    final picked = await ReportDateField.pickDate(context);
+    final picked = await ReportDateField.pickDate(
+      context,
+      currentApiDate: _fromDateApi,
+    );
     if (picked == null) return;
     setState(() => _fromDateApi = _toApiDate(picked));
   }
 
   Future<void> _pickTo() async {
-    final picked = await ReportDateField.pickDate(context);
+    final picked = await ReportDateField.pickDate(
+      context,
+      currentApiDate: _toDateApi,
+    );
     if (picked == null) return;
     setState(() => _toDateApi = _toApiDate(picked));
   }
@@ -161,7 +166,7 @@ class _AssistantManagerReportFiltersPanelState
       toDate: _toDateApi,
       assistantManagerId: _assistantManagerIdForName(_assistantManager),
       clinicId: _clinicIdForName(_clinic),
-      perPage: int.tryParse(_perPage) ?? 15,
+      perPage: AssistantManagerReportPerPage.valueForLabel(_perPage),
       page: 1,
     );
   }
@@ -294,9 +299,13 @@ class _AssistantManagerReportFiltersPanelState
       compact: true,
       key: ValueKey('am_per_page_$_resetToken'),
       label: 'Per Page',
-      hintText: '15',
-      items: _perPageLabels,
-      value: _perPage,
+      hintText: AssistantManagerReportPerPage.defaultSize.toString(),
+      items: AssistantManagerReportPerPage.dropdownLabels,
+      value: AssistantManagerReportPerPage.dropdownLabels.contains(_perPage)
+          ? _perPage
+          : AssistantManagerReportPerPage.labelFor(
+              AssistantManagerReportPerPage.defaultSize,
+            ),
       onChanged: (v) {
         if (v == null) return;
         setState(() => _perPage = v);

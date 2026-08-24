@@ -15,10 +15,12 @@ class PatientDetailTabBar extends StatelessWidget {
     super.key,
     required this.activeTab,
     required this.onTabSelected,
+    this.showSurvey = true,
   });
 
   final PatientDetailTab activeTab;
   final ValueChanged<PatientDetailTab> onTabSelected;
+  final bool showSurvey;
 
   @override
   Widget build(BuildContext context) {
@@ -50,15 +52,17 @@ class PatientDetailTabBar extends StatelessWidget {
             onTap: () => onTabSelected(PatientDetailTab.progress),
           ),
         ),
-        SizedBox(width: 8.w),
-        Expanded(
-          child: PatientDetailTabButton(
-            label: 'Survey',
-            icon: Icons.assignment_outlined,
-            isActive: activeTab == PatientDetailTab.survey,
-            onTap: () => onTabSelected(PatientDetailTab.survey),
+        if (showSurvey) ...[
+          SizedBox(width: 8.w),
+          Expanded(
+            child: PatientDetailTabButton(
+              label: 'Survey',
+              icon: Icons.assignment_outlined,
+              isActive: activeTab == PatientDetailTab.survey,
+              onTap: () => onTabSelected(PatientDetailTab.survey),
+            ),
           ),
-        ),
+        ],
       ],
     );
   }
