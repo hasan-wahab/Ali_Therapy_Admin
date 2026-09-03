@@ -5,6 +5,7 @@ import 'package:ali_therapy_admin/core/routes/navigation_helper.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_sizes.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
+import 'package:ali_therapy_admin/feature/patient/patient_detail/domain/patient_detail_domain/entities/patient_detail_entity.dart';
 import 'package:ali_therapy_admin/feature/patient/patient_detail/presentation/widgets/other/progress_event_kind.dart';
 import 'package:ali_therapy_admin/feature/patient/patient_detail/presentation/widgets/other/progress_session_meta.dart';
 import 'package:ali_therapy_admin/feature/patient/patient_detail/presentation/widgets/other/progress_status_chip.dart';
@@ -28,6 +29,7 @@ class ProgressEventCard extends StatelessWidget {
     this.startTime,
     this.endTime,
     this.duration,
+    this.detail,
   });
 
   final ProgressEventKind kind;
@@ -39,6 +41,7 @@ class ProgressEventCard extends StatelessWidget {
   final String? startTime;
   final String? endTime;
   final String? duration;
+  final PatientDetailEntity? detail;
 
   bool get _hasSessionMeta =>
       packageLine != null &&
@@ -55,11 +58,11 @@ class ProgressEventCard extends StatelessWidget {
   void _onTap(BuildContext context) {
     switch (kind) {
       case ProgressEventKind.historyTaker:
-        AppNavigation.openClinicalHistory(context);
+        AppNavigation.openClinicalHistory(context, detail: detail);
       case ProgressEventKind.consultant:
-        AppNavigation.openConsultantDetails(context);
+        AppNavigation.openConsultantDetails(context, detail: detail);
       case ProgressEventKind.therapySession:
-        AppNavigation.openTherapySessions(context);
+        AppNavigation.openTherapySessions(context, detail: detail);
       default:
         break;
     }

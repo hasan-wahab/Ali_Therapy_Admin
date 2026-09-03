@@ -86,9 +86,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       await dioClient.post(ApiConstants.logout);
     } on DioException catch (e) {
-      if (e.error is AppException) return;
-    } catch (_) {
-      // Ignore — clearing local token is enough for the user.
+      if (e.error is AppException) {
+        throw e.error as AppException;
+      }
+      throw UnknownException(
+        message: 'Logout request failed. Please try again.',
+        debugMessage: e.message,
+      );
     }
   }
 

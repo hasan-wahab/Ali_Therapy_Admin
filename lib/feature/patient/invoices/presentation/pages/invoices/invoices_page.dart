@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'package:ali_therapy_admin/core/theme/app_colors.dart';
-import 'package:ali_therapy_admin/core/widgets/app_tablet_safe_area.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
-import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/form/form_back_app_bar.dart';
 import 'package:ali_therapy_admin/feature/patient/invoices/presentation/widgets/other/invoice_card.dart';
 import 'package:ali_therapy_admin/feature/patient/invoices/presentation/widgets/other/invoice_payment_record.dart';
+import 'package:ali_therapy_admin/feature/patient/patient_detail/presentation/widgets/other/patient_detail_display.dart';
+import 'package:ali_therapy_admin/feature/patient/patient_detail/presentation/widgets/other/patient_detail_record_refresh_shell.dart';
 
 // ============================================================
 // INVOICES PAGE
 // ------------------------------------------------------------
-// List of invoice cards (sample data from Invoice screen).
+// Invoices from Patient Full View (passed via extra).
+// Pull refresh reloads Full View — AppBar underline loading.
 // ============================================================
 
 class InvoicesPage extends StatelessWidget {
@@ -19,61 +19,56 @@ class InvoicesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: const FormBackAppBar(title: 'Invoices'),
-      body: AppTabletSafeArea(
-        child: ListView(
+    return PatientDetailRecordRefreshShell(
+      title: 'Invoices',
+      builder: (context, detail) {
+        final invoices = detail.invoices;
+
+        return ListView.separated(
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: ClampingScrollPhysics(),
+          ),
           padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 24.h),
-          children: [
-            Text(
-              '2 invoices',
-              style: AppTextStyles.bodySmall.copyWith(fontWeight: FontWeight.w600),
-            ),
-            SizedBox(height: 12.h),
-            const InvoiceCard(
-              initiallyExpanded: true,
-              invoiceId: '123',
-              type: 'PACKAGE',
-              date: '05/05/2026',
-              amount: '15000.0',
-              discount: '0.0',
-              paid: '3000.0',
-              due: '12000.0',
-              status: 'partially_paid',
-              payments: [
-                InvoicePaymentRecord(
-                  paymentId: '104',
-                  date: '05/05/2026',
-                  amount: '3000.0',
-                  method: 'cash',
-                  type: 'invoice_payment',
+          itemCount: invoices.length + 1,
+          separatorBuilder: (_, index) =>
+              index == 0 ? SizedBox(height: 12.h) : SizedBox(height: 10.h),
+          itemBuilder: (context, index) {
+            if (index == 0) {
+              final count = invoices.length;
+              return Text(
+                count == 1 ? '1 invoice' : '$count invoices',
+                style: AppTextStyles.bodySmall.copyWith(
+                  fontWeight: FontWeight.w600,
                 ),
-              ],
-            ),
-            SizedBox(height: 10.h),
-            const InvoiceCard(
-              invoiceId: '112',
-              type: 'PACKAGE',
-              date: '05/05/2026',
-              amount: '3000.0',
-              discount: '0.0',
-              paid: '3000.0',
-              due: '0.0',
-              status: 'paid',
-              payments: [
-                InvoicePaymentRecord(
-                  paymentId: '98',
-                  date: '05/05/2026',
-                  amount: '3000.0',
-                  method: 'cash',
-                  type: 'invoice_payment',
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
+              );
+            }
+
+            final invoice = invoices[index - 1];
+            return InvoiceCard(
+              initiallyExpanded: index == 1,
+              invoiceId: PatientDetailDisplay.text(invoice.id),
+              type: PatientDetailDisplay.text(invoice.type),
+              date: PatientDetailDisplay.date(invoice.date),
+              amount: PatientDetailDisplay.moneyPlain(invoice.amount),
+              discount: PatientDetailDisplay.moneyPlain(invoice.discount),
+              paid: PatientDetailDisplay.moneyPlain(invoice.paid),
+              due: PatientDetailDisplay.moneyPlain(invoice.due),
+              status: PatientDetailDisplay.text(invoice.status),
+              payments: invoice.payments
+                  .map(
+                    (item) => InvoicePaymentRecord(
+                      paymentId: PatientDetailDisplay.text(item.id),
+                      date: PatientDetailDisplay.date(item.date),
+                      amount: PatientDetailDisplay.moneyPlain(item.amount),
+                      method: PatientDetailDisplay.text(item.method),
+                      type: PatientDetailDisplay.text(item.type),
+                    ),
+                  )
+                  .toList(),
+            );
+          },
+        );
+      },
     );
   }
 }

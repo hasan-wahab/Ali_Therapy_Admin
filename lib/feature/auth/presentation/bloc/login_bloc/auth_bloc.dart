@@ -49,6 +49,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       LoginParams(email: event.email, password: event.password),
     );
 
+    if (isClosed) return;
+
     result.when(
       success: (login) => emit(AuthAuthenticated(login)),
       failure: (failure) => emit(
@@ -65,8 +67,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     final result = await logoutUseCase(const NoParams());
 
+    if (isClosed) return;
+
     result.when(
-      success: (_) => emit(const AuthUnauthenticated()),
+      success: (_) => emit(_unauthenticated()),
       failure: (failure) => emit(
         AuthError(title: failure.title, message: failure.message),
       ),
@@ -84,10 +88,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         if (login != null) {
           emit(AuthAuthenticated(login));
         } else {
-          emit(const AuthUnauthenticated());
+          emit(_unauthenticated());
         }
       },
-      failure: (_) => emit(const AuthUnauthenticated()),
+      failure: (_) => emit(_unauthenticated()),
+    );
+  }
+
+  AuthUnauthenticated _unauthenticated() {
+    return AuthUnauthenticated(
+      lastEmail: restoreSessionUseCase.lastLoginEmail(),
     );
   }
 

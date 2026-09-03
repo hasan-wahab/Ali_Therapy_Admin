@@ -22,7 +22,7 @@ class PatientStaffCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final display = value.trim().isEmpty ? '—' : value;
+    final display = value.trim().isEmpty ? '_' : value;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

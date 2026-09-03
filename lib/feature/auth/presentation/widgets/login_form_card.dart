@@ -17,7 +17,13 @@ import 'package:ali_therapy_admin/feature/auth/presentation/widgets/forgot_passw
 // ============================================================
 
 class LoginFormCard extends StatefulWidget {
-  const LoginFormCard({super.key});
+  const LoginFormCard({
+    super.key,
+    this.initialEmail = '',
+  });
+
+  /// Last login email — filled so the user does not retype it.
+  final String initialEmail;
 
   @override
   State<LoginFormCard> createState() => _LoginFormCardState();
@@ -28,6 +34,25 @@ class _LoginFormCardState extends State<LoginFormCard> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fillEmailIfEmpty(widget.initialEmail);
+  }
+
+  @override
+  void didUpdateWidget(LoginFormCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _fillEmailIfEmpty(widget.initialEmail);
+  }
+
+  void _fillEmailIfEmpty(String email) {
+    final trimmed = email.trim();
+    if (trimmed.isEmpty || trimmed == '_') return;
+    if (_emailController.text.trim().isNotEmpty) return;
+    _emailController.text = trimmed;
+  }
 
   @override
   void dispose() {
@@ -112,9 +137,16 @@ class _LoginFormCardState extends State<LoginFormCard> {
             SizedBox(height: 8.h),
             const ForgotPasswordLink(),
             SizedBox(height: 18.h),
-            AuthPrimaryButton(
-              label: 'Login',
-              onPressed: _onLoginPressed,
+            BlocBuilder<AuthBloc, AuthState>(
+              buildWhen: (previous, current) =>
+                  (previous is AuthLoading) != (current is AuthLoading),
+              builder: (context, state) {
+                return AuthPrimaryButton(
+                  label: 'Login',
+                  onPressed:
+                      state is AuthLoading ? null : _onLoginPressed,
+                );
+              },
             ),
           ],
         ),

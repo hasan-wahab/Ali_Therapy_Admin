@@ -4,19 +4,32 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_sizes.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
+import 'package:ali_therapy_admin/feature/patient/patient_detail/domain/patient_detail_domain/entities/patient_detail_profile_entity.dart';
+import 'package:ali_therapy_admin/feature/patient/patient_detail/presentation/widgets/other/patient_detail_display.dart';
 import 'package:ali_therapy_admin/feature/patient/patient_detail/presentation/widgets/other/patient_detail_info_chip.dart';
 
 // ============================================================
 // PATIENT DETAIL PERSONAL INFO CONTAINER
 // ------------------------------------------------------------
 // Header: name + email. Fields below. Last visit at bottom.
+// Avatar is a placeholder (API has no photo).
 // ============================================================
 
 class PatientDetailPersonalInfoContainer extends StatelessWidget {
-  const PatientDetailPersonalInfoContainer({super.key});
+  const PatientDetailPersonalInfoContainer({
+    super.key,
+    required this.profile,
+  });
+
+  final PatientDetailProfileEntity profile;
 
   @override
   Widget build(BuildContext context) {
+    final name = PatientDetailDisplay.text(profile.name);
+    final email = PatientDetailDisplay.text(profile.email);
+    final id = PatientDetailDisplay.hashedId(profile.id);
+    final lastVisit = PatientDetailDisplay.dateTime(profile.lastVisitAt);
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -76,14 +89,14 @@ class PatientDetailPersonalInfoContainer extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Muhammad Safeer',
+                        name,
                         style: AppTextStyles.heading3.copyWith(height: 1.2),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                       SizedBox(height: 4.h),
                       Text(
-                        'safeerkaemail@gmail.com',
+                        email,
                         style: AppTextStyles.bodySmall.copyWith(
                           color: AppColors.textSecondary,
                           fontWeight: FontWeight.w500,
@@ -93,7 +106,7 @@ class PatientDetailPersonalInfoContainer extends StatelessWidget {
                       ),
                       SizedBox(height: 4.h),
                       Text(
-                        'Patient Id: #001090',
+                        'Patient Id: $id',
                         style: AppTextStyles.bodySmall.copyWith(
                           color: AppColors.textSecondary,
                           fontWeight: FontWeight.w600,
@@ -117,17 +130,17 @@ class PatientDetailPersonalInfoContainer extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Expanded(
+                    Expanded(
                       child: PatientDetailInfoChip(
                         label: 'Phone',
-                        value: '0333-5121038',
+                        value: PatientDetailDisplay.text(profile.phone),
                       ),
                     ),
                     SizedBox(width: 12.w),
-                    const Expanded(
+                    Expanded(
                       child: PatientDetailInfoChip(
                         label: 'CNIC',
-                        value: '61101-1822371-1',
+                        value: PatientDetailDisplay.text(profile.cnic),
                       ),
                     ),
                   ],
@@ -135,46 +148,46 @@ class PatientDetailPersonalInfoContainer extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Expanded(
+                    Expanded(
                       child: PatientDetailInfoChip(
                         label: 'Birth Date',
-                        value: 'Aug 01, 1967',
+                        value: PatientDetailDisplay.date(profile.dateOfBirth),
                       ),
                     ),
                     SizedBox(width: 12.w),
-                    const Expanded(
+                    Expanded(
                       child: PatientDetailInfoChip(
                         label: 'Age',
-                        value: '59 years',
+                        value: PatientDetailDisplay.ageYears(profile.age),
                       ),
                     ),
                   ],
                 ),
-                const PatientDetailInfoChip(
+                PatientDetailInfoChip(
                   label: 'Referred By',
-                  value: 'Social Media: Google',
+                  value: PatientDetailDisplay.text(profile.referredBy),
                 ),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Expanded(
+                    Expanded(
                       child: PatientDetailInfoChip(
                         label: 'Gender',
-                        value: 'Male',
+                        value: PatientDetailDisplay.text(profile.gender),
                       ),
                     ),
                     SizedBox(width: 12.w),
-                    const Expanded(
+                    Expanded(
                       child: PatientDetailInfoChip(
                         label: 'Blood Group',
-                        value: 'B+',
+                        value: PatientDetailDisplay.text(profile.bloodGroup),
                       ),
                     ),
                     SizedBox(width: 12.w),
-                    const Expanded(
+                    Expanded(
                       child: PatientDetailInfoChip(
                         label: 'Insurance',
-                        value: 'N/A',
+                        value: PatientDetailDisplay.text(profile.insurance),
                       ),
                     ),
                   ],
@@ -200,7 +213,7 @@ class PatientDetailPersonalInfoContainer extends StatelessWidget {
                 SizedBox(width: 6.w),
                 Expanded(
                   child: Text(
-                    'Last Visit: 23 minutes ago',
+                    'Last Visit: $lastVisit',
                     style: AppTextStyles.bodySmall.copyWith(
                       color: AppColors.primary,
                       fontWeight: FontWeight.w600,

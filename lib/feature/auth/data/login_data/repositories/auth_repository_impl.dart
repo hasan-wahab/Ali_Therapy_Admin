@@ -51,6 +51,7 @@ class AuthRepositoryImpl implements AuthRepository {
         password: password,
       );
 
+      await localStorage.saveLastEmail(email);
       await localStorage.saveLogin(loginModel);
 
       return Result.success(loginModel.toEntity());
@@ -63,16 +64,24 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   ResultVoid logout() async {
-    try {
-      // Best-effort server logout (needs Bearer token from storage).
-      await remoteDataSource.logout();
-    } catch (_) {
-      // Ignore API errors — we still clear local session below.
+    if (!await networkInfo.isConnected) {
+      const failure = NetworkFailure(
+        'No internet connection. Please try again.',
+      );
+      AppErrorLogger.logFailure(failure, where: 'AuthRepository.logout');
+      return Result.failure(failure);
     }
 
     try {
-      await localStorage.clear();
+      await remoteDataSource.logout();
+      await _rememberEmailThenClear();
       return Result.success(null);
+    } on UnauthorizedException {
+      // Token already invalid on server — clear local so user can login.
+      await _rememberEmailThenClear();
+      return Result.success(null);
+    } on AppException catch (e) {
+      return Result.failure(ErrorMapper.toFailure(e));
     } catch (e) {
       return Result.failure(ErrorMapper.fromUnknown(e));
     }
@@ -91,5 +100,18 @@ class AuthRepositoryImpl implements AuthRepository {
       await localStorage.clear();
       return Result.success(null);
     }
+  }
+
+  @override
+  String lastLoginEmail() {
+    return localStorage.lastEmailSync();
+  }
+
+  /// Keep the last login email, then drop the session.
+  Future<void> _rememberEmailThenClear() async {
+    final saved = localStorage.getSavedLoginSync();
+    final email = saved?.user.email ?? '';
+    await localStorage.saveLastEmail(email);
+    await localStorage.clear();
   }
 }

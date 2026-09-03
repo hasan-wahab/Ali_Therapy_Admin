@@ -1,13 +1,17 @@
 import 'package:ali_therapy_admin/core/utils/typedefs.dart';
-import '../entities/all_patients_entity.dart';
+
+import '../entities/patients_list_query.dart';
+import '../entities/patients_page_entity.dart';
 
 // ============================================================
-// ALLPATIENTS REPOSITORY CONTRACT (Domain)
+// ALL PATIENTS REPOSITORY CONTRACT (Domain)
 // ------------------------------------------------------------
 // Domain only knows WHAT we need — not HOW (no Dio here).
 // ============================================================
 
 abstract class AllPatientsRepository {
-  /// Load data for this feature. Replace with real methods later.
-  ResultFuture<AllPatientsEntity> getAllPatients();
+  /// Load one page of patients (search + filters + page).
+  ResultFuture<PatientsPageEntity> getPatientsPage({
+    required PatientsListQuery query,
+  });
 }

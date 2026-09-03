@@ -1,10 +1,12 @@
 import 'package:ali_therapy_admin/core/di/all_employees_module.dart';
+import 'package:ali_therapy_admin/core/di/all_patients_module.dart';
 import 'package:ali_therapy_admin/core/di/auth_module.dart';
 import 'package:ali_therapy_admin/core/di/di_module.dart';
 import 'package:ali_therapy_admin/core/di/edit_employee_module.dart';
 import 'package:ali_therapy_admin/core/di/external_module.dart';
 import 'package:ali_therapy_admin/core/di/home_module.dart';
 import 'package:ali_therapy_admin/core/di/network_module.dart';
+import 'package:ali_therapy_admin/core/di/patient_detail_module.dart';
 import 'package:ali_therapy_admin/core/di/profile_module.dart';
 import 'package:ali_therapy_admin/core/di/reports_module.dart';
 import 'package:ali_therapy_admin/core/di/service_module.dart';
@@ -30,6 +32,8 @@ final List<DiModule> coreModules = [
   AuthModule(),
   HomeModule(),
   AllEmployeesModule(),
+  AllPatientsModule(),
+  PatientDetailModule(),
   ProfileModule(),
   EditEmployeeModule(),
   ReportsModule(),

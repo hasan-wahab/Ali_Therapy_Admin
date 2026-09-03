@@ -67,6 +67,16 @@ class AppTextField extends StatelessWidget {
   /// Red border only — used by edit-employee step validation.
   final bool hasError;
 
+  /// TextField crashes if fontSize is 0 (Android first frame).
+  TextStyle get _safeBodyStyle {
+    final style = AppTextStyles.body;
+    final size = style.fontSize;
+    if (size == null || size <= 0) {
+      return style.copyWith(fontSize: 14);
+    }
+    return style;
+  }
+
   /// Shared rounded InputDecoration for text / date / similar fields.
   static InputDecoration decoration({
     String? labelText,
@@ -124,7 +134,8 @@ class AppTextField extends StatelessWidget {
       onChanged: onChanged,
       onFieldSubmitted: onSubmitted,
       textInputAction: textInputAction,
-      style: AppTextStyles.body,
+      style: _safeBodyStyle,
+      strutStyle: StrutStyle.fromTextStyle(_safeBodyStyle),
       decoration: decoration(
         labelText: labelText,
         hintText: hintText,

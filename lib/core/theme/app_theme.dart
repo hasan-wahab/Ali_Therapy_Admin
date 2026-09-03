@@ -48,11 +48,7 @@ class AppTheme {
           statusBarIconBrightness: Brightness.dark,
           statusBarBrightness: Brightness.light,
         ),
-        titleTextStyle: TextStyle(
-          fontSize: 18.sp,
-          fontWeight: FontWeight.w700,
-          color: AppColors.primary,
-        ),
+        titleTextStyle: AppTextStyles.appBarTitle,
         iconTheme: IconThemeData(
           color: AppColors.primary,
           size: AppSizes.iconLg,
@@ -192,11 +188,7 @@ class AppTheme {
           statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.light,
         ),
-        titleTextStyle: TextStyle(
-          fontSize: 18.sp,
-          fontWeight: FontWeight.w700,
-          color: AppColors.primary,
-        ),
+        titleTextStyle: AppTextStyles.appBarTitle,
         iconTheme: IconThemeData(
           color: AppColors.primary,
           size: AppSizes.iconLg,

@@ -24,6 +24,7 @@ class ServiceModule implements DiModule {
     sl.registerLazySingleton<AuthLocalStorage>(
       () => AuthLocalStorage(sl<SharedPreferences>()),
     );
+    sl<AuthLocalStorage>().logAllStored(reason: 'app start');
 
     sl.registerLazySingleton<ConnectivityService>(
       () => ConnectivityService(

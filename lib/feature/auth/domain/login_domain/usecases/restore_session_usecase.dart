@@ -20,4 +20,9 @@ class RestoreSessionUseCase extends UseCase<LoginEntity?, NoParams> {
   ResultFuture<LoginEntity?> call(NoParams params) {
     return repository.restoreSession();
   }
+
+  /// Email from the last successful login (kept after logout).
+  String lastLoginEmail() {
+    return repository.lastLoginEmail();
+  }
 }

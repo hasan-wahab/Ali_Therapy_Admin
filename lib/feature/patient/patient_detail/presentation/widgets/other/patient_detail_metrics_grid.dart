@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/routes/navigation_helper.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
+import 'package:ali_therapy_admin/feature/patient/patient_detail/domain/patient_detail_domain/entities/patient_detail_entity.dart';
+import 'package:ali_therapy_admin/feature/patient/patient_detail/presentation/widgets/other/patient_detail_display.dart';
 import 'package:ali_therapy_admin/feature/patient/patient_detail/presentation/widgets/other/patient_detail_metric_card.dart';
 
 // ============================================================
@@ -14,19 +16,15 @@ import 'package:ali_therapy_admin/feature/patient/patient_detail/presentation/wi
 class PatientDetailMetricsGrid extends StatelessWidget {
   const PatientDetailMetricsGrid({
     super.key,
-    this.totalVisits = '2',
-    this.activePackages = '1',
-    this.totalSpent = 'Rs. 3,000.00',
-    this.therapySessions = '1',
+    required this.detail,
   });
 
-  final String totalVisits;
-  final String activePackages;
-  final String totalSpent;
-  final String therapySessions;
+  final PatientDetailEntity detail;
 
   @override
   Widget build(BuildContext context) {
+    final profile = detail.profile;
+
     return Column(
       children: [
         Row(
@@ -34,18 +32,24 @@ class PatientDetailMetricsGrid extends StatelessWidget {
             Expanded(
               child: PatientDetailMetricCard(
                 title: 'Total Visits',
-                value: totalVisits,
+                value: '${profile.totalVisits}',
                 icon: Icons.calendar_month_outlined,
-                onTap: () => AppNavigation.openTotalVisits(context),
+                onTap: () => AppNavigation.openTotalVisits(
+                  context,
+                  detail: detail,
+                ),
               ),
             ),
             SizedBox(width: 8.w),
             Expanded(
               child: PatientDetailMetricCard(
                 title: 'Active Packages',
-                value: activePackages,
+                value: '${profile.activePackages}',
                 icon: Icons.inventory_2_outlined,
-                onTap: () => AppNavigation.openActivePackages(context),
+                onTap: () => AppNavigation.openActivePackages(
+                  context,
+                  detail: detail,
+                ),
               ),
             ),
           ],
@@ -56,7 +60,7 @@ class PatientDetailMetricsGrid extends StatelessWidget {
             Expanded(
               child: PatientDetailMetricCard(
                 title: 'Total Spent',
-                value: totalSpent,
+                value: PatientDetailDisplay.moneyRs(profile.totalSpent),
                 icon: Icons.payments_outlined,
               ),
             ),
@@ -64,10 +68,13 @@ class PatientDetailMetricsGrid extends StatelessWidget {
             Expanded(
               child: PatientDetailMetricCard(
                 title: 'Therapy Sessions',
-                value: therapySessions,
+                value: '${profile.therapySessions}',
                 icon: Icons.monitor_heart_outlined,
                 accentColor: AppColors.warning,
-                onTap: () => AppNavigation.openTherapySessions(context),
+                onTap: () => AppNavigation.openTherapySessions(
+                  context,
+                  detail: detail,
+                ),
               ),
             ),
           ],

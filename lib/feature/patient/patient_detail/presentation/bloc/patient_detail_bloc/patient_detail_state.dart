@@ -15,11 +15,40 @@ class PatientDetailLoading extends PatientDetailState {
   const PatientDetailLoading();
 }
 
-class PatientDetailError extends PatientDetailState {
-  final String message;
+class PatientDetailLoaded extends PatientDetailState {
+  const PatientDetailLoaded(
+    this.detail, {
+    this.isRefreshing = false,
+  });
 
-  const PatientDetailError(this.message);
+  final PatientDetailEntity detail;
+  final bool isRefreshing;
+
+  PatientDetailLoaded copyWith({
+    PatientDetailEntity? detail,
+    bool? isRefreshing,
+  }) {
+    return PatientDetailLoaded(
+      detail ?? this.detail,
+      isRefreshing: isRefreshing ?? this.isRefreshing,
+    );
+  }
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [detail, isRefreshing];
+}
+
+class PatientDetailError extends PatientDetailState {
+  const PatientDetailError({
+    required this.title,
+    required this.message,
+    this.detail,
+  });
+
+  final String title;
+  final String message;
+  final PatientDetailEntity? detail;
+
+  @override
+  List<Object?> get props => [title, message, detail];
 }

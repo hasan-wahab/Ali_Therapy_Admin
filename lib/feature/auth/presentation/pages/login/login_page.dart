@@ -45,6 +45,8 @@ class LoginPage extends StatelessWidget {
           },
           builder: (context, state) {
             final isLoggingIn = state is AuthLoading;
+            final rememberedEmail =
+                state is AuthUnauthenticated ? state.lastEmail : '';
 
             return Stack(
               children: [
@@ -91,7 +93,9 @@ class LoginPage extends StatelessWidget {
                                   children: [
                                     const LoginHeader(),
                                     SizedBox(height: 28.h),
-                                    const LoginFormCard(),
+                                    LoginFormCard(
+                                      initialEmail: rememberedEmail,
+                                    ),
                                     SizedBox(height: 24.h),
                                     Text(
                                       AppConstants.appName,
@@ -116,7 +120,9 @@ class LoginPage extends StatelessWidget {
                               children: [
                                 const LoginHeader(),
                                 SizedBox(height: 28.h),
-                                const LoginFormCard(),
+                                LoginFormCard(
+                                  initialEmail: rememberedEmail,
+                                ),
                                 SizedBox(height: 24.h),
                                 Text(
                                   AppConstants.appName,

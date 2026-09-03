@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
+import 'package:ali_therapy_admin/feature/patient/patient_detail/domain/patient_detail_domain/entities/patient_detail_entity.dart';
 import 'package:ali_therapy_admin/feature/patient/patient_detail/presentation/widgets/other/progress_day_header.dart';
 import 'package:ali_therapy_admin/feature/patient/patient_detail/presentation/widgets/other/progress_event_kind.dart';
 import 'package:ali_therapy_admin/feature/patient/patient_detail/presentation/widgets/other/progress_status_chip.dart';
@@ -45,6 +46,7 @@ class ProgressDayBlock extends StatelessWidget {
     required this.visitType,
     required this.events,
     this.status = ProgressEventStatus.completed,
+    this.detail,
   });
 
   final String visitTitle;
@@ -52,6 +54,7 @@ class ProgressDayBlock extends StatelessWidget {
   final String visitType;
   final ProgressEventStatus status;
   final List<ProgressDayEventData> events;
+  final PatientDetailEntity? detail;
 
   @override
   Widget build(BuildContext context) {
@@ -88,6 +91,7 @@ class ProgressDayBlock extends StatelessWidget {
                   ProgressTimelineStep(
                     event: events[i],
                     isLast: i == events.length - 1,
+                    detail: detail,
                   ),
               ],
             ),

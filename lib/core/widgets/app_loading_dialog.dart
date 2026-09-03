@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
+import 'package:ali_therapy_admin/core/utils/app_error_logger.dart';
 import 'package:ali_therapy_admin/core/utils/app_keyboard.dart';
 
 // ============================================================
@@ -72,6 +74,10 @@ class AppLoadingOverlay extends StatefulWidget {
 class _AppLoadingOverlayState extends State<AppLoadingOverlay>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
+  Timer? _hangTimer;
+  bool _isSlow = false;
+
+  static const _hangAfter = Duration(seconds: 12);
 
   @override
   void initState() {
@@ -81,17 +87,30 @@ class _AppLoadingOverlayState extends State<AppLoadingOverlay>
       vsync: this,
       duration: const Duration(milliseconds: 1400),
     )..repeat();
+    _hangTimer = Timer(_hangAfter, _onPossibleHang);
+  }
+
+  void _onPossibleHang() {
+    if (!mounted) return;
+    AppErrorLogger.logHang(
+      overlayMessage: widget.message,
+      subtitle: widget.subtitle,
+    );
+    setState(() => _isSlow = true);
   }
 
   @override
   void dispose() {
+    _hangTimer?.cancel();
     _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final detail = widget.subtitle ?? 'Please wait';
+    final detail = _isSlow
+        ? 'Taking longer than usual. Check Debug Console.'
+        : (widget.subtitle ?? 'Please wait');
 
     // Material is required: overlay often sits in a Stack *outside* Scaffold
     // (e.g. logout). Without it, Text shows yellow double underlines.

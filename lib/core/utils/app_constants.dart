@@ -35,4 +35,18 @@ class AppConstants {
   // PAGINATION DEFAULTS
   // ----------------------------------------------------------
   static const int defaultPageSize = 20;
+
+  // ----------------------------------------------------------
+  // BLOOD GROUPS (shared — dropdowns)
+  // ----------------------------------------------------------
+  static const List<String> bloodGroups = [
+    'A+',
+    'A-',
+    'B+',
+    'B-',
+    'AB+',
+    'AB-',
+    'O+',
+    'O-',
+  ];
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'package:ali_therapy_admin/feature/patient/patient_detail/domain/patient_detail_domain/entities/patient_detail_entity.dart';
 import 'package:ali_therapy_admin/feature/patient/patient_detail/presentation/widgets/other/progress_day_block.dart';
 import 'package:ali_therapy_admin/feature/patient/patient_detail/presentation/widgets/other/progress_event_card.dart';
 import 'package:ali_therapy_admin/feature/patient/patient_detail/presentation/widgets/other/progress_event_kind.dart';
@@ -17,10 +18,12 @@ class ProgressTimelineStep extends StatelessWidget {
     super.key,
     required this.event,
     required this.isLast,
+    this.detail,
   });
 
   final ProgressDayEventData event;
   final bool isLast;
+  final PatientDetailEntity? detail;
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +49,7 @@ class ProgressTimelineStep extends StatelessWidget {
                 startTime: event.startTime,
                 endTime: event.endTime,
                 duration: event.duration,
+                detail: detail,
               ),
             ),
           ),

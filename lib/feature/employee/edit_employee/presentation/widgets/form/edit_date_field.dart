@@ -1,13 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:intl/intl.dart';
 
-import 'package:ali_therapy_admin/core/theme/app_colors.dart';
-import 'package:ali_therapy_admin/core/theme/app_sizes.dart';
-import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
-import 'package:ali_therapy_admin/core/widgets/app_cupertino_date_picker.dart';
-import 'package:ali_therapy_admin/core/widgets/app_field_label.dart';
-import 'package:ali_therapy_admin/core/widgets/app_text_field.dart';
+import 'package:ali_therapy_admin/core/widgets/app_date_field.dart';
 
 // ============================================================
 // EDIT DATE FIELD
@@ -24,6 +17,8 @@ class EditDateField extends StatelessWidget {
     this.hintText = 'mm/dd/yyyy',
     this.onChanged,
     this.hasError = false,
+    this.firstDate,
+    this.lastDate,
   });
 
   final String label;
@@ -32,65 +27,20 @@ class EditDateField extends StatelessWidget {
   final String hintText;
   final ValueChanged<String>? onChanged;
   final bool hasError;
+  final DateTime? firstDate;
+  final DateTime? lastDate;
 
   @override
   Widget build(BuildContext context) {
-    final display = (value != null && value!.trim().isNotEmpty) ? value! : null;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        AppFieldLabel(label: label, isRequired: isRequired),
-        SizedBox(height: 8.h),
-        Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: onChanged == null
-                ? null
-                : () => _pickDate(context, display),
-            borderRadius: BorderRadius.circular(12.r),
-            child: InputDecorator(
-              decoration: AppTextField.decoration(
-                hintText: hintText,
-                hasError: hasError,
-                suffixIcon: Icon(
-                  Icons.calendar_today_outlined,
-                  size: AppSizes.iconSm,
-                  color: hasError ? AppColors.error : AppColors.textMuted,
-                ),
-              ),
-              child: Text(
-                display ?? hintText,
-                style: AppTextStyles.body.copyWith(
-                  color: display == null
-                      ? AppColors.textMuted
-                      : AppColors.textPrimary,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
+    return AppDateField(
+      label: label,
+      isRequired: isRequired,
+      value: value,
+      hintText: hintText,
+      onChanged: onChanged,
+      hasError: hasError,
+      firstDate: firstDate,
+      lastDate: lastDate,
     );
-  }
-
-  Future<void> _pickDate(BuildContext context, String? current) async {
-    final picked = await showAppCupertinoDatePicker(
-      context: context,
-      initialDate: _parseDisplay(current),
-      firstDate: DateTime(1950),
-      lastDate: DateTime(DateTime.now().year + 5, 12, 31),
-    );
-    if (picked == null) return;
-    onChanged!(DateFormat('MM/dd/yyyy').format(picked));
-  }
-
-  DateTime? _parseDisplay(String? raw) {
-    if (raw == null || raw.trim().isEmpty) return null;
-    try {
-      return DateFormat('MM/dd/yyyy').parse(raw.trim());
-    } catch (_) {
-      return DateTime.tryParse(raw.trim());
-    }
   }
 }

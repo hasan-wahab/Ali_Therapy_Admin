@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'package:ali_therapy_admin/core/utils/app_constants.dart';
 import 'package:ali_therapy_admin/core/widgets/app_dropdown_field.dart';
 import 'package:ali_therapy_admin/core/widgets/app_text_field.dart';
 import 'package:ali_therapy_admin/feature/patient/patient_registration/presentation/widgets/form/patient_fields_row.dart';
@@ -22,17 +23,6 @@ class AdditionalDetailsFormFields extends StatelessWidget {
     'Social Media',
     'Walk-in',
     'Other',
-  ];
-
-  static const _bloodGroups = [
-    'A+',
-    'A-',
-    'B+',
-    'B-',
-    'AB+',
-    'AB-',
-    'O+',
-    'O-',
   ];
 
   static const _languages = [
@@ -70,7 +60,7 @@ class AdditionalDetailsFormFields extends StatelessWidget {
         const AppDropdownField(
           label: 'Blood Group',
           hintText: 'Select Blood Group',
-          items: _bloodGroups,
+          items: AppConstants.bloodGroups,
         ),
         SizedBox(height: 14.h),
         const AppDropdownField(

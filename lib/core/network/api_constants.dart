@@ -21,6 +21,30 @@ class ApiConstants {
   // static String imageBaseUrl = 'https://alitherapy.neonweb.tech';
   //static const String baseUrl = 'https://example.com/api/';
 
+  /// File host (no /api/admin). Used for /storage/... images.
+  static String get fileHost {
+    const suffix = '/api/admin/';
+    if (baseUrl.endsWith(suffix)) {
+      return baseUrl.substring(0, baseUrl.length - suffix.length);
+    }
+    return baseUrl;
+  }
+
+  /// Turn an API file path into a full URL the image loader can fetch.
+  static String resolveFileUrl(String raw) {
+    var path = raw.replaceAll(RegExp(r'\s+'), '').replaceAll('\\', '/');
+    if (path.isEmpty || path == '_') return '';
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      return path;
+    }
+    if (path.startsWith('/storage/')) return '$fileHost$path';
+    if (path.startsWith('storage/')) return '$fileHost/$path';
+    if (path.startsWith('/uploads/')) return '$fileHost/storage$path';
+    if (path.startsWith('uploads/')) return '$fileHost/storage/$path';
+    if (path.startsWith('/')) return '$fileHost$path';
+    return '$fileHost/storage/$path';
+  }
+
   // ----------------------------------------------------------
   // TIMEOUTS (how long we wait for the server)
   // ----------------------------------------------------------
@@ -59,6 +83,9 @@ class ApiConstants {
 
   /// GET — show one patient
   static String patientDetails(String id) => 'patient/$id';
+
+  /// GET — patient full view (profile + visits + records)
+  static String patientFullView(String id) => 'patient/$id/full-view';
 
   /// GET —  Search patients
   static const String searchPatients = 'search-patients';

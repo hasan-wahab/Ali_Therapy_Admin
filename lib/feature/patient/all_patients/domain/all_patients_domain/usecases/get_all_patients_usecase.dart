@@ -1,21 +1,24 @@
 import 'package:ali_therapy_admin/core/usecase/usecase.dart';
 import 'package:ali_therapy_admin/core/utils/typedefs.dart';
-import '../entities/all_patients_entity.dart';
+
+import '../entities/patients_list_query.dart';
+import '../entities/patients_page_entity.dart';
 import '../repositories/all_patients_repository.dart';
 
 // ============================================================
-// GET ALLPATIENTS USE CASE
+// GET ALL PATIENTS USE CASE
 // ------------------------------------------------------------
-// One job: fetch all patients data.
+// One job: load one patients page (with search + filters).
 // ============================================================
 
-class GetAllPatientsUseCase extends UseCase<AllPatientsEntity, NoParams> {
-  final AllPatientsRepository repository;
-
+class GetAllPatientsUseCase
+    extends UseCase<PatientsPageEntity, PatientsListQuery> {
   GetAllPatientsUseCase(this.repository);
 
+  final AllPatientsRepository repository;
+
   @override
-  ResultFuture<AllPatientsEntity> call(NoParams params) {
-    return repository.getAllPatients();
+  ResultFuture<PatientsPageEntity> call(PatientsListQuery params) {
+    return repository.getPatientsPage(query: params);
   }
 }

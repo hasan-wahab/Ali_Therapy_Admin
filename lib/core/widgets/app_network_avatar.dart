@@ -1,10 +1,9 @@
 import 'dart:typed_data';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'package:ali_therapy_admin/core/services/auth_local_storage.dart';
+import 'package:ali_therapy_admin/core/network/dio_client.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_sizes.dart';
 import 'package:ali_therapy_admin/injection.dart';
@@ -45,12 +44,6 @@ class _AppNetworkAvatarState extends State<AppNetworkAvatar> {
     return url != null && url.isNotEmpty && url != '_';
   }
 
-  Map<String, String>? _authHeaders() {
-    final token = sl<AuthLocalStorage>().getTokenSync();
-    if (token == null) return null;
-    return {'Authorization': 'Bearer $token'};
-  }
-
   @override
   void initState() {
     super.initState();
@@ -79,26 +72,7 @@ class _AppNetworkAvatarState extends State<AppNetworkAvatar> {
 
   Future<Uint8List?> _loadImageBytes() async {
     if (!_hasUrl) return null;
-
-    try {
-      final response = await Dio().get<List<int>>(
-        widget.imageUrl!.trim(),
-        options: Options(
-          headers: _authHeaders(),
-          responseType: ResponseType.bytes,
-          receiveTimeout: const Duration(seconds: 15),
-          sendTimeout: const Duration(seconds: 15),
-          validateStatus: (status) => status != null && status >= 200 && status < 300,
-        ),
-      );
-
-      final bytes = response.data;
-      if (bytes == null || bytes.isEmpty) return null;
-      return Uint8List.fromList(bytes);
-    } catch (_) {
-      // Broken URL, forbidden file, or missing auth should quietly fall back.
-      return null;
-    }
+    return sl<DioClient>().getFileBytes(widget.imageUrl!.trim());
   }
 
   @override

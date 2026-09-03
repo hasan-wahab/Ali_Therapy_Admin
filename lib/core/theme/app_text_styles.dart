@@ -15,26 +15,33 @@ import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 class AppTextStyles {
   AppTextStyles._();
 
+  /// ScreenUtil can return 0 while Android viewport is still 0×0.
+  /// TextField crashes if fontSize is not greater than 0.
+  static double _sp(double size) {
+    final scaled = size.sp;
+    return scaled > 0 ? scaled : size;
+  }
+
   // ----------------------------------------------------------
   // HEADINGS
   // ----------------------------------------------------------
 
   static TextStyle get heading1 => TextStyle(
-        fontSize: 28.sp,
+        fontSize: _sp(28),
         fontWeight: FontWeight.bold,
         color: AppColors.textPrimary,
         height: 1.3,
       );
 
   static TextStyle get heading2 => TextStyle(
-        fontSize: 22.sp,
+        fontSize: _sp(22),
         fontWeight: FontWeight.w700,
         color: AppColors.textPrimary,
         height: 1.3,
       );
 
   static TextStyle get heading3 => TextStyle(
-        fontSize: 18.sp,
+        fontSize: _sp(18),
         fontWeight: FontWeight.w600,
         color: AppColors.textPrimary,
         height: 1.3,
@@ -45,21 +52,21 @@ class AppTextStyles {
   // ----------------------------------------------------------
 
   static TextStyle get bodyLarge => TextStyle(
-        fontSize: 16.sp,
+        fontSize: _sp(16),
         fontWeight: FontWeight.w400,
         color: AppColors.textPrimary,
         height: 1.5,
       );
 
   static TextStyle get body => TextStyle(
-        fontSize: 14.sp,
+        fontSize: _sp(14),
         fontWeight: FontWeight.w400,
         color: AppColors.textPrimary,
         height: 1.5,
       );
 
   static TextStyle get bodySmall => TextStyle(
-        fontSize: 12.sp,
+        fontSize: _sp(12),
         fontWeight: FontWeight.w400,
         color: AppColors.textSecondary,
         height: 1.4,
@@ -70,21 +77,21 @@ class AppTextStyles {
   // ----------------------------------------------------------
 
   static TextStyle get label => TextStyle(
-        fontSize: 12.sp,
+        fontSize: _sp(12),
         fontWeight: FontWeight.w500,
         color: AppColors.textMuted,
         letterSpacing: 0.2,
       );
 
   static TextStyle get button => TextStyle(
-        fontSize: 16.sp,
+        fontSize: _sp(16),
         fontWeight: FontWeight.w600,
         color: AppColors.textOnPrimary,
         letterSpacing: 0.3,
       );
 
   static TextStyle get link => TextStyle(
-        fontSize: 14.sp,
+        fontSize: _sp(14),
         fontWeight: FontWeight.w500,
         color: AppColors.info,
         decoration: TextDecoration.underline,
@@ -92,14 +99,14 @@ class AppTextStyles {
 
   /// AppBar title (teal).
   static TextStyle get appBarTitle => TextStyle(
-        fontSize: 18.sp,
+        fontSize: _sp(18),
         fontWeight: FontWeight.w700,
         color: AppColors.primary,
       );
 
   /// Profile / card name line.
   static TextStyle get name => TextStyle(
-        fontSize: 16.sp,
+        fontSize: _sp(16),
         fontWeight: FontWeight.w700,
         color: AppColors.textPrimary,
         letterSpacing: 0.2,
@@ -107,14 +114,14 @@ class AppTextStyles {
 
   /// Chip / tag text (primary color).
   static TextStyle get chipPrimary => TextStyle(
-        fontSize: 12.sp,
+        fontSize: _sp(12),
         fontWeight: FontWeight.w500,
         color: AppColors.primary,
       );
 
   /// Chip / tag text (muted).
   static TextStyle get chipMuted => TextStyle(
-        fontSize: 12.sp,
+        fontSize: _sp(12),
         fontWeight: FontWeight.w500,
         color: AppColors.textSecondary,
       );

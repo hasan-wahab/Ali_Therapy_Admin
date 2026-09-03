@@ -1,64 +1,90 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'package:ali_therapy_admin/core/theme/app_colors.dart';
-import 'package:ali_therapy_admin/core/widgets/app_tablet_safe_area.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
-import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/form/form_back_app_bar.dart';
+import 'package:ali_therapy_admin/feature/patient/patient_detail/presentation/widgets/other/patient_detail_display.dart';
+import 'package:ali_therapy_admin/feature/patient/patient_detail/presentation/widgets/other/patient_detail_record_refresh_shell.dart';
 import 'package:ali_therapy_admin/feature/patient/therapy_sessions/presentation/widgets/other/therapy_session_card.dart';
 import 'package:ali_therapy_admin/feature/patient/therapy_sessions/presentation/widgets/other/therapy_session_modality_chip.dart';
 
 // ============================================================
 // THERAPY SESSIONS PAGE
 // ------------------------------------------------------------
-// Compact session cards list (app brand colors).
+// Sessions from Patient Full View (passed via extra).
+// Pull refresh reloads Full View — AppBar underline loading.
 // ============================================================
 
 class TherapySessionsPage extends StatelessWidget {
   const TherapySessionsPage({super.key});
 
+  String _ageGender({required int age, required String gender}) {
+    final ageText = age > 0 ? '$age Y' : PatientDetailDisplay.empty;
+    final genderText = PatientDetailDisplay.text(gender);
+    if (ageText == PatientDetailDisplay.empty &&
+        genderText == PatientDetailDisplay.empty) {
+      return PatientDetailDisplay.empty;
+    }
+    if (ageText == PatientDetailDisplay.empty) return genderText;
+    if (genderText == PatientDetailDisplay.empty) return ageText;
+    return '$ageText / $genderText';
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: const FormBackAppBar(title: 'All Sessions'),
-      body: AppTabletSafeArea(
-        child: ListView(
+    return PatientDetailRecordRefreshShell(
+      title: 'All Sessions',
+      builder: (context, detail) {
+        final sessions = detail.sessions;
+
+        return ListView.separated(
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: ClampingScrollPhysics(),
+          ),
           padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 24.h),
-          children: [
-            Text(
-              '1 therapy session',
-              style: AppTextStyles.bodySmall.copyWith(fontWeight: FontWeight.w600),
-            ),
-            SizedBox(height: 12.h),
-            const TherapySessionCard(
-              initiallyExpanded: true,
-              sessionNumber: 1,
-              patientName: 'Saima Raees',
-              cnic: '82401-9475130-9',
-              ageGender: '35 Y / Female',
-              therapist: 'DR TAHNIAT ZEHRA NAQVI',
-              packageName: '10 days package 30000',
-              duration: '00:40:22',
-              startedAt: '04:36 PM',
-              endedAt: '05:16 PM',
-              modalities: [
-                TherapySessionModalityChip(title: 'IFC', duration: '10m'),
-                TherapySessionModalityChip(
-                  title: 'Ultrasound',
-                  duration: '5m',
+          itemCount: sessions.length + 1,
+          separatorBuilder: (_, index) => SizedBox(height: 12.h),
+          itemBuilder: (context, index) {
+            if (index == 0) {
+              final count = sessions.length;
+              return Text(
+                count == 1 ? '1 therapy session' : '$count therapy sessions',
+                style: AppTextStyles.bodySmall.copyWith(
+                  fontWeight: FontWeight.w600,
                 ),
-                TherapySessionModalityChip(
-                  title: 'Thermotherapy',
-                  duration: '10m',
-                ),
-              ],
-              nextDate: '08 Aug, 2026',
-              nextTimeSlot: '04:00 - 04:05 PM',
-            ),
-          ],
-        ),
-      ),
+              );
+            }
+
+            final session = sessions[index - 1];
+            return TherapySessionCard(
+              initiallyExpanded: index == 1,
+              sessionNumber: session.sessionNumber,
+              patientName: PatientDetailDisplay.text(session.patientName),
+              cnic: PatientDetailDisplay.text(session.cnic),
+              ageGender: _ageGender(
+                age: session.age,
+                gender: session.gender,
+              ),
+              therapist: PatientDetailDisplay.text(session.therapist),
+              packageName: PatientDetailDisplay.text(session.packageName),
+              duration: PatientDetailDisplay.text(session.duration),
+              startedAt: PatientDetailDisplay.text(session.startedAt),
+              endedAt: PatientDetailDisplay.text(session.endedAt),
+              modalities: session.modalities
+                  .map(
+                    (item) => TherapySessionModalityChip(
+                      title: PatientDetailDisplay.text(item.title),
+                      duration: PatientDetailDisplay.text(item.duration),
+                    ),
+                  )
+                  .toList(),
+              nextDate: PatientDetailDisplay.date(session.nextSession.date),
+              nextTimeSlot: PatientDetailDisplay.text(
+                session.nextSession.timeSlot,
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

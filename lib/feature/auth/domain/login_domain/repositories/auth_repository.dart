@@ -23,4 +23,7 @@ abstract class AuthRepository {
   /// Restore session from local storage (app restart).
   /// Returns null when user must login again.
   ResultFuture<LoginEntity?> restoreSession();
+
+  /// Email from the last successful login (kept after logout).
+  String lastLoginEmail();
 }

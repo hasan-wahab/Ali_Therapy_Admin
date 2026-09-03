@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'package:ali_therapy_admin/core/theme/app_colors.dart';
-import 'package:ali_therapy_admin/core/theme/app_sizes.dart';
-import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
-import 'package:ali_therapy_admin/core/widgets/app_field_label.dart';
-import 'package:ali_therapy_admin/core/widgets/app_text_field.dart';
+import 'package:ali_therapy_admin/core/widgets/app_date_field.dart';
 
 // ============================================================
 // PATIENT DATE FIELD
 // ------------------------------------------------------------
-// Date-looking field (picker action comes later).
+// Birth / form dates — shared Cupertino picker.
 // ============================================================
 
 class PatientDateField extends StatelessWidget {
@@ -19,34 +14,27 @@ class PatientDateField extends StatelessWidget {
     required this.label,
     this.isRequired = false,
     this.hintText = 'mm/dd/yyyy',
+    this.value,
+    this.onChanged,
   });
 
   final String label;
   final bool isRequired;
   final String hintText;
+  final String? value;
+  final ValueChanged<String>? onChanged;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        AppFieldLabel(label: label, isRequired: isRequired),
-        SizedBox(height: 8.h),
-        InputDecorator(
-          decoration: AppTextField.decoration(
-            hintText: hintText,
-            suffixIcon: Icon(
-              Icons.calendar_today_outlined,
-              size: AppSizes.iconSm,
-              color: AppColors.textMuted,
-            ),
-          ),
-          child: Text(
-            hintText,
-            style: AppTextStyles.body.copyWith(color: AppColors.textMuted),
-          ),
-        ),
-      ],
+    final today = DateTime.now();
+    return AppDateField(
+      label: label,
+      isRequired: isRequired,
+      hintText: hintText,
+      value: value,
+      onChanged: onChanged,
+      firstDate: DateTime(1920),
+      lastDate: DateTime(today.year, today.month, today.day),
     );
   }
 }

@@ -6,6 +6,7 @@ import 'package:ali_therapy_admin/core/theme/app_sizes.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
 import 'package:ali_therapy_admin/core/utils/helpers.dart';
 import 'package:ali_therapy_admin/core/widgets/app_cupertino_date_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:ali_therapy_admin/core/widgets/app_field_label.dart';
 import 'package:ali_therapy_admin/core/widgets/app_text_field.dart';
 
@@ -103,10 +104,18 @@ class PatientsFilterDateField extends StatelessWidget {
   static Future<String?> pickDate(
     BuildContext context, {
     DateTime? initialDate,
+    String? currentDisplay,
   }) async {
+    DateTime? fromText;
+    final raw = currentDisplay?.trim() ?? '';
+    if (raw.isNotEmpty) {
+      try {
+        fromText = DateFormat('MM/dd/yyyy').parse(raw);
+      } catch (_) {}
+    }
     final picked = await showAppCupertinoDatePicker(
       context: context,
-      initialDate: initialDate,
+      initialDate: initialDate ?? fromText,
     );
     if (picked == null) return null;
     return Helpers.formatDate(picked, pattern: 'MM/dd/yyyy');

@@ -10,17 +10,18 @@ import 'package:ali_therapy_admin/feature/patient/all_patients/presentation/widg
 // PATIENT STAFF BLOCK
 // ------------------------------------------------------------
 // Staff details in a compact labeled grid (2 cols phone, 3 tablet).
+// Missing values show as "_".
 // ============================================================
 
 class PatientStaffBlock extends StatelessWidget {
   const PatientStaffBlock({
     super.key,
     required this.createdBy,
-    this.receptionist = '—',
-    this.assistantManager = '—',
-    this.historyTaker = '—',
-    this.consultant = '—',
-    this.therapist = '—',
+    this.receptionist = '_',
+    this.assistantManager = '_',
+    this.historyTaker = '_',
+    this.consultant = '_',
+    this.therapist = '_',
   });
 
   final String createdBy;
@@ -48,30 +49,12 @@ class PatientStaffBlock extends StatelessWidget {
             phoneColumns: 2,
             tabletColumns: 3,
             children: [
-              PatientStaffCell(
-                label: 'Created By',
-                value: createdBy,
-              ),
-              PatientStaffCell(
-                label: 'Receptionist',
-                value: receptionist,
-              ),
-              PatientStaffCell(
-                label: 'AM',
-                value: assistantManager,
-              ),
-              PatientStaffCell(
-                label: 'History Taker',
-                value: historyTaker,
-              ),
-              PatientStaffCell(
-                label: 'Consultant',
-                value: consultant,
-              ),
-              PatientStaffCell(
-                label: 'Therapist',
-                value: therapist,
-              ),
+              PatientStaffCell(label: 'Created By', value: createdBy),
+              PatientStaffCell(label: 'Receptionist', value: receptionist),
+              PatientStaffCell(label: 'AM', value: assistantManager),
+              PatientStaffCell(label: 'History Taker', value: historyTaker),
+              PatientStaffCell(label: 'Consultant', value: consultant),
+              PatientStaffCell(label: 'Therapist', value: therapist),
             ],
           ),
         ],

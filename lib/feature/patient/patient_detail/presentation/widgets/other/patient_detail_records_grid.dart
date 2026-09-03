@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/routes/navigation_helper.dart';
 import 'package:ali_therapy_admin/core/utils/app_snackbar.dart';
+import 'package:ali_therapy_admin/feature/patient/patient_detail/domain/patient_detail_domain/entities/patient_detail_entity.dart';
 import 'package:ali_therapy_admin/feature/patient/patient_detail/presentation/widgets/other/patient_detail_record_grid_item.dart';
 
 // ============================================================
@@ -12,7 +13,12 @@ import 'package:ali_therapy_admin/feature/patient/patient_detail/presentation/wi
 // ============================================================
 
 class PatientDetailRecordsGrid extends StatelessWidget {
-  const PatientDetailRecordsGrid({super.key});
+  const PatientDetailRecordsGrid({
+    super.key,
+    required this.detail,
+  });
+
+  final PatientDetailEntity detail;
 
   void _comingSoon(BuildContext context, String title) {
     AppSnackbar.info(context, '$title coming soon');
@@ -24,32 +30,35 @@ class PatientDetailRecordsGrid extends StatelessWidget {
       PatientDetailRecordGridItem(
         title: 'Visits',
         icon: Icons.calendar_month_outlined,
-        onTap: () => AppNavigation.openTotalVisits(context),
+        onTap: () => AppNavigation.openTotalVisits(context, detail: detail),
       ),
       PatientDetailRecordGridItem(
         title: 'Sessions',
         icon: Icons.monitor_heart_outlined,
-        onTap: () => AppNavigation.openTherapySessions(context),
+        onTap: () => AppNavigation.openTherapySessions(context, detail: detail),
       ),
       PatientDetailRecordGridItem(
         title: 'Invoices',
         icon: Icons.receipt_long_outlined,
-        onTap: () => AppNavigation.openInvoices(context),
+        onTap: () => AppNavigation.openInvoices(context, detail: detail),
       ),
       PatientDetailRecordGridItem(
         title: 'Packages',
         icon: Icons.inventory_2_outlined,
-        onTap: () => AppNavigation.openActivePackages(context),
+        onTap: () => AppNavigation.openActivePackages(context, detail: detail),
       ),
       PatientDetailRecordGridItem(
         title: 'Clinical History',
         icon: Icons.history_rounded,
-        onTap: () => AppNavigation.openClinicalHistory(context),
+        onTap: () => AppNavigation.openClinicalHistory(context, detail: detail),
       ),
       PatientDetailRecordGridItem(
         title: 'Consultant Details',
         icon: Icons.badge_outlined,
-        onTap: () => AppNavigation.openConsultantDetails(context),
+        onTap: () => AppNavigation.openConsultantDetails(
+          context,
+          detail: detail,
+        ),
       ),
       PatientDetailRecordGridItem(
         title: 'Reconsultations',

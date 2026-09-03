@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'package:ali_therapy_admin/core/network/api_constants.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
 import 'package:ali_therapy_admin/core/utils/helpers.dart';
 import 'package:ali_therapy_admin/core/widgets/app_form_dialog.dart';
@@ -22,8 +23,6 @@ class ProfileDocumentDetailDialog extends StatelessWidget {
 
   final ProfileDocumentEntity document;
 
-  static const _host = 'https://alitherapy.neonweb.tech';
-
   String _display(String value) {
     final text = value.trim();
     if (text.isEmpty || text == '_') return '';
@@ -38,20 +37,12 @@ class ProfileDocumentDetailDialog extends StatelessWidget {
     return Helpers.formatDate(parsed, pattern: 'dd MMM yyyy');
   }
 
-  String _fileUrl() {
-    final raw = _display(document.docFile);
-    if (raw.isEmpty) return '';
-    if (raw.startsWith('http://') || raw.startsWith('https://')) return raw;
-    if (raw.startsWith('/')) return '$_host$raw';
-    return '$_host/$raw';
-  }
-
   String _fileName() {
     final raw = _display(document.docFile);
     if (raw.isEmpty) return '';
-    final path = raw.split('?').first;
+    final path = raw.split('?').first.replaceAll('\\', '/');
     final name = path.split('/').last;
-    if (name.isEmpty) return raw;
+    if (name.isEmpty) return '';
     return Uri.decodeComponent(name);
   }
 
@@ -60,7 +51,7 @@ class ProfileDocumentDetailDialog extends StatelessWidget {
     final title = _display(document.docTitle);
     final description = _display(document.docDescription);
     final expiry = _expiryText();
-    final fileUrl = _fileUrl();
+    final fileUrl = ApiConstants.resolveFileUrl(document.docFile);
     final fileName = _fileName();
 
     return AppFormDialog(

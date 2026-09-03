@@ -38,7 +38,7 @@ class PatientDetailInfoChip extends StatelessWidget {
           ),
           SizedBox(height: 2.h),
           Text(
-            value.isEmpty ? '—' : value,
+            value.isEmpty || value == '—' ? '_' : value,
             style: AppTextStyles.body.copyWith(
               fontWeight: FontWeight.w600,
               height: 1.35,

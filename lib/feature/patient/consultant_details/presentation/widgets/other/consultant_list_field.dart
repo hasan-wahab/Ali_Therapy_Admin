@@ -42,7 +42,7 @@ class ConsultantListField extends StatelessWidget {
             SizedBox(height: 4.h),
             if (items.isEmpty)
               Text(
-                '—',
+                '_',
                 textAlign: TextAlign.left,
                 style: AppTextStyles.bodySmall.copyWith(
                   color: AppColors.textMuted,

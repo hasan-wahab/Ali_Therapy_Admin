@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:ali_therapy_admin/core/routes/route_names.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/domain/profile_domain/entities/profile_entity.dart';
+import 'package:ali_therapy_admin/feature/patient/patient_detail/domain/patient_detail_domain/entities/patient_detail_entity.dart';
 
 // ============================================================
 // NAVIGATION HELPER
@@ -87,33 +88,54 @@ class AppNavigation {
     context.push(AppRoutes.editPatient);
   }
 
-  /// Open patient Detail screen.
-  static void openPatientDetail(BuildContext context) {
-    context.push(AppRoutes.patientDetail);
+  /// All Patients → View: open Detail and load GET patient/{id}/full-view.
+  static void openPatientDetail(
+    BuildContext context, {
+    String? patientId,
+  }) {
+    context.push(AppRoutes.patientDetail, extra: patientId);
   }
 
-  static void openTotalVisits(BuildContext context) {
-    context.push(AppRoutes.totalVisits);
+  static void openTotalVisits(
+    BuildContext context, {
+    PatientDetailEntity? detail,
+  }) {
+    context.push(AppRoutes.totalVisits, extra: detail);
   }
 
-  static void openActivePackages(BuildContext context) {
-    context.push(AppRoutes.activePackages);
+  static void openActivePackages(
+    BuildContext context, {
+    PatientDetailEntity? detail,
+  }) {
+    context.push(AppRoutes.activePackages, extra: detail);
   }
 
-  static void openTherapySessions(BuildContext context) {
-    context.push(AppRoutes.therapySessions);
+  static void openTherapySessions(
+    BuildContext context, {
+    PatientDetailEntity? detail,
+  }) {
+    context.push(AppRoutes.therapySessions, extra: detail);
   }
 
-  static void openInvoices(BuildContext context) {
-    context.push(AppRoutes.invoices);
+  static void openInvoices(
+    BuildContext context, {
+    PatientDetailEntity? detail,
+  }) {
+    context.push(AppRoutes.invoices, extra: detail);
   }
 
-  static void openClinicalHistory(BuildContext context) {
-    context.push(AppRoutes.clinicalHistory);
+  static void openClinicalHistory(
+    BuildContext context, {
+    PatientDetailEntity? detail,
+  }) {
+    context.push(AppRoutes.clinicalHistory, extra: detail);
   }
 
-  static void openConsultantDetails(BuildContext context) {
-    context.push(AppRoutes.consultantDetails);
+  static void openConsultantDetails(
+    BuildContext context, {
+    PatientDetailEntity? detail,
+  }) {
+    context.push(AppRoutes.consultantDetails, extra: detail);
   }
 
   static void openEditEmployee(

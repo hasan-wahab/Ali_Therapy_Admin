@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'package:ali_therapy_admin/core/utils/app_constants.dart';
 import 'package:ali_therapy_admin/core/widgets/app_dropdown_field.dart';
 import 'package:ali_therapy_admin/core/widgets/app_text_field.dart';
 import 'package:ali_therapy_admin/feature/employee/edit_employee/domain/edit_employee_domain/entities/edit_employee_options_entity.dart';
@@ -136,6 +137,8 @@ class DetailsFormFields extends StatelessWidget {
                     EditEmployeeFormControllers.dateOfBirthKey,
                   ),
                   onChanged: form.setDateOfBirth,
+                  firstDate: DateTime(1920),
+                  lastDate: DateTime.now(),
                 ),
               ],
             ),
@@ -198,14 +201,19 @@ class DetailsFormFields extends StatelessWidget {
                     EditEmployeeFormControllers.religionKey,
                   ),
                 ),
-                AppTextField(
+                AppDropdownField(
                   label: 'Blood Group',
                   isRequired: true,
-                  hintText: 'Blood group..',
-                  controller: form.bloodGroup,
+                  hintText: 'Select Blood Group',
+                  items: _withCurrent(
+                    AppConstants.bloodGroups,
+                    form.bloodGroup,
+                  ),
+                  value: form.bloodGroup.isEmpty ? null : form.bloodGroup,
                   hasError: form.isInvalid(
                     EditEmployeeFormControllers.bloodGroupKey,
                   ),
+                  onChanged: form.setBloodGroup,
                 ),
               ],
             ),

@@ -32,6 +32,7 @@ class _PatientProblemChipsState extends State<PatientProblemChips> {
 
   List<String> get _chips {
     if (widget.problems.trim().isEmpty ||
+        widget.problems == '_' ||
         widget.problems.toLowerCase() == 'no record' ||
         widget.problems.toLowerCase() == 'n/a') {
       return const [];
@@ -49,10 +50,11 @@ class _PatientProblemChipsState extends State<PatientProblemChips> {
 
     if (chips.isEmpty) {
       return Text(
-        'No record',
-        style: AppTextStyles.bodySmall.copyWith(color: AppColors.textMuted),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
+        '_',
+        style: AppTextStyles.bodySmall.copyWith(
+          color: AppColors.textPrimary,
+          fontWeight: FontWeight.w600,
+        ),
       );
     }
 

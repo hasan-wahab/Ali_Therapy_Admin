@@ -33,9 +33,9 @@ class PatientCameraButton extends StatelessWidget {
           foregroundColor: AppColors.textOnPrimary,
           disabledBackgroundColor: AppColors.success.withValues(alpha: 0.7),
           elevation: 0,
-          padding: EdgeInsets.symmetric(horizontal: 18.w),
+          padding: .symmetric(horizontal: 18.w),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12.r),
+            borderRadius: .circular(12.r),
           ),
         ),
       ),

@@ -19,7 +19,7 @@ import 'package:ali_therapy_admin/core/widgets/app_expandable_card.dart';
 // ============================================================
 // PATIENT CARD
 // ------------------------------------------------------------
-// Clear labeled sections — ~2 cards visible without scroll.
+// All labels stay visible. Missing API values show as "_".
 // ============================================================
 
 class PatientCard extends StatelessWidget {
@@ -39,11 +39,11 @@ class PatientCard extends StatelessWidget {
     required this.createdBy,
     required this.createdDate,
     this.totalSessions = 0,
-    this.receptionist = '—',
-    this.assistantManager = '—',
-    this.historyTaker = '—',
-    this.consultant = '—',
-    this.therapist = '—',
+    this.receptionist = '_',
+    this.assistantManager = '_',
+    this.historyTaker = '_',
+    this.consultant = '_',
+    this.therapist = '_',
     this.onActionSelected,
     this.initiallyExpanded = false,
   });
@@ -70,6 +70,7 @@ class PatientCard extends StatelessWidget {
   final ValueChanged<PatientActionType>? onActionSelected;
 
   final bool initiallyExpanded;
+
   void _handleAction(BuildContext context, PatientActionType type) {
     if (onActionSelected != null) {
       onActionSelected!(type);
@@ -77,7 +78,7 @@ class PatientCard extends StatelessWidget {
     }
 
     if (type == PatientActionType.view) {
-      AppNavigation.openPatientDetail(context);
+      AppNavigation.openPatientDetail(context, patientId: patientId);
       return;
     }
 
@@ -91,7 +92,6 @@ class PatientCard extends StatelessWidget {
       return;
     }
 
-    // UI only — wire remaining actions later.
     AppSnackbar.info(context, '${type.name} tapped');
   }
 
@@ -102,181 +102,172 @@ class PatientCard extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.fromLTRB(10.w, 10.h, 10.w, 10.h),
         child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header: name / CNIC / ID left, Actions right
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      name,
-                      style: AppTextStyles.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    SizedBox(height: 3.h),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.badge_outlined,
-                          size: AppSizes.iconSm,
-                          color: AppColors.textMuted,
-                        ),
-                        SizedBox(width: 4.w),
-                        Text(
-                          'CNIC: ',
-                          style: AppTextStyles.bodySmall.copyWith(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name,
+                        style: AppTextStyles.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      SizedBox(height: 3.h),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.badge_outlined,
+                            size: AppSizes.iconSm,
                             color: AppColors.textMuted,
                           ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            cnic,
+                          SizedBox(width: 4.w),
+                          Text(
+                            'CNIC: ',
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: AppColors.textMuted,
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              cnic,
+                              style: AppTextStyles.bodySmall.copyWith(
+                                color: AppColors.textPrimary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 3.h),
+                      Row(
+                        children: [
+                          Text(
+                            'Patient ID: ',
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: AppColors.textMuted,
+                            ),
+                          ),
+                          Text(
+                            patientId,
                             style: AppTextStyles.bodySmall.copyWith(
                               color: AppColors.textPrimary,
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w700,
                             ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
                           ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 3.h),
-                    Row(
-                      children: [
-                        Text(
-                          'Patient ID: ',
-                          style: AppTextStyles.bodySmall.copyWith(
-                            color: AppColors.textMuted,
-                          ),
-                        ),
-                        Text(
-                          patientId,
-                          style: AppTextStyles.bodySmall.copyWith(
-                            color: AppColors.textPrimary,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(width: 8.w),
-              PatientActionsButton(
-                onSelected: (type) => _handleAction(context, type),
-              ),
-            ],
-          ),
-          SizedBox(height: 8.h),
-
-          // Problems + Insurance
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                flex: 3,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const PatientSectionTitle(title: 'Problems'),
-                    SizedBox(height: 4.h),
-                    PatientProblemChips(problems: problems),
-                  ],
-                ),
-              ),
-              SizedBox(width: 10.w),
-              Expanded(
-                flex: 2,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const PatientSectionTitle(title: 'Insurance'),
-                    SizedBox(height: 4.h),
-                    Text(
-                      insurance,
-                      style: AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.textPrimary,
-                        fontWeight: FontWeight.w600,
+                        ],
                       ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 8.h),
-
-          // Balance + Sessions
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                flex: 6,
-                child: PatientBalanceBlock(
-                  totalBilled: totalBilled,
-                  paid: paid,
-                  discount: discount,
-                  insurance: insuranceAmount,
-                  remaining: remaining,
-                ),
-              ),
-              SizedBox(width: 8.w),
-              Expanded(
-                flex: 5,
-                child: PatientSessionsBlock(
-                  remainingSessions: remainingSessions,
-                  totalSessions: totalSessions,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 8.h),
-
-          // Staff details (full)
-          PatientStaffBlock(
-            createdBy: createdBy,
-            receptionist: receptionist,
-            assistantManager: assistantManager,
-            historyTaker: historyTaker,
-            consultant: consultant,
-            therapist: therapist,
-          ),
-          SizedBox(height: 8.h),
-
-          // Created date
-          Row(
-            children: [
-              Text(
-                'Created Date: ',
-                style: AppTextStyles.bodySmall.copyWith(
-                  color: AppColors.textMuted,
-                ),
-              ),
-              Expanded(
-                child: Text(
-                  createdDate,
-                  style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w600,
-                    decoration: TextDecoration.underline,
-                    decorationColor: AppColors.border,
+                    ],
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-            ],
-          ),
-        ],
-      ),
+                SizedBox(width: 8.w),
+                PatientActionsButton(
+                  onSelected: (type) => _handleAction(context, type),
+                ),
+              ],
+            ),
+            SizedBox(height: 8.h),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const PatientSectionTitle(title: 'Problems'),
+                      SizedBox(height: 4.h),
+                      PatientProblemChips(problems: problems),
+                    ],
+                  ),
+                ),
+                SizedBox(width: 10.w),
+                Expanded(
+                  flex: 2,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const PatientSectionTitle(title: 'Insurance'),
+                      SizedBox(height: 4.h),
+                      Text(
+                        insurance,
+                        style: AppTextStyles.bodySmall.copyWith(
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 8.h),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  flex: 6,
+                  child: PatientBalanceBlock(
+                    totalBilled: totalBilled,
+                    paid: paid,
+                    discount: discount,
+                    insurance: insuranceAmount,
+                    remaining: remaining,
+                  ),
+                ),
+                SizedBox(width: 8.w),
+                Expanded(
+                  flex: 5,
+                  child: PatientSessionsBlock(
+                    remainingSessions: remainingSessions,
+                    totalSessions: totalSessions,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 8.h),
+            PatientStaffBlock(
+              createdBy: createdBy,
+              receptionist: receptionist,
+              assistantManager: assistantManager,
+              historyTaker: historyTaker,
+              consultant: consultant,
+              therapist: therapist,
+            ),
+            SizedBox(height: 8.h),
+            Row(
+              children: [
+                Text(
+                  'Created Date: ',
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.textMuted,
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    createdDate,
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                      decoration: TextDecoration.underline,
+                      decorationColor: AppColors.border,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
@@ -18,13 +20,14 @@ import 'package:ali_therapy_admin/core/services/connectivity_service.dart';
 
 class DioClient {
   late final Dio _dio;
+  final Future<String?> Function()? _getToken;
 
   /// Optional: pass a function that returns the auth token.
   /// [connectivityService] enables wait + controlled retry for all APIs.
   DioClient({
     Future<String?> Function()? getToken,
     ConnectivityService? connectivityService,
-  }) {
+  }) : _getToken = getToken {
     _dio = Dio(
       BaseOptions(
         baseUrl: ApiConstants.baseUrl,
@@ -136,5 +139,46 @@ class DioClient {
       queryParameters: queryParameters,
       options: options,
     );
+  }
+
+  /// Download a file as bytes (profile photo, document image).
+  ///
+  /// Uses a separate Dio so a 403 from /storage/ does not log as an API error.
+  /// Server currently blocks /storage/ even with a valid API token.
+  Future<Uint8List?> getFileBytes(String url) async {
+    final trimmed = ApiConstants.resolveFileUrl(url);
+    if (trimmed.isEmpty) return null;
+
+    final token = await (_getToken?.call() ?? Future<String?>.value());
+    try {
+      final dio = Dio(
+        BaseOptions(
+          connectTimeout: ApiConstants.connectTimeout,
+          receiveTimeout: ApiConstants.receiveTimeout,
+          followRedirects: true,
+          validateStatus: (status) =>
+              status != null && status >= 200 && status < 300,
+        ),
+      );
+      final headers = <String, String>{
+        Headers.acceptHeader: '*/*',
+      };
+      if (token != null && token.isNotEmpty) {
+        headers[ApiConstants.authorizationHeader] = 'Bearer $token';
+      }
+
+      final response = await dio.get<List<int>>(
+        trimmed,
+        options: Options(
+          headers: headers,
+          responseType: ResponseType.bytes,
+        ),
+      );
+      final data = response.data;
+      if (data == null || data.isEmpty) return null;
+      return Uint8List.fromList(data);
+    } catch (_) {
+      return null;
+    }
   }
 }

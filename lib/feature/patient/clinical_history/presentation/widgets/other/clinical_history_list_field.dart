@@ -39,7 +39,7 @@ class ClinicalHistoryListField extends StatelessWidget {
           SizedBox(height: 4.h),
           if (items.isEmpty)
             Text(
-              '—',
+              '_',
               style: AppTextStyles.bodySmall.copyWith(
                 color: AppColors.textMuted,
                 fontWeight: FontWeight.w600,

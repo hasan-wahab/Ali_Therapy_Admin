@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:ali_therapy_admin/core/di/service_locator.dart';
 import 'package:ali_therapy_admin/core/routes/route_names.dart';
 import 'package:ali_therapy_admin/core/routes/app_page.dart';
+import 'package:ali_therapy_admin/core/routes/app_route_logger.dart';
 import 'package:ali_therapy_admin/core/routes/auth_session_listenable.dart';
 import 'package:ali_therapy_admin/core/services/auth_local_storage.dart';
 import 'package:ali_therapy_admin/core/utils/app_permission.dart';
@@ -72,7 +73,8 @@ class AppRouter {
   static final GoRouter router = GoRouter(
     // Always start at login; [redirect] sends logged-in users to Home.
     initialLocation: AppRoutes.login,
-    debugLogDiagnostics: true,
+    debugLogDiagnostics: false,
+    observers: [AppRouteLogger()],
     refreshListenable: AuthSessionListenable.instance,
     redirect: (context, state) {
       // Real session check (saved access_token).

@@ -4,15 +4,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/widgets/app_tablet_fields_grid.dart';
 import 'package:ali_therapy_admin/core/widgets/app_dropdown_field.dart';
+import 'package:ali_therapy_admin/feature/patient/all_patients/domain/all_patients_domain/entities/patients_list_query.dart';
 import 'package:ali_therapy_admin/feature/patient/all_patients/presentation/widgets/patients_filter_date_field.dart';
 import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/report_filters_header.dart';
 
 // ============================================================
 // PATIENTS FILTERS PANEL
 // ------------------------------------------------------------
-// Same filter pattern as Patient Dues:
+// Same filter pattern as Patient Dues / All Employees:
 // dropdowns only update local draft; list updates after Apply.
-// UI only until the patients API is wired.
 // ============================================================
 
 class PatientsFiltersPanel extends StatefulWidget {
@@ -22,6 +22,7 @@ class PatientsFiltersPanel extends StatefulWidget {
     required this.receptionist,
     this.fromDate,
     this.toDate,
+    this.perPage = PatientsListPerPage.defaultSize,
     required this.onApply,
     this.onApplied,
   });
@@ -30,11 +31,13 @@ class PatientsFiltersPanel extends StatefulWidget {
   final String receptionist;
   final String? fromDate;
   final String? toDate;
+  final int perPage;
   final void Function({
     required String clinic,
     required String receptionist,
     String? fromDate,
     String? toDate,
+    required int perPage,
   }) onApply;
   final VoidCallback? onApplied;
 
@@ -73,7 +76,10 @@ class _PatientsFiltersPanelState extends State<PatientsFiltersPanel> {
   late String _receptionist;
   String? _fromDate;
   String? _toDate;
+  late String _perPage;
   int _resetToken = 0;
+
+  List<String> get _perPageItems => PatientsListPerPage.dropdownLabels;
 
   @override
   void initState() {
@@ -87,7 +93,8 @@ class _PatientsFiltersPanelState extends State<PatientsFiltersPanel> {
     if (oldWidget.clinic != widget.clinic ||
         oldWidget.receptionist != widget.receptionist ||
         oldWidget.fromDate != widget.fromDate ||
-        oldWidget.toDate != widget.toDate) {
+        oldWidget.toDate != widget.toDate ||
+        oldWidget.perPage != widget.perPage) {
       setState(() {
         _syncFromApplied();
         _resetToken++;
@@ -100,13 +107,15 @@ class _PatientsFiltersPanelState extends State<PatientsFiltersPanel> {
     _receptionist = widget.receptionist;
     _fromDate = PatientsFilterDateField.orToday(widget.fromDate);
     _toDate = PatientsFilterDateField.orToday(widget.toDate);
+    _perPage = PatientsListPerPage.labelFor(widget.perPage);
   }
 
   bool get _hasPendingChanges =>
       _clinic != widget.clinic ||
       _receptionist != widget.receptionist ||
       _fromDate != widget.fromDate ||
-      _toDate != widget.toDate;
+      _toDate != widget.toDate ||
+      PatientsListPerPage.valueForLabel(_perPage) != widget.perPage;
 
   void _onReset() {
     setState(() {
@@ -114,6 +123,7 @@ class _PatientsFiltersPanelState extends State<PatientsFiltersPanel> {
       _receptionist = PatientsFiltersPanel.allReceptionists;
       _fromDate = PatientsFilterDateField.orToday(null);
       _toDate = PatientsFilterDateField.orToday(null);
+      _perPage = PatientsListPerPage.labelFor(PatientsListPerPage.defaultSize);
       _resetToken++;
     });
   }
@@ -124,18 +134,25 @@ class _PatientsFiltersPanelState extends State<PatientsFiltersPanel> {
       receptionist: _receptionist,
       fromDate: _fromDate,
       toDate: _toDate,
+      perPage: PatientsListPerPage.valueForLabel(_perPage),
     );
     widget.onApplied?.call();
   }
 
   Future<void> _pickFromDate() async {
-    final text = await PatientsFilterDateField.pickDate(context);
+    final text = await PatientsFilterDateField.pickDate(
+      context,
+      currentDisplay: _fromDate,
+    );
     if (text == null || !mounted) return;
     setState(() => _fromDate = text);
   }
 
   Future<void> _pickToDate() async {
-    final text = await PatientsFilterDateField.pickDate(context);
+    final text = await PatientsFilterDateField.pickDate(
+      context,
+      currentDisplay: _toDate,
+    );
     if (text == null || !mounted) return;
     setState(() => _toDate = text);
   }
@@ -204,6 +221,22 @@ class _PatientsFiltersPanelState extends State<PatientsFiltersPanel> {
                 label: 'To Date',
                 valueText: _toDate,
                 onTap: _pickToDate,
+              ),
+              AppDropdownField(
+                compact: true,
+                key: ValueKey('per_page_$_resetToken'),
+                label: 'Per Page',
+                hintText: '50',
+                items: _perPageItems,
+                value: _perPageItems.contains(_perPage)
+                    ? _perPage
+                    : PatientsListPerPage.labelFor(
+                        PatientsListPerPage.defaultSize,
+                      ),
+                onChanged: (value) {
+                  if (value == null) return;
+                  setState(() => _perPage = value);
+                },
               ),
             ],
           ),

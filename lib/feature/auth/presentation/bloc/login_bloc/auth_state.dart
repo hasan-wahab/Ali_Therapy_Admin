@@ -36,7 +36,13 @@ class AuthAuthenticated extends AuthState {
 
 /// User is logged out / must login.
 class AuthUnauthenticated extends AuthState {
-  const AuthUnauthenticated();
+  const AuthUnauthenticated({this.lastEmail = ''});
+
+  /// Email used on the last successful login (empty if none saved).
+  final String lastEmail;
+
+  @override
+  List<Object?> get props => [lastEmail];
 }
 
 /// Something went wrong — show title + message.

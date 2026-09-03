@@ -4,18 +4,25 @@ import '../entities/patient_detail_entity.dart';
 import '../repositories/patient_detail_repository.dart';
 
 // ============================================================
-// GET PATIENTDETAIL USE CASE
+// GET PATIENT DETAIL USE CASE
 // ------------------------------------------------------------
-// One job: fetch patient detail data.
+// One job: fetch Patient Full View for the given patient id.
 // ============================================================
 
-class GetPatientDetailUseCase extends UseCase<PatientDetailEntity, NoParams> {
-  final PatientDetailRepository repository;
+class GetPatientDetailParams {
+  const GetPatientDetailParams({required this.patientId});
 
+  final String patientId;
+}
+
+class GetPatientDetailUseCase
+    extends UseCase<PatientDetailEntity, GetPatientDetailParams> {
   GetPatientDetailUseCase(this.repository);
 
+  final PatientDetailRepository repository;
+
   @override
-  ResultFuture<PatientDetailEntity> call(NoParams params) {
-    return repository.getPatientDetail();
+  ResultFuture<PatientDetailEntity> call(GetPatientDetailParams params) {
+    return repository.getPatientDetail(patientId: params.patientId);
   }
 }

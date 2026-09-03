@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 
 import 'package:ali_therapy_admin/core/widgets/app_search_filter_section.dart';
+import 'package:ali_therapy_admin/feature/patient/all_patients/domain/all_patients_domain/entities/patients_list_query.dart';
 import 'package:ali_therapy_admin/feature/patient/all_patients/presentation/widgets/patients_filters_panel.dart';
 
 // ============================================================
 // PATIENTS SEARCH FILTER SECTION
 // ------------------------------------------------------------
 // Same flow as Patient Dues:
-// SearchChanged (debounced in page) + SearchSubmitted.
+// SearchChanged (debounced in Bloc) + SearchSubmitted.
 // Filter panel Apply closes and updates the list.
 // ============================================================
 
@@ -18,6 +19,7 @@ class PatientsSearchFilterSection extends StatelessWidget {
     required this.receptionist,
     this.fromDate,
     this.toDate,
+    this.perPage = PatientsListPerPage.defaultSize,
     required this.onFiltersApply,
     this.onSearchChanged,
     this.onSearchSubmitted,
@@ -32,11 +34,13 @@ class PatientsSearchFilterSection extends StatelessWidget {
   final String receptionist;
   final String? fromDate;
   final String? toDate;
+  final int perPage;
   final void Function({
     required String clinic,
     required String receptionist,
     String? fromDate,
     String? toDate,
+    required int perPage,
   }) onFiltersApply;
   final ValueChanged<String>? onSearchChanged;
   final ValueChanged<String>? onSearchSubmitted;
@@ -62,6 +66,7 @@ class PatientsSearchFilterSection extends StatelessWidget {
         receptionist: receptionist,
         fromDate: fromDate,
         toDate: toDate,
+        perPage: perPage,
         onApply: onFiltersApply,
         onApplied: closeFilters,
       ),

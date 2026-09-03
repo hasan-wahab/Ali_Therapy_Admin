@@ -36,13 +36,43 @@ class AppErrorLogger {
     );
   }
 
-  static void logUnknown(Object error, {String? where}) {
+  static void logUnknown(Object error, {String? where, StackTrace? stack}) {
     _printBlock(
       source: where ?? 'Unknown',
       title: 'Unexpected Error',
       message: error.toString(),
-      detail: null,
+      detail: _appStack(stack),
       typeName: error.runtimeType.toString(),
+    );
+  }
+
+  /// Uncaught Flutter / Dart crash. Prints the first app file frames
+  /// so we know WHICH screen / file broke.
+  static void logCrash({
+    required Object error,
+    StackTrace? stack,
+    String? where,
+  }) {
+    _printBlock(
+      source: where ?? 'Crash',
+      title: 'App Crash',
+      message: error.toString(),
+      detail: _appStack(stack),
+      typeName: error.runtimeType.toString(),
+    );
+  }
+
+  /// Loading overlay still visible — likely hang or slow API.
+  static void logHang({
+    required String overlayMessage,
+    String? subtitle,
+  }) {
+    _printBlock(
+      source: 'AppLoadingOverlay',
+      title: 'Possible Hang',
+      message: 'Loading still showing: $overlayMessage',
+      detail: subtitle,
+      typeName: 'Hang',
     );
   }
 
@@ -89,9 +119,31 @@ class AppErrorLogger {
     debugPrint('║ TYPE    : $typeName');
     debugPrint('║ MESSAGE : $message');
     if (detail != null && detail.trim().isNotEmpty) {
-      debugPrint('║ DETAIL  : $detail');
+      for (final line in detail.split('\n')) {
+        debugPrint('║ DETAIL  : $line');
+      }
     }
     debugPrint('╚══════════════════════════════════════════════');
     debugPrint('');
+  }
+
+  /// Keep only frames from THIS app so the file name is easy to spot.
+  static String? _appStack(StackTrace? stack) {
+    if (stack == null) return null;
+    final lines = stack
+        .toString()
+        .split('\n')
+        .map((line) => line.trim())
+        .where((line) => line.isNotEmpty)
+        .toList();
+    final appLines = lines
+        .where((line) => line.contains('package:ali_therapy_admin'))
+        .take(8)
+        .toList();
+    if (appLines.isNotEmpty) {
+      return 'FILE:\n${appLines.join('\n')}';
+    }
+    if (lines.isEmpty) return null;
+    return lines.take(8).join('\n');
   }
 }

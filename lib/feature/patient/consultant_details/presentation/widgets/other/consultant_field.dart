@@ -22,7 +22,9 @@ class ConsultantField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final display = value.trim().isEmpty ? '—' : value;
+    final display = value.trim().isEmpty || value.trim() == '—'
+        ? '_'
+        : value;
 
     return Padding(
       padding: EdgeInsets.only(bottom: 10.h),
@@ -44,7 +46,7 @@ class ConsultantField extends StatelessWidget {
               display,
               textAlign: TextAlign.left,
               style: AppTextStyles.bodySmall.copyWith(
-                color: display == '—'
+                color: display == '_'
                     ? AppColors.textMuted
                     : AppColors.textPrimary,
                 fontWeight: FontWeight.w600,

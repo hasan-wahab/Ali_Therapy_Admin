@@ -102,6 +102,7 @@ class EditDocumentEntryCard extends StatelessWidget {
             value: expiryValue,
             hintText: 'mm/dd/yyyy',
             onChanged: onExpiryChanged,
+            lastDate: DateTime(DateTime.now().year + 20, 12, 31),
           ),
         ],
       ),

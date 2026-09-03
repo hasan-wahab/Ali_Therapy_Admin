@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:ali_therapy_admin/core/routes/navigation_helper.dart';
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
 import 'package:ali_therapy_admin/core/utils/app_snackbar.dart';
@@ -61,6 +60,8 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
   }
 
   void _goBack(BuildContext context) {
+    FocusManager.instance.primaryFocus?.unfocus();
+
     final previous = _step.previous;
     if (previous == null) {
       _popPage(context);
@@ -75,7 +76,9 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
     setState(() => _allowRoutePop = true);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!context.mounted) return;
-      AppNavigation.back(context);
+      if (context.canPop()) {
+        context.pop();
+      }
     });
   }
 
@@ -183,7 +186,7 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
               loaded?.page.options ?? const EditEmployeeOptionsEntity.empty();
 
           return PopScope(
-            // Device back must go to the previous section, not leave the page.
+            // Device back: previous section, or leave on the first section.
             canPop: !isSaving && (_step.isFirst || _allowRoutePop),
             onPopInvokedWithResult: (didPop, result) {
               if (didPop || isSaving) return;

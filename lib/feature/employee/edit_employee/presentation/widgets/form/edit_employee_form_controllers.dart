@@ -103,7 +103,6 @@ class EditEmployeeFormControllers extends ChangeNotifier {
         emergencyRelationship = TextEditingController(),
         emergencyPhone = TextEditingController(),
         religion = TextEditingController(),
-        bloodGroup = TextEditingController(),
         district = TextEditingController(),
         experienceYears = TextEditingController(),
         salary = TextEditingController(),
@@ -125,7 +124,6 @@ class EditEmployeeFormControllers extends ChangeNotifier {
     _bindClearError(emergencyRelationship, emergencyRelationshipKey);
     _bindClearError(emergencyPhone, emergencyPhoneKey);
     _bindClearError(religion, religionKey);
-    _bindClearError(bloodGroup, bloodGroupKey);
     _bindClearError(salary, salaryKey);
     _bindClearError(presentAddress, presentAddressKey);
     _bindClearError(permanentAddress, permanentAddressKey);
@@ -178,6 +176,7 @@ class EditEmployeeFormControllers extends ChangeNotifier {
   String shiftName = '';
   String shiftId = '';
   String gender = '';
+  String bloodGroup = '';
   String salaryType = '';
   String dateOfBirth = '';
   String joiningDate = '';
@@ -189,7 +188,6 @@ class EditEmployeeFormControllers extends ChangeNotifier {
   final TextEditingController emergencyRelationship;
   final TextEditingController emergencyPhone;
   final TextEditingController religion;
-  final TextEditingController bloodGroup;
   final TextEditingController district;
   final TextEditingController experienceYears;
   final TextEditingController salary;
@@ -241,7 +239,7 @@ class EditEmployeeFormControllers extends ChangeNotifier {
     emergencyRelationship.text = form.emergencyRelationship;
     emergencyPhone.text = form.emergencyPhone;
     religion.text = form.religion;
-    bloodGroup.text = form.bloodGroup;
+    bloodGroup = form.bloodGroup;
     district.text = form.district;
     experienceYears.text = form.experienceYears;
     salary.text = form.salary;
@@ -313,7 +311,7 @@ class EditEmployeeFormControllers extends ChangeNotifier {
       emergencyRelationship: emergencyRelationship.text,
       emergencyPhone: emergencyPhone.text,
       religion: religion.text,
-      bloodGroup: bloodGroup.text,
+      bloodGroup: bloodGroup,
       district: district.text,
       experienceYears: experienceYears.text,
       salaryType: salaryType,
@@ -434,7 +432,7 @@ class EditEmployeeFormControllers extends ChangeNotifier {
     if (religion.text.trim().isEmpty) {
       errors[religionKey] = 'Religion is required.';
     }
-    if (bloodGroup.text.trim().isEmpty) {
+    if (bloodGroup.trim().isEmpty) {
       errors[bloodGroupKey] = 'Blood group is required.';
     }
     final salaryTypeValue = salaryType.trim().toLowerCase();
@@ -503,6 +501,12 @@ class EditEmployeeFormControllers extends ChangeNotifier {
   void setGender(String? value) {
     gender = value ?? '';
     invalidFields = {...invalidFields}..remove(genderKey);
+    notifyListeners();
+  }
+
+  void setBloodGroup(String? value) {
+    bloodGroup = value ?? '';
+    invalidFields = {...invalidFields}..remove(bloodGroupKey);
     notifyListeners();
   }
 
@@ -676,7 +680,6 @@ class EditEmployeeFormControllers extends ChangeNotifier {
     emergencyRelationship.dispose();
     emergencyPhone.dispose();
     religion.dispose();
-    bloodGroup.dispose();
     district.dispose();
     experienceYears.dispose();
     salary.dispose();
