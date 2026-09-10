@@ -12,8 +12,8 @@
     </item>
     <!-- Tablet: larger Neon Web branding, more bottom inset. -->
     <item
-        android:width="140dp"
-        android:height="56dp"
+        android:width="180dp"
+        android:height="60dp"
         android:gravity="bottom|center_horizontal"
         android:bottom="48dp">
         <bitmap android:gravity="fill" android:src="@drawable/branding"/>

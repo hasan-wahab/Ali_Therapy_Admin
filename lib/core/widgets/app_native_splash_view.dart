@@ -9,7 +9,7 @@ import 'package:ali_therapy_admin/core/utils/app_device.dart';
 // ------------------------------------------------------------
 // Matches Figma 651:2 native launch screen so Flutter's first
 // frame does not flash a different layout.
-// Phone: 176pt center logo, 90×36 branding, 32pt bottom inset.
+// Phone: 176pt center logo, ~112×37 branding, 32pt bottom inset.
 // Tablet: larger logo + branding, more bottom inset.
 // ============================================================
 
@@ -17,11 +17,11 @@ class AppNativeSplashView extends StatelessWidget {
   const AppNativeSplashView({super.key});
 
   static const _phoneLogo = 176.0;
-  static const _phoneBrandHeight = 36.0;
+  static const _phoneBrandHeight = 42.0;
   static const _phoneBottomInset = 32.0;
 
   static const _tabletLogo = 240.0;
-  static const _tabletBrandHeight = 56.0;
+  static const _tabletBrandHeight = 64.0;
   static const _tabletBottomInset = 48.0;
 
   @override
