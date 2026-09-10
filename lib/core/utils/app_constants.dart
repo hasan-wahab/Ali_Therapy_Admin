@@ -13,8 +13,8 @@ class AppConstants {
   // ----------------------------------------------------------
   static const String appName = 'Ali Therapy Admin';
 
-  /// App logo path (use with Image.asset).
-  static const String appLogo = 'assets/images/dr_ali_icon.png';
+  /// In-app clinic logo (red splash mark, transparent background).
+  static const String appLogo = 'assets/images/app_logo.png';
 
   /// Native splash — Figma 651:2 center clinic logo.
   static const String nativeSplashLogo =

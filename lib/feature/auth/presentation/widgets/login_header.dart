@@ -18,24 +18,13 @@ class LoginHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
+        SizedBox(
           width: 96.w,
           height: 96.w,
-          padding: EdgeInsets.all(14.w),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primary.withValues(alpha: 0.18),
-                blurRadius: 20.r,
-                offset: Offset(0, 8.h),
-              ),
-            ],
-          ),
           child: Image.asset(
             AppConstants.appLogo,
             fit: BoxFit.contain,
+            filterQuality: FilterQuality.high,
           ),
         ),
         SizedBox(height: 20.h),
