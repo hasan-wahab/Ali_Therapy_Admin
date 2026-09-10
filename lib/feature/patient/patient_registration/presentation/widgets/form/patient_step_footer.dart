@@ -36,7 +36,7 @@ class PatientStepFooter extends StatelessWidget {
           child: SizedBox(
             height: 48.h,
             child: TextButton(
-              onPressed: isFirstStep ? null : onBack,
+              onPressed: onBack,
               style: TextButton.styleFrom(
                 backgroundColor: AppColors.softGray,
                 foregroundColor: AppColors.textPrimary,
@@ -46,7 +46,7 @@ class PatientStepFooter extends StatelessWidget {
                 ),
               ),
               child: Text(
-                'Back',
+                isFirstStep ? 'Close' : 'Back',
                 style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w600),
               ),
             ),

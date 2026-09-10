@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/routes/app_router.dart';
-import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_theme.dart';
 import 'package:ali_therapy_admin/core/utils/app_bloc_observer.dart';
 import 'package:ali_therapy_admin/core/utils/app_constants.dart';
 import 'package:ali_therapy_admin/core/utils/app_device.dart';
 import 'package:ali_therapy_admin/core/utils/app_error_logger.dart';
+import 'package:ali_therapy_admin/core/widgets/app_native_splash_view.dart';
 import 'package:ali_therapy_admin/injection.dart';
 
 // ============================================================
@@ -38,8 +39,9 @@ class _NoGlowScrollBehavior extends ScrollBehavior {
 }
 
 Future<void> main() async {
-  // Required before using plugins or async startup code.
-  WidgetsFlutterBinding.ensureInitialized();
+  // Keep the native (Figma) white+logo splash until Flutter's first frame.
+  final bindings = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: bindings);
 
   // Uncaught UI / framework errors → Debug Console with file name.
   FlutterError.onError = (details) {
@@ -79,6 +81,13 @@ class AliTherapyAdminApp extends StatefulWidget {
 class _AliTherapyAdminAppState extends State<AliTherapyAdminApp>
     with WidgetsBindingObserver {
   late Size _designSize = _readDesignSize();
+  bool _nativeSplashRemoved = false;
+
+  void _removeNativeSplash() {
+    if (_nativeSplashRemoved) return;
+    _nativeSplashRemoved = true;
+    FlutterNativeSplash.remove();
+  }
 
   @override
   void initState() {
@@ -168,10 +177,15 @@ class _AliTherapyAdminAppState extends State<AliTherapyAdminApp>
         final view = View.of(context);
         final logical = view.physicalSize / view.devicePixelRatio;
         if (!_hasUsableSize(logical)) {
-          return const ColoredBox(color: AppColors.background);
+          // Match native splash (Figma 651:2) so the first frame stays white.
+          return const AppNativeSplashView();
         }
 
         _applyScreenUtil(context);
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _removeNativeSplash();
+        });
 
         return MaterialApp.router(
           title: AppConstants.appName,

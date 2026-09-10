@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
@@ -27,6 +28,7 @@ class AppTextField extends StatelessWidget {
     this.controller,
     this.validator,
     this.keyboardType,
+    this.textCapitalization = TextCapitalization.none,
     this.maxLines = 1,
     this.obscureText = false,
     this.readOnly = false,
@@ -38,6 +40,7 @@ class AppTextField extends StatelessWidget {
     this.onSubmitted,
     this.textInputAction,
     this.hasError = false,
+    this.inputFormatters,
   });
 
   /// Label drawn ABOVE the field (profile forms style).
@@ -53,6 +56,7 @@ class AppTextField extends StatelessWidget {
   final TextEditingController? controller;
   final String? Function(String?)? validator;
   final TextInputType? keyboardType;
+  final TextCapitalization textCapitalization;
   final int maxLines;
   final bool obscureText;
   final bool readOnly;
@@ -66,6 +70,9 @@ class AppTextField extends StatelessWidget {
 
   /// Red border only — used by edit-employee step validation.
   final bool hasError;
+
+  /// Typing limits (phone digits, CNIC dashes, etc.).
+  final List<TextInputFormatter>? inputFormatters;
 
   /// TextField crashes if fontSize is 0 (Android first frame).
   TextStyle get _safeBodyStyle {
@@ -122,10 +129,16 @@ class AppTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final resolvedKeyboard = keyboardType ??
+        (obscureText
+            ? TextInputType.visiblePassword
+            : (maxLines > 1 ? TextInputType.multiline : TextInputType.text));
+
     final field = TextFormField(
       controller: controller,
       validator: validator,
-      keyboardType: keyboardType,
+      keyboardType: resolvedKeyboard,
+      textCapitalization: textCapitalization,
       maxLines: obscureText ? 1 : maxLines,
       obscureText: obscureText,
       readOnly: readOnly,
@@ -134,6 +147,7 @@ class AppTextField extends StatelessWidget {
       onChanged: onChanged,
       onFieldSubmitted: onSubmitted,
       textInputAction: textInputAction,
+      inputFormatters: inputFormatters,
       style: _safeBodyStyle,
       strutStyle: StrutStyle.fromTextStyle(_safeBodyStyle),
       decoration: decoration(

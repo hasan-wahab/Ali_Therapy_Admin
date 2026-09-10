@@ -14,12 +14,14 @@ class PatientImageSection extends StatelessWidget {
   const PatientImageSection({
     super.key,
     this.photoBytes,
+    this.imageUrl,
     this.fileName,
     this.onPickCamera,
     this.onPickGallery,
   });
 
   final List<int>? photoBytes;
+  final String? imageUrl;
   final String? fileName;
   final VoidCallback? onPickCamera;
   final VoidCallback? onPickGallery;
@@ -38,6 +40,7 @@ class PatientImageSection extends StatelessWidget {
         SizedBox(height: 20.h),
         PatientImageFormFields(
           photoBytes: photoBytes,
+          imageUrl: imageUrl,
           fileName: fileName,
           onPickCamera: onPickCamera,
           onPickGallery: onPickGallery,

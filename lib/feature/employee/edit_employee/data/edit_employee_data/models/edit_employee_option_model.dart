@@ -1,3 +1,5 @@
+import 'package:ali_therapy_admin/core/utils/helpers.dart';
+
 import '../../../domain/edit_employee_domain/entities/edit_employee_option_entity.dart';
 import 'edit_employee_json_helpers.dart';
 
@@ -14,7 +16,9 @@ class EditEmployeeOptionModel extends EditEmployeeOptionEntity {
   factory EditEmployeeOptionModel.fromJson(Map<String, dynamic> json) {
     return EditEmployeeOptionModel(
       id: EditEmployeeJsonHelpers.idOf(json, const ['id', 'value']),
-      name: EditEmployeeJsonHelpers.fieldOf(json, const ['name', 'title', 'label']),
+      name: Helpers.titleCase(
+        EditEmployeeJsonHelpers.fieldOf(json, const ['name', 'title', 'label']),
+      ),
     );
   }
 
@@ -23,9 +27,14 @@ class EditEmployeeOptionModel extends EditEmployeeOptionEntity {
     final options = <EditEmployeeOptionModel>[];
     for (final item in list) {
       if (item is String || item is num) {
-        final name = EditEmployeeJsonHelpers.field(item);
-        if (name.isEmpty) continue;
-        options.add(EditEmployeeOptionModel(id: name, name: name));
+        final rawName = EditEmployeeJsonHelpers.field(item);
+        if (rawName.isEmpty) continue;
+        options.add(
+          EditEmployeeOptionModel(
+            id: rawName,
+            name: Helpers.titleCase(rawName),
+          ),
+        );
         continue;
       }
       final map = EditEmployeeJsonHelpers.mapOrNull(item);

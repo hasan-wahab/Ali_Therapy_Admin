@@ -26,6 +26,7 @@ class EmployeesSearchField extends StatelessWidget {
     return AppTextField(
       controller: controller,
       hintText: 'Search employees...',
+      keyboardType: TextInputType.text,
       prefixIcon: Icon(Icons.search, size: AppSizes.iconMd),
       textInputAction: TextInputAction.search,
       onChanged: onChanged,

@@ -21,6 +21,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   dropdown_button2: ^3.1.0
   shared_preferences: ^2.5.5
+  flutter_native_splash: ^2.4.6
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -28,7 +29,6 @@ dev_dependencies:
 
   flutter_lints: ^6.0.0
   flutter_launcher_icons: ^0.14.3
-  flutter_native_splash: ^2.4.6
 
 # Generates Android + iOS launcher icons from our logo.
 flutter_launcher_icons:
@@ -38,14 +38,21 @@ flutter_launcher_icons:
   adaptive_icon_background: "#FFFFFF"
   adaptive_icon_foreground: assets/images/dr_ali_icon.png
 
-# Native splash only (no Flutter splash screen).
-# Full-screen white + centered logo. Run:
+# Native launch splash (Figma 651:2):
+#   white screen + centered 176pt clinic logo + Neon Web branding at bottom.
+# Phone + tablet: same design, tablet uses a larger layout (see AppNativeSplashView
+# and drawable-sw600dp after generate).
+# After changing images, run:
 #   dart run flutter_native_splash:create
 flutter_native_splash:
   color: "#FFFFFF"
   color_dark: "#FFFFFF"
-  image: assets/images/dr_ali_icon.png
-  image_dark: assets/images/dr_ali_icon.png
+  image: assets/images/native_splash_logo.png
+  image_dark: assets/images/native_splash_logo.png
+  branding: assets/images/native_splash_branding.png
+  branding_dark: assets/images/native_splash_branding.png
+  branding_mode: bottom
+  branding_bottom_padding: 32
   fullscreen: true
   android_gravity: center
   ios_content_mode: center
@@ -53,9 +60,14 @@ flutter_native_splash:
   ios: true
   web: false
   android_12:
-    # Color only — circular Android 12 icon badge is disabled in styles-v31.
     color: "#FFFFFF"
     color_dark: "#FFFFFF"
+    image: assets/images/native_splash_android12.png
+    image_dark: assets/images/native_splash_android12.png
+    icon_background_color: "#FFFFFF"
+    icon_background_color_dark: "#FFFFFF"
+    branding: assets/images/native_splash_android12_branding.png
+    branding_dark: assets/images/native_splash_android12_branding.png
 
 
 flutter:

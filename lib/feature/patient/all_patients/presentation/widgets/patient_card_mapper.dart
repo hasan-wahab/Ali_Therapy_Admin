@@ -24,7 +24,13 @@ class PatientCardMapper {
     return text;
   }
 
-  static String name(PatientEntity e) => display(e.name);
+  static String titled(String value) {
+    final text = display(value);
+    if (text == empty) return empty;
+    return Helpers.titleCase(text);
+  }
+
+  static String name(PatientEntity e) => titled(e.name);
 
   static String cnic(PatientEntity e) => display(e.cnic);
 
@@ -32,10 +38,10 @@ class PatientCardMapper {
 
   static String problems(PatientEntity e) {
     if (e.problems.isEmpty) return empty;
-    return e.problems.join(', ');
+    return e.problems.map(Helpers.titleCase).join(', ');
   }
 
-  static String insurance(PatientEntity e) => display(e.insurance);
+  static String insurance(PatientEntity e) => titled(e.insurance);
 
   static String pkr(double value) {
     if (value == value.roundToDouble()) {
@@ -54,18 +60,18 @@ class PatientCardMapper {
 
   static String remaining(PatientEntity e) => pkr(e.remaining);
 
-  static String createdBy(PatientEntity e) => display(e.createdBy);
+  static String createdBy(PatientEntity e) => titled(e.createdBy);
 
-  static String receptionist(PatientEntity e) => display(e.receptionist);
+  static String receptionist(PatientEntity e) => titled(e.receptionist);
 
   static String assistantManager(PatientEntity e) =>
-      display(e.assistantManager);
+      titled(e.assistantManager);
 
-  static String historyTaker(PatientEntity e) => display(e.historyTaker);
+  static String historyTaker(PatientEntity e) => titled(e.historyTaker);
 
-  static String consultant(PatientEntity e) => display(e.consultant);
+  static String consultant(PatientEntity e) => titled(e.consultant);
 
-  static String therapist(PatientEntity e) => display(e.therapist);
+  static String therapist(PatientEntity e) => titled(e.therapist);
 
   static String createdDate(PatientEntity e) {
     final parsed = Helpers.tryParseDate(e.createdAt);

@@ -16,6 +16,14 @@ class AppConstants {
   /// App logo path (use with Image.asset).
   static const String appLogo = 'assets/images/dr_ali_icon.png';
 
+  /// Native splash — Figma 651:2 center clinic logo.
+  static const String nativeSplashLogo =
+      'assets/images/native_splash_logo.png';
+
+  /// Native splash — Figma 651:2 bottom Neon Web branding.
+  static const String nativeSplashBranding =
+      'assets/images/native_splash_branding.png';
+
   // ----------------------------------------------------------
   // UI DEFAULTS — ScreenUtil design sizes
   // Phone stays locked. Tablet uses iPad Pro 11" frame.

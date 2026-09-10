@@ -7,6 +7,7 @@ import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_sizes.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
 import 'package:ali_therapy_admin/core/widgets/app_field_label.dart';
+import 'package:ali_therapy_admin/core/widgets/app_network_avatar.dart';
 import 'package:ali_therapy_admin/feature/patient/patient_registration/presentation/widgets/form/patient_camera_button.dart';
 
 // ============================================================
@@ -19,12 +20,14 @@ class PatientImageFormFields extends StatelessWidget {
   const PatientImageFormFields({
     super.key,
     this.photoBytes,
+    this.imageUrl,
     this.fileName,
     this.onPickCamera,
     this.onPickGallery,
   });
 
   final List<int>? photoBytes;
+  final String? imageUrl;
   final String? fileName;
   final VoidCallback? onPickCamera;
   final VoidCallback? onPickGallery;
@@ -33,6 +36,8 @@ class PatientImageFormFields extends StatelessWidget {
   Widget build(BuildContext context) {
     final bytes = photoBytes;
     final hasPhoto = bytes != null && bytes.isNotEmpty;
+    final existingUrl = imageUrl?.trim() ?? '';
+    final hasExisting = !hasPhoto && existingUrl.isNotEmpty && existingUrl != '_';
     final chosenName = fileName?.trim() ?? '';
 
     return Column(
@@ -60,6 +65,12 @@ class PatientImageFormFields extends StatelessWidget {
                     gaplessPlayback: true,
                   ),
                 )
+              else if (hasExisting)
+                AppNetworkAvatar(
+                  imageUrl: existingUrl,
+                  radius: 48.w,
+                  iconSize: AppSizes.iconXl,
+                )
               else
                 Container(
                   width: 96.w,
@@ -79,7 +90,9 @@ class PatientImageFormFields extends StatelessWidget {
               Text(
                 hasPhoto
                     ? (chosenName.isNotEmpty ? chosenName : 'Photo selected')
-                    : 'No photo selected yet',
+                    : hasExisting
+                        ? 'Current photo'
+                        : 'No photo selected yet',
                 textAlign: TextAlign.center,
                 style: AppTextStyles.bodySmall,
               ),

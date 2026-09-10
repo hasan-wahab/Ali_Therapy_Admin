@@ -20,17 +20,31 @@ class ExperienceFormFields extends StatelessWidget {
       children: [
         const FormFieldsRow(
           children: [
-            AppTextField(label: 'Company'),
+            AppTextField(
+              label: 'Company',
+              keyboardType: TextInputType.text,
+              textCapitalization: TextCapitalization.words,
+            ),
             AppTextField(
               label: 'Working Period',
               hintText: 'e.g. 2019-2022',
               isRequired: true,
+              keyboardType: TextInputType.text,
             ),
-            AppTextField(label: 'Supervisor'),
+            AppTextField(
+              label: 'Supervisor',
+              keyboardType: TextInputType.name,
+              textCapitalization: TextCapitalization.words,
+            ),
           ],
         ),
         SizedBox(height: 14.h),
-        const AppTextField(label: 'Duties', maxLines: 4),
+        const AppTextField(
+          label: 'Duties',
+          keyboardType: TextInputType.multiline,
+          textCapitalization: TextCapitalization.sentences,
+          maxLines: 4,
+        ),
       ],
     );
   }

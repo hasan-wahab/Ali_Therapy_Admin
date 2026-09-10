@@ -74,6 +74,7 @@ class _AssignBiometricIdDialogState extends State<AssignBiometricIdDialog> {
             label: 'Biometric ID',
             isRequired: true,
             hintText: 'e.g. BIO-1042',
+            keyboardType: TextInputType.text,
             controller: _biometricIdController,
             prefixIcon: Icon(
               Icons.fingerprint,

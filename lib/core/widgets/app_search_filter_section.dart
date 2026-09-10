@@ -138,6 +138,7 @@ class _AppSearchFilterSectionState extends State<AppSearchFilterSection> {
               child: AppTextField(
                 controller: _searchController,
                 hintText: widget.searchHint,
+                keyboardType: TextInputType.text,
                 prefixIcon: Icon(Icons.search, size: AppSizes.iconMd),
                 textInputAction: TextInputAction.search,
                 onChanged: widget.onSearchChanged,

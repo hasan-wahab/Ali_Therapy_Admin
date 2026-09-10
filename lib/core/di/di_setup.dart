@@ -7,6 +7,7 @@ import 'package:ali_therapy_admin/core/di/external_module.dart';
 import 'package:ali_therapy_admin/core/di/home_module.dart';
 import 'package:ali_therapy_admin/core/di/network_module.dart';
 import 'package:ali_therapy_admin/core/di/patient_detail_module.dart';
+import 'package:ali_therapy_admin/core/di/patient_registration_module.dart';
 import 'package:ali_therapy_admin/core/di/profile_module.dart';
 import 'package:ali_therapy_admin/core/di/reports_module.dart';
 import 'package:ali_therapy_admin/core/di/service_module.dart';
@@ -34,6 +35,7 @@ final List<DiModule> coreModules = [
   AllEmployeesModule(),
   AllPatientsModule(),
   PatientDetailModule(),
+  PatientRegistrationModule(),
   ProfileModule(),
   EditEmployeeModule(),
   ReportsModule(),

@@ -68,6 +68,7 @@ class _ForgotPasswordFormCardState extends State<ForgotPasswordFormCard> {
               label: 'Email',
               hintText: 'admin@example.com',
               keyboardType: TextInputType.emailAddress,
+              textCapitalization: TextCapitalization.none,
               textInputAction: TextInputAction.done,
               validator: Validators.email,
               prefixIcon: Icon(

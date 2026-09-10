@@ -20,8 +20,16 @@ class EducationFormFields extends StatelessWidget {
       children: [
         const FormFieldsRow(
           children: [
-            AppTextField(label: 'Degree'),
-            AppTextField(label: 'University'),
+            AppTextField(
+              label: 'Degree',
+              keyboardType: TextInputType.text,
+              textCapitalization: TextCapitalization.words,
+            ),
+            AppTextField(
+              label: 'University',
+              keyboardType: TextInputType.text,
+              textCapitalization: TextCapitalization.words,
+            ),
             AppTextField(
               label: 'CGPA',
               keyboardType: TextInputType.numberWithOptions(decimal: true),
@@ -29,7 +37,12 @@ class EducationFormFields extends StatelessWidget {
           ],
         ),
         SizedBox(height: 14.h),
-        const AppTextField(label: 'Comments', maxLines: 4),
+        const AppTextField(
+          label: 'Comments',
+          keyboardType: TextInputType.multiline,
+          textCapitalization: TextCapitalization.sentences,
+          maxLines: 4,
+        ),
       ],
     );
   }

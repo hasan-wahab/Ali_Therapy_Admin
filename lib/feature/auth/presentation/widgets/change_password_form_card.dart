@@ -80,6 +80,7 @@ class _ChangePasswordFormCardState extends State<ChangePasswordFormCard> {
               label: 'Current Password',
               hintText: 'Enter current password',
               obscureText: _obscureCurrent,
+              keyboardType: TextInputType.visiblePassword,
               textInputAction: TextInputAction.next,
               validator: Validators.password,
               prefixIcon: Icon(
@@ -106,6 +107,7 @@ class _ChangePasswordFormCardState extends State<ChangePasswordFormCard> {
               label: 'New Password',
               hintText: 'Enter new password',
               obscureText: _obscurePassword,
+              keyboardType: TextInputType.visiblePassword,
               textInputAction: TextInputAction.next,
               validator: Validators.password,
               prefixIcon: Icon(
@@ -132,6 +134,7 @@ class _ChangePasswordFormCardState extends State<ChangePasswordFormCard> {
               label: 'Confirm Password',
               hintText: 'Re-enter new password',
               obscureText: _obscureConfirm,
+              keyboardType: TextInputType.visiblePassword,
               textInputAction: TextInputAction.done,
               validator: (value) => Validators.confirmPassword(
                 value,

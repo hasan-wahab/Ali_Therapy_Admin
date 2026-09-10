@@ -17,5 +17,7 @@ export 'package:ali_therapy_admin/core/di/service_locator.dart';
 
 /// Sets up dependency injection when the app starts.
 Future<void> setupInjection() async {
+
   await setupCoreDi();
+
 }

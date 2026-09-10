@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:ali_therapy_admin/core/utils/app_input_formatters.dart';
+import 'package:ali_therapy_admin/core/utils/helpers.dart';
 import 'package:ali_therapy_admin/feature/employee/edit_employee/domain/edit_employee_domain/entities/edit_employee_document_entry.dart';
 import 'package:ali_therapy_admin/feature/employee/edit_employee/domain/edit_employee_domain/entities/edit_employee_education_entry.dart';
 import 'package:ali_therapy_admin/feature/employee/edit_employee/domain/edit_employee_domain/entities/edit_employee_experience_entry.dart';
@@ -211,45 +213,47 @@ class EditEmployeeFormControllers extends ChangeNotifier {
     profilePicturePath = '';
     profilePictureName = '';
     profilePictureBytes = const [];
-    name.text = form.name;
+    name.text = Helpers.titleCase(form.name);
     employeeCode.text = form.employeeCode;
     email.text = form.email;
     password.text = '';
-    clinicName = form.clinicName;
+    clinicName = Helpers.titleCase(form.clinicName);
     clinicId = form.clinicId;
-    roomName = form.roomName;
+    roomName = Helpers.titleCase(form.roomName);
     roomId = form.roomId;
-    roleNames = List<String>.from(form.roleNames);
+    roleNames = [
+      for (final name in form.roleNames) Helpers.titleCase(name),
+    ];
     roleIds = List<String>.from(form.roleIds);
     allowLogin = form.allowLogin;
-    departmentName = form.departmentName;
+    departmentName = Helpers.titleCase(form.departmentName);
     departmentId = form.departmentId;
-    designationName = form.designationName;
+    designationName = Helpers.titleCase(form.designationName);
     designationId = form.designationId;
-    shiftName = form.shiftName;
+    shiftName = Helpers.titleCase(form.shiftName);
     shiftId = form.shiftId;
-    gender = form.gender;
+    gender = Helpers.titleCase(form.gender);
     salaryType = form.salaryType;
     dateOfBirth = form.dateOfBirth;
     joiningDate = form.joiningDate;
     biometricId.text = form.biometricId;
-    phone.text = form.phone;
-    cnic.text = form.cnic;
-    emergencyName.text = form.emergencyName;
-    emergencyRelationship.text = form.emergencyRelationship;
-    emergencyPhone.text = form.emergencyPhone;
-    religion.text = form.religion;
-    bloodGroup = form.bloodGroup;
-    district.text = form.district;
+    phone.text = AppInputFormatters.formatPhone(form.phone);
+    cnic.text = AppInputFormatters.formatCnic(form.cnic);
+    emergencyName.text = Helpers.titleCase(form.emergencyName);
+    emergencyRelationship.text = Helpers.titleCase(form.emergencyRelationship);
+    emergencyPhone.text = AppInputFormatters.formatPhone(form.emergencyPhone);
+    religion.text = Helpers.titleCase(form.religion);
+    bloodGroup = Helpers.titleCase(form.bloodGroup);
+    district.text = Helpers.titleCase(form.district);
     experienceYears.text = form.experienceYears;
     salary.text = form.salary;
-    presentAddress.text = form.presentAddress;
-    permanentAddress.text = form.permanentAddress;
-    biography.text = form.biography;
-    bankName.text = form.bankName;
-    branch.text = form.branch;
+    presentAddress.text = Helpers.sentenceCase(form.presentAddress);
+    permanentAddress.text = Helpers.sentenceCase(form.permanentAddress);
+    biography.text = Helpers.sentenceCase(form.biography);
+    bankName.text = Helpers.titleCase(form.bankName);
+    branch.text = Helpers.titleCase(form.branch);
     branchCode.text = form.branchCode;
-    accountHolder.text = form.accountHolder;
+    accountHolder.text = Helpers.titleCase(form.accountHolder);
     accountNumber.text = form.accountNumber;
     iban.text = form.iban;
 
@@ -280,9 +284,9 @@ class EditEmployeeFormControllers extends ChangeNotifier {
   EditEmployeeFormEntity toForm() {
     return EditEmployeeFormEntity(
       id: employeeId,
-      name: name.text,
+      name: Helpers.titleCase(name.text),
       employeeCode: employeeCode.text,
-      email: email.text,
+      email: email.text.trim(),
       password: password.text,
       clinicId: clinicId,
       clinicName: clinicName,
@@ -307,30 +311,30 @@ class EditEmployeeFormControllers extends ChangeNotifier {
       cnic: cnic.text,
       dateOfBirth: dateOfBirth,
       joiningDate: joiningDate,
-      emergencyName: emergencyName.text,
-      emergencyRelationship: emergencyRelationship.text,
+      emergencyName: Helpers.titleCase(emergencyName.text),
+      emergencyRelationship: Helpers.titleCase(emergencyRelationship.text),
       emergencyPhone: emergencyPhone.text,
-      religion: religion.text,
+      religion: Helpers.titleCase(religion.text),
       bloodGroup: bloodGroup,
-      district: district.text,
+      district: Helpers.titleCase(district.text),
       experienceYears: experienceYears.text,
       salaryType: salaryType,
       salary: salary.text,
-      presentAddress: presentAddress.text,
-      permanentAddress: permanentAddress.text,
-      biography: biography.text,
-      bankName: bankName.text,
-      branch: branch.text,
+      presentAddress: Helpers.sentenceCase(presentAddress.text),
+      permanentAddress: Helpers.sentenceCase(permanentAddress.text),
+      biography: Helpers.sentenceCase(biography.text),
+      bankName: Helpers.titleCase(bankName.text),
+      branch: Helpers.titleCase(branch.text),
       branchCode: branchCode.text,
-      accountHolder: accountHolder.text,
+      accountHolder: Helpers.titleCase(accountHolder.text),
       accountNumber: accountNumber.text,
       iban: iban.text,
       documents: [
         for (final row in documents)
           EditEmployeeDocumentEntry(
             id: row.id,
-            title: row.title.text,
-            description: row.description.text,
+            title: Helpers.titleCase(row.title.text),
+            description: Helpers.sentenceCase(row.description.text),
             expiry: row.expiry,
           ),
       ],
@@ -338,20 +342,20 @@ class EditEmployeeFormControllers extends ChangeNotifier {
         for (final row in educations)
           EditEmployeeEducationEntry(
             id: row.id,
-            degree: row.degree.text,
-            university: row.university.text,
+            degree: Helpers.titleCase(row.degree.text),
+            university: Helpers.titleCase(row.university.text),
             cgpa: row.cgpa.text,
-            comments: row.comments.text,
+            comments: Helpers.sentenceCase(row.comments.text),
           ),
       ],
       experiences: [
         for (final row in experiences)
           EditEmployeeExperienceEntry(
             id: row.id,
-            companyName: row.company.text,
+            companyName: Helpers.titleCase(row.company.text),
             workingPeriod: row.period.text,
-            duties: row.duties.text,
-            supervisor: row.supervisor.text,
+            duties: Helpers.sentenceCase(row.duties.text),
+            supervisor: Helpers.titleCase(row.supervisor.text),
           ),
       ],
     );
@@ -409,9 +413,13 @@ class EditEmployeeFormControllers extends ChangeNotifier {
     }
     if (phone.text.trim().isEmpty) {
       errors[phoneKey] = 'Phone is required.';
+    } else if (!AppInputFormatters.isCompletePhone(phone.text)) {
+      errors[phoneKey] = 'Phone must be 11 digits.';
     }
     if (cnic.text.trim().isEmpty) {
       errors[cnicKey] = 'CNIC is required.';
+    } else if (!AppInputFormatters.isCompleteCnic(cnic.text)) {
+      errors[cnicKey] = 'CNIC must be 12345-1234567-1.';
     }
     if (dateOfBirth.trim().isEmpty) {
       errors[dateOfBirthKey] = 'Date of birth is required.';
@@ -428,6 +436,8 @@ class EditEmployeeFormControllers extends ChangeNotifier {
     }
     if (emergencyPhone.text.trim().isEmpty) {
       errors[emergencyPhoneKey] = 'Emergency contact phone is required.';
+    } else if (!AppInputFormatters.isCompletePhone(emergencyPhone.text)) {
+      errors[emergencyPhoneKey] = 'Emergency phone must be 11 digits.';
     }
     if (religion.text.trim().isEmpty) {
       errors[religionKey] = 'Religion is required.';

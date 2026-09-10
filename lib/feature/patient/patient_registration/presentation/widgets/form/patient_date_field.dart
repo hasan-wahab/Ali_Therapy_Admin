@@ -16,6 +16,7 @@ class PatientDateField extends StatelessWidget {
     this.hintText = 'mm/dd/yyyy',
     this.value,
     this.onChanged,
+    this.hasError = false,
   });
 
   final String label;
@@ -23,6 +24,7 @@ class PatientDateField extends StatelessWidget {
   final String hintText;
   final String? value;
   final ValueChanged<String>? onChanged;
+  final bool hasError;
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +35,7 @@ class PatientDateField extends StatelessWidget {
       hintText: hintText,
       value: value,
       onChanged: onChanged,
+      hasError: hasError,
       firstDate: DateTime(1920),
       lastDate: DateTime(today.year, today.month, today.day),
     );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/utils/app_constants.dart';
+import 'package:ali_therapy_admin/core/utils/app_input_formatters.dart';
 import 'package:ali_therapy_admin/core/widgets/app_dropdown_field.dart';
 import 'package:ali_therapy_admin/core/widgets/app_text_field.dart';
 import 'package:ali_therapy_admin/feature/employee/edit_employee/domain/edit_employee_domain/entities/edit_employee_options_entity.dart';
@@ -86,6 +87,7 @@ class DetailsFormFields extends StatelessWidget {
                 AppTextField(
                   label: 'Biometric Device User ID',
                   hintText: 'Biometric Device User ID..',
+                  keyboardType: TextInputType.text,
                   controller: form.biometricId,
                 ),
               ],
@@ -107,9 +109,10 @@ class DetailsFormFields extends StatelessWidget {
                 AppTextField(
                   label: 'Phone',
                   isRequired: true,
-                  hintText: 'Phone..',
+                  hintText: '03XXXXXXXXX',
                   keyboardType: TextInputType.phone,
                   controller: form.phone,
+                  inputFormatters: AppInputFormatters.phone,
                   hasError: form.isInvalid(
                     EditEmployeeFormControllers.phoneKey,
                   ),
@@ -122,9 +125,10 @@ class DetailsFormFields extends StatelessWidget {
                 AppTextField(
                   label: 'CNIC',
                   isRequired: true,
-                  hintText: 'CNIC..',
+                  hintText: '12345-1234567-1',
                   keyboardType: TextInputType.number,
                   controller: form.cnic,
+                  inputFormatters: AppInputFormatters.cnic,
                   hasError: form.isInvalid(
                     EditEmployeeFormControllers.cnicKey,
                   ),
@@ -158,6 +162,8 @@ class DetailsFormFields extends StatelessWidget {
                   label: 'Emergency Contact Name',
                   isRequired: true,
                   hintText: 'Name..',
+                  keyboardType: TextInputType.name,
+                  textCapitalization: TextCapitalization.words,
                   controller: form.emergencyName,
                   hasError: form.isInvalid(
                     EditEmployeeFormControllers.emergencyNameKey,
@@ -172,6 +178,8 @@ class DetailsFormFields extends StatelessWidget {
                   label: 'Emergency Contact Relationship',
                   isRequired: true,
                   hintText: 'Relationship..',
+                  keyboardType: TextInputType.text,
+                  textCapitalization: TextCapitalization.words,
                   controller: form.emergencyRelationship,
                   hasError: form.isInvalid(
                     EditEmployeeFormControllers.emergencyRelationshipKey,
@@ -180,9 +188,10 @@ class DetailsFormFields extends StatelessWidget {
                 AppTextField(
                   label: 'Emergency Contact',
                   isRequired: true,
-                  hintText: 'Phone..',
+                  hintText: '03XXXXXXXXX',
                   keyboardType: TextInputType.phone,
                   controller: form.emergencyPhone,
+                  inputFormatters: AppInputFormatters.phone,
                   hasError: form.isInvalid(
                     EditEmployeeFormControllers.emergencyPhoneKey,
                   ),
@@ -196,6 +205,8 @@ class DetailsFormFields extends StatelessWidget {
                   label: 'Religion',
                   isRequired: true,
                   hintText: 'Religion..',
+                  keyboardType: TextInputType.text,
+                  textCapitalization: TextCapitalization.words,
                   controller: form.religion,
                   hasError: form.isInvalid(
                     EditEmployeeFormControllers.religionKey,
@@ -223,6 +234,8 @@ class DetailsFormFields extends StatelessWidget {
                 AppTextField(
                   label: 'District',
                   hintText: 'District...',
+                  keyboardType: TextInputType.text,
+                  textCapitalization: TextCapitalization.words,
                   controller: form.district,
                 ),
                 AppTextField(
@@ -264,6 +277,8 @@ class DetailsFormFields extends StatelessWidget {
               label: 'Present Address',
               isRequired: true,
               hintText: 'Present address..',
+              keyboardType: TextInputType.streetAddress,
+              textCapitalization: TextCapitalization.sentences,
               maxLines: 3,
               controller: form.presentAddress,
               hasError: form.isInvalid(
@@ -275,6 +290,8 @@ class DetailsFormFields extends StatelessWidget {
               label: 'Permanent Address',
               isRequired: true,
               hintText: 'Permanent address..',
+              keyboardType: TextInputType.streetAddress,
+              textCapitalization: TextCapitalization.sentences,
               maxLines: 3,
               controller: form.permanentAddress,
               hasError: form.isInvalid(
@@ -285,6 +302,8 @@ class DetailsFormFields extends StatelessWidget {
             AppTextField(
               label: 'Biography',
               hintText: 'Biography..',
+              keyboardType: TextInputType.multiline,
+              textCapitalization: TextCapitalization.sentences,
               maxLines: 4,
               controller: form.biography,
             ),

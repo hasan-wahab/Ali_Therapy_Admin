@@ -90,6 +90,12 @@ class ApiConstants {
   /// GET —  Search patients
   static const String searchPatients = 'search-patients';
 
+  /// GET — patient registration form dropdowns
+  static const String patientsFormData = 'patients/form-data';
+
+  /// POST — register a new patient
+  static const String patientsCreate = 'patients/create';
+
   // ----------------------------------------------------------
   // EMPLOYEE ENDPOINTS
   // Matches Laravel EmployeesApiController routes

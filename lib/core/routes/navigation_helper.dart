@@ -84,8 +84,11 @@ class AppNavigation {
     context.push(AppRoutes.patientRegistration);
   }
 
-  static void openEditPatient(BuildContext context) {
-    context.push(AppRoutes.editPatient);
+  static void openEditPatient(
+    BuildContext context, {
+    required String patientId,
+  }) {
+    context.push(AppRoutes.editPatient, extra: patientId);
   }
 
   /// All Patients → View: open Detail and load GET patient/{id}/full-view.

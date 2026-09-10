@@ -55,6 +55,37 @@ class Helpers {
     return value[0].toUpperCase() + value.substring(1);
   }
 
+  /// "islamabad" → "Islamabad", "wah_cantt" → "Wah Cantt".
+  /// Emails stay exactly as typed / returned by the API.
+  static String titleCase(String raw) {
+    final text = raw.trim();
+    if (text.isEmpty) return '';
+    if (_looksLikeEmail(text)) return text;
+    final words = text
+        .replaceAll('_', ' ')
+        .replaceAll('-', ' ')
+        .split(RegExp(r'\s+'))
+        .where((word) => word.isNotEmpty);
+    return words.map(_titleWord).join(' ');
+  }
+
+  /// First letter of the sentence; rest stays as typed.
+  /// Emails stay exactly as typed / returned by the API.
+  static String sentenceCase(String raw) {
+    final text = raw.trim();
+    if (text.isEmpty) return '';
+    if (_looksLikeEmail(text)) return text;
+    return text[0].toUpperCase() + text.substring(1);
+  }
+
+  static bool _looksLikeEmail(String value) => value.contains('@');
+
+  static String _titleWord(String word) {
+    if (word.isEmpty) return word;
+    if (word.length == 1) return word.toUpperCase();
+    return word[0].toUpperCase() + word.substring(1).toLowerCase();
+  }
+
   /// Show a short version of long text.
   /// Example: "Hello world..." if longer than [max]
   static String truncate(String value, {int max = 40}) {

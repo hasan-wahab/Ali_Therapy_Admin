@@ -168,6 +168,8 @@ class _TerminateEmployeeDialogState extends State<TerminateEmployeeDialog> {
             label: 'Termination Reason',
             isRequired: true,
             hintText: 'Enter details here...',
+            keyboardType: TextInputType.multiline,
+            textCapitalization: TextCapitalization.sentences,
             controller: _reasonController,
             maxLines: 3,
           ),

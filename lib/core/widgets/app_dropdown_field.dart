@@ -219,6 +219,7 @@ class _AppDropdownFieldState extends State<AppDropdownField> {
                 child: AppTextField(
                   controller: _searchController,
                   hintText: widget.searchHintText,
+                  keyboardType: TextInputType.text,
                 ),
               ),
               noResultsWidget: Padding(

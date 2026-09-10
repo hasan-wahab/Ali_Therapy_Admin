@@ -29,11 +29,15 @@ class BankDetailsFormFields extends StatelessWidget {
             AppTextField(
               label: 'Bank Name',
               hintText: 'Bank Name',
+              keyboardType: TextInputType.text,
+              textCapitalization: TextCapitalization.words,
               controller: form.bankName,
             ),
             AppTextField(
               label: 'Branch',
               hintText: 'Branch',
+              keyboardType: TextInputType.text,
+              textCapitalization: TextCapitalization.words,
               controller: form.branch,
             ),
           ],
@@ -44,11 +48,14 @@ class BankDetailsFormFields extends StatelessWidget {
             AppTextField(
               label: 'Branch Code',
               hintText: 'Branch Code',
+              keyboardType: TextInputType.number,
               controller: form.branchCode,
             ),
             AppTextField(
               label: 'Account Holder',
               hintText: 'Account Holder',
+              keyboardType: TextInputType.name,
+              textCapitalization: TextCapitalization.words,
               controller: form.accountHolder,
             ),
           ],
@@ -65,6 +72,8 @@ class BankDetailsFormFields extends StatelessWidget {
             AppTextField(
               label: 'IBAN',
               hintText: 'IBAN',
+              keyboardType: TextInputType.text,
+              textCapitalization: TextCapitalization.characters,
               controller: form.iban,
             ),
           ],

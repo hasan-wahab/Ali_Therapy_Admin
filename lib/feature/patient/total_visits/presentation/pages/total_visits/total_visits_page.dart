@@ -44,9 +44,9 @@ class TotalVisitsPage extends StatelessWidget {
             final visit = visits[index - 1];
             return TotalVisitCard(
               date: PatientDetailDisplay.date(visit.date),
-              type: PatientDetailDisplay.text(visit.type),
-              doctor: PatientDetailDisplay.text(visit.doctor),
-              stage: PatientDetailDisplay.text(visit.stage),
+              type: PatientDetailDisplay.titled(visit.type),
+              doctor: PatientDetailDisplay.titled(visit.doctor),
+              stage: PatientDetailDisplay.titled(visit.stage),
               amount: PatientDetailDisplay.moneyRs(visit.amount),
             );
           },

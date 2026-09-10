@@ -25,7 +25,7 @@ class PatientDetailPersonalInfoContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final name = PatientDetailDisplay.text(profile.name);
+    final name = PatientDetailDisplay.titled(profile.name);
     final email = PatientDetailDisplay.text(profile.email);
     final id = PatientDetailDisplay.hashedId(profile.id);
     final lastVisit = PatientDetailDisplay.dateTime(profile.lastVisitAt);
@@ -165,7 +165,7 @@ class PatientDetailPersonalInfoContainer extends StatelessWidget {
                 ),
                 PatientDetailInfoChip(
                   label: 'Referred By',
-                  value: PatientDetailDisplay.text(profile.referredBy),
+                  value: PatientDetailDisplay.titled(profile.referredBy),
                 ),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -173,21 +173,21 @@ class PatientDetailPersonalInfoContainer extends StatelessWidget {
                     Expanded(
                       child: PatientDetailInfoChip(
                         label: 'Gender',
-                        value: PatientDetailDisplay.text(profile.gender),
+                        value: PatientDetailDisplay.titled(profile.gender),
                       ),
                     ),
                     SizedBox(width: 12.w),
                     Expanded(
                       child: PatientDetailInfoChip(
                         label: 'Blood Group',
-                        value: PatientDetailDisplay.text(profile.bloodGroup),
+                        value: PatientDetailDisplay.titled(profile.bloodGroup),
                       ),
                     ),
                     SizedBox(width: 12.w),
                     Expanded(
                       child: PatientDetailInfoChip(
                         label: 'Insurance',
-                        value: PatientDetailDisplay.text(profile.insurance),
+                        value: PatientDetailDisplay.titled(profile.insurance),
                       ),
                     ),
                   ],

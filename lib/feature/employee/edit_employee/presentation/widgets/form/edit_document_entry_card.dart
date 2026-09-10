@@ -55,6 +55,8 @@ class EditDocumentEntryCard extends StatelessWidget {
                 child: AppTextField(
                   label: 'Title',
                   hintText: 'Title',
+                  keyboardType: TextInputType.text,
+                  textCapitalization: TextCapitalization.sentences,
                   controller: titleController,
                 ),
               ),
@@ -88,6 +90,8 @@ class EditDocumentEntryCard extends StatelessWidget {
           AppTextField(
             label: 'Description',
             hintText: 'Document Description',
+            keyboardType: TextInputType.text,
+            textCapitalization: TextCapitalization.sentences,
             controller: descriptionController,
           ),
           SizedBox(height: 10.h),

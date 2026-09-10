@@ -100,6 +100,7 @@ class _LoginFormCardState extends State<LoginFormCard> {
               label: 'Email',
               hintText: 'admin@example.com',
               keyboardType: TextInputType.emailAddress,
+              textCapitalization: TextCapitalization.none,
               textInputAction: TextInputAction.next,
               validator: Validators.email,
               prefixIcon: Icon(
@@ -114,6 +115,7 @@ class _LoginFormCardState extends State<LoginFormCard> {
               label: 'Password',
               hintText: 'Enter password',
               obscureText: _obscurePassword,
+              keyboardType: TextInputType.visiblePassword,
               textInputAction: TextInputAction.done,
               validator: Validators.password,
               prefixIcon: Icon(

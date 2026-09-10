@@ -22,6 +22,13 @@ class PatientDetailDisplay {
     return text;
   }
 
+  /// Names / labels. Emails stay as returned by the API.
+  static String titled(String value) {
+    final shown = text(value);
+    if (shown == empty) return empty;
+    return Helpers.titleCase(shown);
+  }
+
   static String hashedId(String id) {
     final value = text(id);
     if (value == empty) return empty;

@@ -10,7 +10,7 @@ import 'package:ali_therapy_admin/feature/employee/all_employees/domain/all_empl
 class EmployeeCardMapper {
   EmployeeCardMapper._();
 
-  static String name(EmployeeEntity e) => e.name;
+  static String name(EmployeeEntity e) => Helpers.titleCase(e.name);
 
   static String email(EmployeeEntity e) => e.email;
 
@@ -30,12 +30,12 @@ class EmployeeCardMapper {
 
   static List<String> roles(EmployeeEntity e) {
     if (e.roles.isEmpty) return const ['_'];
-    return e.roles;
+    return e.roles.map(Helpers.titleCase).toList();
   }
 
-  static String shift(EmployeeEntity e) => e.shift;
+  static String shift(EmployeeEntity e) => Helpers.titleCase(e.shift);
 
-  static String createdBy(EmployeeEntity e) => e.createdBy;
+  static String createdBy(EmployeeEntity e) => Helpers.titleCase(e.createdBy);
 
   static bool isActive(EmployeeEntity e) => e.isActive;
 

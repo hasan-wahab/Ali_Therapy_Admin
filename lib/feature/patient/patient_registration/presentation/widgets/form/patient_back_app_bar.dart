@@ -10,9 +10,16 @@ import 'package:ali_therapy_admin/core/widgets/app_back_app_bar.dart';
 // ============================================================
 
 class PatientBackAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const PatientBackAppBar({super.key, required this.title});
+  const PatientBackAppBar({
+    super.key,
+    required this.title,
+    this.isLoading = false,
+    this.onBack,
+  });
 
   final String title;
+  final bool isLoading;
+  final VoidCallback? onBack;
 
   @override
   Size get preferredSize =>
@@ -20,6 +27,10 @@ class PatientBackAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBackAppBar(title: title);
+    return AppBackAppBar(
+      title: title,
+      isLoading: isLoading,
+      onBack: onBack,
+    );
   }
 }

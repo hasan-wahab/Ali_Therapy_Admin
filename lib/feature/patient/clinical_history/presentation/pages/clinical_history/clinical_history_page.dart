@@ -54,7 +54,7 @@ class ClinicalHistoryPage extends StatelessWidget {
         : 16.w;
 
     final visitId = PatientDetailDisplay.hashedId(history.visitId);
-    final name = PatientDetailDisplay.text(history.patientName);
+    final name = PatientDetailDisplay.titled(history.patientName);
     final age = PatientDetailDisplay.ageYears(history.age);
     final createdAt = PatientDetailDisplay.dateTime(history.createdAt);
 
@@ -106,7 +106,7 @@ class ClinicalHistoryPage extends StatelessWidget {
               ClinicalHistoryField(label: 'Age', value: age),
               ClinicalHistoryField(
                 label: 'Occupation',
-                value: PatientDetailDisplay.text(history.occupation),
+                value: PatientDetailDisplay.titled(history.occupation),
               ),
             ],
           ),

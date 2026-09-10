@@ -48,6 +48,8 @@ class EditExperienceEntryCard extends StatelessWidget {
                 child: AppTextField(
                   label: 'Company Name',
                   hintText: 'Company Name',
+                  keyboardType: TextInputType.text,
+                  textCapitalization: TextCapitalization.words,
                   controller: companyController,
                 ),
               ),
@@ -83,11 +85,14 @@ class EditExperienceEntryCard extends StatelessWidget {
               AppTextField(
                 label: 'Working Period',
                 hintText: 'Working Period',
+                keyboardType: TextInputType.text,
                 controller: periodController,
               ),
               AppTextField(
                 label: 'Supervisor',
                 hintText: 'Supervisor Name',
+                keyboardType: TextInputType.name,
+                textCapitalization: TextCapitalization.words,
                 controller: supervisorController,
               ),
             ],
@@ -96,6 +101,8 @@ class EditExperienceEntryCard extends StatelessWidget {
           AppTextField(
             label: 'Duties',
             hintText: 'Duties',
+            keyboardType: TextInputType.text,
+            textCapitalization: TextCapitalization.sentences,
             controller: dutiesController,
           ),
         ],

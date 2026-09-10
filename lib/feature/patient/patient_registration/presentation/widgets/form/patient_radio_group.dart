@@ -8,7 +8,7 @@ import 'package:ali_therapy_admin/core/widgets/app_field_label.dart';
 // ============================================================
 // PATIENT RADIO GROUP
 // ------------------------------------------------------------
-// Horizontal radio options under a label (UI only).
+// Horizontal radio options under a label.
 // ============================================================
 
 class PatientRadioGroup extends StatefulWidget {
@@ -17,25 +17,67 @@ class PatientRadioGroup extends StatefulWidget {
     required this.label,
     required this.options,
     this.isRequired = false,
-    this.initialValue,
+    this.value,
+    this.onChanged,
   });
 
   final String label;
   final List<String> options;
   final bool isRequired;
-  final String? initialValue;
+  final String? value;
+  final ValueChanged<String>? onChanged;
 
   @override
   State<PatientRadioGroup> createState() => _PatientRadioGroupState();
 }
 
 class _PatientRadioGroupState extends State<PatientRadioGroup> {
-  late String _selected;
+  String _selected = '';
 
   @override
   void initState() {
     super.initState();
-    _selected = widget.initialValue ?? widget.options.first;
+    _selected = _resolveSelection();
+  }
+
+  @override
+  void didUpdateWidget(covariant PatientRadioGroup oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.options != oldWidget.options ||
+        widget.value != oldWidget.value) {
+      final next = _resolveSelection();
+      if (next != _selected) {
+        _selected = next;
+      }
+    }
+  }
+
+  String get _groupValue {
+    final controlled = widget.value?.trim() ?? '';
+    if (controlled.isNotEmpty) return controlled;
+    return _selected;
+  }
+
+  String _resolveSelection() {
+    final initial = widget.value;
+    if (initial != null && widget.options.contains(initial)) {
+      return initial;
+    }
+    if (widget.onChanged != null) {
+      return '';
+    }
+    if (_selected.isNotEmpty && widget.options.contains(_selected)) {
+      return _selected;
+    }
+    return widget.options.isNotEmpty ? widget.options.first : '';
+  }
+
+  void _select(String option) {
+    if (widget.onChanged != null) {
+      widget.onChanged!(option);
+      return;
+    }
+    setState(() => _selected = option);
   }
 
   @override
@@ -46,10 +88,10 @@ class _PatientRadioGroupState extends State<PatientRadioGroup> {
         AppFieldLabel(label: widget.label, isRequired: widget.isRequired),
         SizedBox(height: 8.h),
         RadioGroup<String>(
-          groupValue: _selected,
+          groupValue: _groupValue,
           onChanged: (value) {
             if (value == null) return;
-            setState(() => _selected = value);
+            _select(value);
           },
           child: Wrap(
             spacing: 8.w,
@@ -58,7 +100,7 @@ class _PatientRadioGroupState extends State<PatientRadioGroup> {
               for (final option in widget.options)
                 InkWell(
                   borderRadius: BorderRadius.circular(8.r),
-                  onTap: () => setState(() => _selected = option),
+                  onTap: () => _select(option),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

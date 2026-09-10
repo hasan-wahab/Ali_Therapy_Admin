@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <bitmap android:gravity="fill" android:src="@drawable/background"/>
+    </item>
+    <!-- Tablet: larger centered clinic logo (Figma phone is 176dp). -->
+    <item
+        android:width="240dp"
+        android:height="240dp"
+        android:gravity="center">
+        <bitmap android:gravity="fill" android:src="@drawable/splash"/>
+    </item>
+    <!-- Tablet: larger Neon Web branding, more bottom inset. -->
+    <item
+        android:width="140dp"
+        android:height="56dp"
+        android:gravity="bottom|center_horizontal"
+        android:bottom="48dp">
+        <bitmap android:gravity="fill" android:src="@drawable/branding"/>
+    </item>
+</layer-list>

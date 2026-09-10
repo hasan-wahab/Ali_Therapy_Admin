@@ -83,7 +83,7 @@ class PatientCard extends StatelessWidget {
     }
 
     if (type == PatientActionType.edit) {
-      AppNavigation.openEditPatient(context);
+      AppNavigation.openEditPatient(context, patientId: patientId);
       return;
     }
 

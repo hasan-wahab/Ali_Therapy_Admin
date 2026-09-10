@@ -22,13 +22,22 @@ class DocumentFormFields extends StatelessWidget {
       children: [
         const FormFieldsRow(
           children: [
-            AppTextField(label: 'Title'),
+            AppTextField(
+              label: 'Title',
+              keyboardType: TextInputType.text,
+              textCapitalization: TextCapitalization.words,
+            ),
             FormFileField(),
             FormDateField(label: 'Expiry'),
           ],
         ),
         SizedBox(height: 14.h),
-        const AppTextField(label: 'Description', maxLines: 4),
+        const AppTextField(
+          label: 'Description',
+          keyboardType: TextInputType.multiline,
+          textCapitalization: TextCapitalization.sentences,
+          maxLines: 4,
+        ),
       ],
     );
   }

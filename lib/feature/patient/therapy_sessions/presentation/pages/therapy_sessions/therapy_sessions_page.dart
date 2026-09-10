@@ -19,7 +19,7 @@ class TherapySessionsPage extends StatelessWidget {
 
   String _ageGender({required int age, required String gender}) {
     final ageText = age > 0 ? '$age Y' : PatientDetailDisplay.empty;
-    final genderText = PatientDetailDisplay.text(gender);
+    final genderText = PatientDetailDisplay.titled(gender);
     if (ageText == PatientDetailDisplay.empty &&
         genderText == PatientDetailDisplay.empty) {
       return PatientDetailDisplay.empty;
@@ -58,21 +58,21 @@ class TherapySessionsPage extends StatelessWidget {
             return TherapySessionCard(
               initiallyExpanded: index == 1,
               sessionNumber: session.sessionNumber,
-              patientName: PatientDetailDisplay.text(session.patientName),
+              patientName: PatientDetailDisplay.titled(session.patientName),
               cnic: PatientDetailDisplay.text(session.cnic),
               ageGender: _ageGender(
                 age: session.age,
                 gender: session.gender,
               ),
-              therapist: PatientDetailDisplay.text(session.therapist),
-              packageName: PatientDetailDisplay.text(session.packageName),
+              therapist: PatientDetailDisplay.titled(session.therapist),
+              packageName: PatientDetailDisplay.titled(session.packageName),
               duration: PatientDetailDisplay.text(session.duration),
               startedAt: PatientDetailDisplay.text(session.startedAt),
               endedAt: PatientDetailDisplay.text(session.endedAt),
               modalities: session.modalities
                   .map(
                     (item) => TherapySessionModalityChip(
-                      title: PatientDetailDisplay.text(item.title),
+                      title: PatientDetailDisplay.titled(item.title),
                       duration: PatientDetailDisplay.text(item.duration),
                     ),
                   )

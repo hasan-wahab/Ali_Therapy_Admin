@@ -48,6 +48,8 @@ class EditEducationEntryCard extends StatelessWidget {
                 child: AppTextField(
                   label: 'Degree',
                   hintText: 'Degree Title',
+                  keyboardType: TextInputType.text,
+                  textCapitalization: TextCapitalization.words,
                   controller: degreeController,
                 ),
               ),
@@ -83,6 +85,8 @@ class EditEducationEntryCard extends StatelessWidget {
               AppTextField(
                 label: 'University',
                 hintText: 'University Name',
+                keyboardType: TextInputType.text,
+                textCapitalization: TextCapitalization.words,
                 controller: universityController,
               ),
               AppTextField(
@@ -99,6 +103,8 @@ class EditEducationEntryCard extends StatelessWidget {
           AppTextField(
             label: 'Comments',
             hintText: 'Comments',
+            keyboardType: TextInputType.text,
+            textCapitalization: TextCapitalization.sentences,
             controller: commentsController,
           ),
         ],
