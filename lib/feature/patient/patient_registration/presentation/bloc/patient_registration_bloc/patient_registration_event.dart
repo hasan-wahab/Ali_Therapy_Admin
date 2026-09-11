@@ -27,3 +27,17 @@ class PatientRegistrationSubmitted extends PatientRegistrationEvent {
   @override
   List<Object?> get props => [form];
 }
+
+/// Last-step Update — POST /patients/{id}/update
+class PatientRegistrationUpdated extends PatientRegistrationEvent {
+  const PatientRegistrationUpdated({
+    required this.patientId,
+    required this.form,
+  });
+
+  final String patientId;
+  final PatientCreateFormEntity form;
+
+  @override
+  List<Object?> get props => [patientId, form];
+}

@@ -96,6 +96,15 @@ class ApiConstants {
   /// POST — register a new patient
   static const String patientsCreate = 'patients/create';
 
+  /// GET — patient record + form dropdowns for Edit
+  static String patientEdit(String id) => 'patients/$id/edit';
+
+  /// POST — update an existing patient
+  static String patientsUpdate(String id) => 'patients/$id/update';
+
+  /// DELETE — delete a patient (and linked user / photo)
+  static String patientsDelete(String id) => 'patients/$id';
+
   // ----------------------------------------------------------
   // EMPLOYEE ENDPOINTS
   // Matches Laravel EmployeesApiController routes

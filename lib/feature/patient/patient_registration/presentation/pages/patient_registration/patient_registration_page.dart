@@ -26,8 +26,9 @@ import 'package:ali_therapy_admin/injection.dart';
 // 3-step wizard: Basic → Additional → Photo.
 // Also reused for Edit Patient (same forms).
 // Load: GET patients/form-data
-// Edit load: GET patient/{id}/full-view (+ show if available)
+// Edit load: GET patients/{id}/edit (fallback: full-view)
 // Submit (register): POST patients/create
+// Submit (update): POST patients/{id}/update
 // ============================================================
 
 class PatientRegistrationPage extends StatefulWidget {
@@ -143,12 +144,6 @@ class _PatientRegistrationPageState extends State<PatientRegistrationPage> {
     BuildContext context,
     PatientFormDataEntity formData,
   ) {
-    if (widget.isEdit) {
-      AppSnackbar.success(context, 'Patient updated successfully (UI only).');
-      AppNavigation.back(context);
-      return;
-    }
-
     final error = _form.validateForCreate(formData);
     if (error != null) {
       AppSnackbar.error(context, error, title: 'Check form');
@@ -157,8 +152,19 @@ class _PatientRegistrationPageState extends State<PatientRegistrationPage> {
     }
 
     // Use BlocConsumer context — the page context sits above BlocProvider.
+    final form = _form.toForm();
+    if (widget.isEdit) {
+      final patientId = form.id.isNotEmpty
+          ? form.id
+          : (_patientIdFromRoute(context) ?? '');
+      context.read<PatientRegistrationBloc>().add(
+        PatientRegistrationUpdated(patientId: patientId, form: form),
+      );
+      return;
+    }
+
     context.read<PatientRegistrationBloc>().add(
-      PatientRegistrationSubmitted(form: _form.toForm()),
+      PatientRegistrationSubmitted(form: form),
     );
   }
 
@@ -305,8 +311,10 @@ class _PatientRegistrationPageState extends State<PatientRegistrationPage> {
                       subtitle: 'Please wait',
                     )
                   else if (isSaving)
-                    const AppLoadingOverlay(
-                      message: 'Registering patient...',
+                    AppLoadingOverlay(
+                      message: widget.isEdit
+                          ? 'Updating patient...'
+                          : 'Registering patient...',
                       subtitle: 'Please wait',
                     ),
                 ],

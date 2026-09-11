@@ -7,6 +7,7 @@ import 'package:ali_therapy_admin/core/utils/app_device.dart';
 import 'package:ali_therapy_admin/core/utils/app_search_ranker.dart';
 import 'package:ali_therapy_admin/core/utils/app_snackbar.dart';
 import 'package:ali_therapy_admin/core/widgets/app_list_card_skeleton.dart';
+import 'package:ali_therapy_admin/core/widgets/app_loading_dialog.dart';
 import 'package:ali_therapy_admin/core/widgets/app_pull_refresh.dart';
 import 'package:ali_therapy_admin/core/widgets/app_shimmer.dart';
 import 'package:ali_therapy_admin/core/widgets/app_tablet_safe_area.dart';
@@ -45,7 +46,9 @@ class AllPatientsPage extends StatelessWidget {
       return true;
     }
     if (state is AllPatientsLoaded) {
-      return state.isRefreshingList || state.isLoadingMore;
+      return state.isRefreshingList ||
+          state.isLoadingMore ||
+          state.deletingPatientId != null;
     }
     return false;
   }
@@ -193,10 +196,24 @@ class AllPatientsPage extends StatelessWidget {
     return BlocProvider(
       create: (_) => sl<AllPatientsBloc>()..add(const AllPatientsStarted()),
       child: BlocConsumer<AllPatientsBloc, AllPatientsState>(
-        listenWhen: (previous, current) => current is AllPatientsError,
+        listenWhen: (previous, current) {
+          if (current is AllPatientsError) return true;
+          if (current is AllPatientsLoaded && current.successMessage != null) {
+            final previousMessage = previous is AllPatientsLoaded
+                ? previous.successMessage
+                : null;
+            return previousMessage != current.successMessage;
+          }
+          return false;
+        },
         listener: (context, state) {
           if (state is AllPatientsError) {
             AppSnackbar.error(context, state.message, title: state.title);
+          }
+          if (state is AllPatientsLoaded &&
+              state.successMessage != null &&
+              state.successMessage!.isNotEmpty) {
+            AppSnackbar.success(context, state.successMessage!);
           }
         },
         builder: (context, state) {
@@ -209,6 +226,9 @@ class AllPatientsPage extends StatelessWidget {
               ? (AppDevice.isLandscape(context) ? 40.w : 48.w)
               : 16.w;
 
+          final isDeleting =
+              state is AllPatientsLoaded && state.deletingPatientId != null;
+
           return Scaffold(
             backgroundColor: AppColors.background,
             appBar: FormBackAppBar(
@@ -216,11 +236,20 @@ class AllPatientsPage extends StatelessWidget {
               isLoading: isLoading,
             ),
             body: AppTabletSafeArea(
-              child: _listContent(
-                context: context,
-                state: state,
-                isFirstLoad: isFirstLoad,
-                hPad: hPad,
+              child: Stack(
+                children: [
+                  _listContent(
+                    context: context,
+                    state: state,
+                    isFirstLoad: isFirstLoad,
+                    hPad: hPad,
+                  ),
+                  if (isDeleting)
+                    const AppLoadingOverlay(
+                      message: 'Deleting...',
+                      subtitle: 'Please wait',
+                    ),
+                ],
               ),
             ),
           );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ali_therapy_admin/core/routes/navigation_helper.dart';
@@ -6,6 +7,7 @@ import 'package:ali_therapy_admin/core/theme/app_colors.dart';
 import 'package:ali_therapy_admin/core/theme/app_sizes.dart';
 import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
 import 'package:ali_therapy_admin/core/utils/app_snackbar.dart';
+import 'package:ali_therapy_admin/feature/patient/all_patients/presentation/bloc/all_patients_bloc/all_patients_bloc.dart';
 import 'package:ali_therapy_admin/feature/patient/all_patients/presentation/widgets/patients_card/delete_patient_dialog.dart';
 import 'package:ali_therapy_admin/feature/patient/all_patients/presentation/widgets/patients_card/patient_action_type.dart';
 import 'package:ali_therapy_admin/feature/patient/all_patients/presentation/widgets/patients_card/patient_actions_button.dart';
@@ -88,11 +90,23 @@ class PatientCard extends StatelessWidget {
     }
 
     if (type == PatientActionType.delete) {
-      showDeletePatientDialog(context, patientName: name);
+      _submitDelete(context);
       return;
     }
 
     AppSnackbar.info(context, '${type.name} tapped');
+  }
+
+  Future<void> _submitDelete(BuildContext context) async {
+    final confirmed = await showDeletePatientDialog(
+      context,
+      patientName: name,
+    );
+    if (!confirmed || !context.mounted) return;
+
+    context.read<AllPatientsBloc>().add(
+      AllPatientsDeleted(patientId: patientId),
+    );
   }
 
   @override

@@ -6,6 +6,7 @@ import 'package:ali_therapy_admin/core/network/dio_client.dart';
 import 'package:ali_therapy_admin/core/network/network_info.dart';
 import 'package:ali_therapy_admin/feature/patient/all_patients/data/all_patients_data/repositories/all_patients_repository_impl.dart';
 import 'package:ali_therapy_admin/feature/patient/all_patients/domain/all_patients_domain/repositories/all_patients_repository.dart';
+import 'package:ali_therapy_admin/feature/patient/all_patients/domain/all_patients_domain/usecases/delete_patient_usecase.dart';
 import 'package:ali_therapy_admin/feature/patient/all_patients/domain/all_patients_domain/usecases/get_all_patients_usecase.dart';
 import 'package:ali_therapy_admin/feature/patient/all_patients/presentation/bloc/all_patients_bloc/all_patients_bloc.dart';
 
@@ -32,10 +33,14 @@ class AllPatientsModule implements DiModule {
     sl.registerLazySingleton(
       () => GetAllPatientsUseCase(sl<AllPatientsRepository>()),
     );
+    sl.registerLazySingleton(
+      () => DeletePatientUseCase(sl<AllPatientsRepository>()),
+    );
 
     sl.registerFactory(
       () => AllPatientsBloc(
         getAllPatientsUseCase: sl<GetAllPatientsUseCase>(),
+        deletePatientUseCase: sl<DeletePatientUseCase>(),
       ),
     );
   }

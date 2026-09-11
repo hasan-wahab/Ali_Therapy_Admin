@@ -1,5 +1,8 @@
 part of 'all_patients_bloc.dart';
 
+// Sentinel used by copyWith to distinguish "not passed" from "null".
+const Object _keep = Object();
+
 abstract class AllPatientsState extends Equatable {
   const AllPatientsState();
 
@@ -25,6 +28,8 @@ class AllPatientsLoaded extends AllPatientsState {
     this.isLoadingMore = false,
     this.query = const PatientsListQuery(),
     this.isRefreshingList = false,
+    this.deletingPatientId,
+    this.successMessage,
   });
 
   final List<PatientEntity> patients;
@@ -34,6 +39,12 @@ class AllPatientsLoaded extends AllPatientsState {
   final bool isLoadingMore;
   final PatientsListQuery query;
   final bool isRefreshingList;
+
+  /// Patient id currently being deleted (null = none in progress).
+  final String? deletingPatientId;
+
+  /// One-shot success text after delete.
+  final String? successMessage;
 
   bool get hasMore => currentPage < lastPage;
 
@@ -45,6 +56,8 @@ class AllPatientsLoaded extends AllPatientsState {
     bool? isLoadingMore,
     PatientsListQuery? query,
     bool? isRefreshingList,
+    Object? deletingPatientId = _keep,
+    Object? successMessage = _keep,
   }) {
     return AllPatientsLoaded(
       patients: patients ?? this.patients,
@@ -54,6 +67,12 @@ class AllPatientsLoaded extends AllPatientsState {
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
       query: query ?? this.query,
       isRefreshingList: isRefreshingList ?? this.isRefreshingList,
+      deletingPatientId: deletingPatientId == _keep
+          ? this.deletingPatientId
+          : deletingPatientId as String?,
+      successMessage: successMessage == _keep
+          ? this.successMessage
+          : successMessage as String?,
     );
   }
 
@@ -66,6 +85,8 @@ class AllPatientsLoaded extends AllPatientsState {
         isLoadingMore,
         query,
         isRefreshingList,
+        deletingPatientId,
+        successMessage,
       ];
 }
 

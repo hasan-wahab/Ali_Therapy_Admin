@@ -6,6 +6,7 @@ import 'package:ali_therapy_admin/core/utils/app_error_logger.dart';
 import 'package:ali_therapy_admin/core/utils/error_mapper.dart';
 import 'package:ali_therapy_admin/core/utils/typedefs.dart';
 
+import '../../../domain/all_patients_domain/entities/delete_patient_entity.dart';
 import '../../../domain/all_patients_domain/entities/patients_list_query.dart';
 import '../../../domain/all_patients_domain/entities/patients_page_entity.dart';
 import '../../../domain/all_patients_domain/repositories/all_patients_repository.dart';
@@ -58,6 +59,43 @@ class AllPatientsRepositoryImpl implements AllPatientsRepository {
       AppErrorLogger.logFailure(
         failure,
         where: 'AllPatientsRepository.getPatientsPage',
+      );
+      return Result.failure(failure);
+    }
+  }
+
+  @override
+  ResultFuture<DeletePatientEntity> deletePatient({
+    required String patientId,
+  }) async {
+    if (!await networkInfo.ensureConnected()) {
+      const failure = NetworkFailure(
+        'No internet connection. Please try again.',
+      );
+      AppErrorLogger.logFailure(
+        failure,
+        where: 'AllPatientsRepository.deletePatient',
+      );
+      return Result.failure(failure);
+    }
+
+    try {
+      final model = await remoteDataSource.deletePatient(
+        patientId: patientId,
+      );
+      return Result.success(model.toEntity());
+    } on AppException catch (e) {
+      final failure = ErrorMapper.toFailure(e);
+      AppErrorLogger.logFailure(
+        failure,
+        where: 'AllPatientsRepository.deletePatient',
+      );
+      return Result.failure(failure);
+    } catch (e) {
+      final failure = ErrorMapper.fromUnknown(e);
+      AppErrorLogger.logFailure(
+        failure,
+        where: 'AllPatientsRepository.deletePatient',
       );
       return Result.failure(failure);
     }

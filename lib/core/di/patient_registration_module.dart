@@ -10,6 +10,7 @@ import 'package:ali_therapy_admin/feature/patient/patient_registration/domain/pa
 import 'package:ali_therapy_admin/feature/patient/patient_registration/domain/patient_registration_domain/usecases/create_patient_usecase.dart';
 import 'package:ali_therapy_admin/feature/patient/patient_registration/domain/patient_registration_domain/usecases/get_patient_details_usecase.dart';
 import 'package:ali_therapy_admin/feature/patient/patient_registration/domain/patient_registration_domain/usecases/get_patient_form_data_usecase.dart';
+import 'package:ali_therapy_admin/feature/patient/patient_registration/domain/patient_registration_domain/usecases/update_patient_usecase.dart';
 import 'package:ali_therapy_admin/feature/patient/patient_registration/presentation/bloc/patient_registration_bloc/patient_registration_bloc.dart';
 
 // ============================================================
@@ -43,12 +44,16 @@ class PatientRegistrationModule implements DiModule {
     sl.registerLazySingleton(
       () => CreatePatientUseCase(sl<PatientRegistrationRepository>()),
     );
+    sl.registerLazySingleton(
+      () => UpdatePatientUseCase(sl<PatientRegistrationRepository>()),
+    );
 
     sl.registerFactory(
       () => PatientRegistrationBloc(
         getPatientFormDataUseCase: sl<GetPatientFormDataUseCase>(),
         getPatientDetailsUseCase: sl<GetPatientDetailsUseCase>(),
         createPatientUseCase: sl<CreatePatientUseCase>(),
+        updatePatientUseCase: sl<UpdatePatientUseCase>(),
       ),
     );
   }

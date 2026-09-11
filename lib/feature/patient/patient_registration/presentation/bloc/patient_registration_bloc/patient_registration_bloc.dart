@@ -8,6 +8,7 @@ import '../../../domain/patient_registration_domain/entities/patient_form_data_e
 import '../../../domain/patient_registration_domain/usecases/create_patient_usecase.dart';
 import '../../../domain/patient_registration_domain/usecases/get_patient_details_usecase.dart';
 import '../../../domain/patient_registration_domain/usecases/get_patient_form_data_usecase.dart';
+import '../../../domain/patient_registration_domain/usecases/update_patient_usecase.dart';
 
 part 'patient_registration_event.dart';
 part 'patient_registration_state.dart';
@@ -16,8 +17,9 @@ part 'patient_registration_state.dart';
 // PATIENT REGISTRATION BLOC
 // ------------------------------------------------------------
 // Started   → GET patients/form-data (cached after first Create Patient)
-//             + GET patient/{id}/full-view when editing
+//             + GET patients/{id}/edit when editing
 // Submitted → POST patients/create
+// Updated   → POST patients/{id}/update
 // ============================================================
 
 class PatientRegistrationBloc
@@ -26,14 +28,17 @@ class PatientRegistrationBloc
     required this.getPatientFormDataUseCase,
     required this.getPatientDetailsUseCase,
     required this.createPatientUseCase,
+    required this.updatePatientUseCase,
   }) : super(const PatientRegistrationInitial()) {
     on<PatientRegistrationStarted>(_onStarted);
     on<PatientRegistrationSubmitted>(_onSubmitted);
+    on<PatientRegistrationUpdated>(_onUpdated);
   }
 
   final GetPatientFormDataUseCase getPatientFormDataUseCase;
   final GetPatientDetailsUseCase getPatientDetailsUseCase;
   final CreatePatientUseCase createPatientUseCase;
+  final UpdatePatientUseCase updatePatientUseCase;
 
   Future<void> _onStarted(
     PatientRegistrationStarted event,
@@ -112,6 +117,55 @@ class PatientRegistrationBloc
           current.copyWith(
             isSaving: false,
             successMessage: data.displayMessage,
+          ),
+        );
+      },
+      failure: (failure) {
+        emit(
+          PatientRegistrationError(
+            title: failure.title,
+            message: failure.message,
+          ),
+        );
+        emit(current.copyWith(isSaving: false, successMessage: null));
+      },
+    );
+  }
+
+  Future<void> _onUpdated(
+    PatientRegistrationUpdated event,
+    Emitter<PatientRegistrationState> emit,
+  ) async {
+    final current = state;
+    if (current is! PatientRegistrationLoaded) return;
+    if (current.isSaving) return;
+
+    final patientId = event.patientId.trim().isNotEmpty
+        ? event.patientId.trim()
+        : event.form.id.trim();
+    if (patientId.isEmpty || patientId == '_') {
+      emit(
+        const PatientRegistrationError(
+          title: 'Missing Id',
+          message: 'Patient id is missing. Open Edit from All Patients again.',
+        ),
+      );
+      emit(current.copyWith(isSaving: false, successMessage: null));
+      return;
+    }
+
+    emit(current.copyWith(isSaving: true, successMessage: null));
+
+    final result = await updatePatientUseCase(
+      UpdatePatientParams(patientId: patientId, form: event.form),
+    );
+
+    result.when(
+      success: (data) {
+        emit(
+          current.copyWith(
+            isSaving: false,
+            successMessage: data.message,
           ),
         );
       },

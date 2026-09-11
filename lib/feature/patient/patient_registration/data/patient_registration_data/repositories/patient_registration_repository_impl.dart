@@ -10,6 +10,7 @@ import 'package:ali_therapy_admin/feature/patient/patient_registration/data/pati
 import '../../../domain/patient_registration_domain/entities/create_patient_entity.dart';
 import '../../../domain/patient_registration_domain/entities/patient_create_form_entity.dart';
 import '../../../domain/patient_registration_domain/entities/patient_form_data_entity.dart';
+import '../../../domain/patient_registration_domain/entities/update_patient_entity.dart';
 import '../../../domain/patient_registration_domain/repositories/patient_registration_repository.dart';
 
 // ============================================================
@@ -136,6 +137,45 @@ class PatientRegistrationRepositoryImpl
       AppErrorLogger.logFailure(
         failure,
         where: 'PatientRegistrationRepository.createPatient',
+      );
+      return Result.failure(failure);
+    }
+  }
+
+  @override
+  ResultFuture<UpdatePatientEntity> updatePatient({
+    required String patientId,
+    required PatientCreateFormEntity form,
+  }) async {
+    if (!await networkInfo.ensureConnected()) {
+      const failure = NetworkFailure(
+        'No internet connection. Please try again.',
+      );
+      AppErrorLogger.logFailure(
+        failure,
+        where: 'PatientRegistrationRepository.updatePatient',
+      );
+      return Result.failure(failure);
+    }
+
+    try {
+      final model = await remoteDataSource.updatePatient(
+        patientId: patientId,
+        form: form,
+      );
+      return Result.success(model.toEntity());
+    } on AppException catch (e) {
+      final failure = ErrorMapper.toFailure(e);
+      AppErrorLogger.logFailure(
+        failure,
+        where: 'PatientRegistrationRepository.updatePatient',
+      );
+      return Result.failure(failure);
+    } catch (e) {
+      final failure = ErrorMapper.fromUnknown(e);
+      AppErrorLogger.logFailure(
+        failure,
+        where: 'PatientRegistrationRepository.updatePatient',
       );
       return Result.failure(failure);
     }

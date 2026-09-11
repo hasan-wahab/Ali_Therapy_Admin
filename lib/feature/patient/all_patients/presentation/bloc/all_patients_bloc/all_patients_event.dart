@@ -81,3 +81,13 @@ class AllPatientsFiltersApplied extends AllPatientsEvent {
         resetAll,
       ];
 }
+
+/// Confirm delete dialog → DELETE /patients/{id}
+class AllPatientsDeleted extends AllPatientsEvent {
+  const AllPatientsDeleted({required this.patientId});
+
+  final String patientId;
+
+  @override
+  List<Object?> get props => [patientId];
+}

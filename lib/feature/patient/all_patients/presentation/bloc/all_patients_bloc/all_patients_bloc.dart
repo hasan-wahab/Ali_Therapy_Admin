@@ -7,6 +7,7 @@ import 'package:ali_therapy_admin/core/utils/app_search_ranker.dart';
 
 import '../../../domain/all_patients_domain/entities/patient_entity.dart';
 import '../../../domain/all_patients_domain/entities/patients_list_query.dart';
+import '../../../domain/all_patients_domain/usecases/delete_patient_usecase.dart';
 import '../../../domain/all_patients_domain/usecases/get_all_patients_usecase.dart';
 
 part 'all_patients_event.dart';
@@ -19,20 +20,25 @@ part 'all_patients_state.dart';
 // SearchChanged  → debounce → page 1 with search + current filters
 // FiltersApplied → immediate page 1 with new filters
 // LoadMore       → next page, same query
+// Deleted        → DELETE /patients/{id} then reload page 1
 // ============================================================
 
 class AllPatientsBloc extends Bloc<AllPatientsEvent, AllPatientsState> {
-  AllPatientsBloc({required this.getAllPatientsUseCase})
-      : super(const AllPatientsInitial()) {
+  AllPatientsBloc({
+    required this.getAllPatientsUseCase,
+    required this.deletePatientUseCase,
+  }) : super(const AllPatientsInitial()) {
     on<AllPatientsStarted>(_onStarted);
     on<AllPatientsRefreshed>(_onRefreshed);
     on<AllPatientsLoadMore>(_onLoadMore);
     on<AllPatientsSearchChanged>(_onSearchChanged);
     on<AllPatientsSearchSubmitted>(_onSearchSubmitted);
     on<AllPatientsFiltersApplied>(_onFiltersApplied);
+    on<AllPatientsDeleted>(_onDeleted);
   }
 
   final GetAllPatientsUseCase getAllPatientsUseCase;
+  final DeletePatientUseCase deletePatientUseCase;
 
   bool _isFetchingMore = false;
   PatientsListQuery _query = const PatientsListQuery();
@@ -139,6 +145,65 @@ class AllPatientsBloc extends Bloc<AllPatientsEvent, AllPatientsState> {
     }
 
     await _reloadList(emit);
+  }
+
+  Future<void> _onDeleted(
+    AllPatientsDeleted event,
+    Emitter<AllPatientsState> emit,
+  ) async {
+    final current = state;
+    if (current is! AllPatientsLoaded) return;
+    if (current.deletingPatientId != null) return;
+
+    emit(
+      current.copyWith(
+        deletingPatientId: event.patientId,
+        successMessage: null,
+      ),
+    );
+
+    final result = await deletePatientUseCase(
+      DeletePatientParams(patientId: event.patientId),
+    );
+
+    await result.when(
+      success: (data) async {
+        await _loadPage(
+          emit,
+          page: 1,
+          replace: true,
+          keepOnError: _snapshot(),
+        );
+        final after = state;
+        if (after is AllPatientsLoaded) {
+          emit(
+            after.copyWith(
+              deletingPatientId: null,
+              successMessage: data.message,
+            ),
+          );
+        }
+      },
+      failure: (failure) async {
+        emit(
+          AllPatientsError(
+            title: failure.title,
+            message: failure.message,
+            patients: current.patients,
+            currentPage: current.currentPage,
+            lastPage: current.lastPage,
+            total: current.total,
+            query: current.query,
+          ),
+        );
+        emit(
+          current.copyWith(
+            deletingPatientId: null,
+            successMessage: null,
+          ),
+        );
+      },
+    );
   }
 
   Future<void> _reloadList(Emitter<AllPatientsState> emit) async {
