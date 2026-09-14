@@ -101,6 +101,9 @@ class AppColors {
   /// Soft blue background.
   static const Color infoSoft = Color(0xFFE3F2FD);
 
+  /// Patient NFC identification card (same blue as doctor-app).
+  static const Color nfcCard = Color(0xFF167FC9);
+
   // ----------------------------------------------------------
   // DARK THEME COLORS
   // (used when ThemeMode.dark is active)

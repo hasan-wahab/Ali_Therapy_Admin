@@ -6,11 +6,16 @@ import 'package:ali_therapy_admin/feature/reports/domain/discount_report_domain/
 // DISCOUNT REPORT MODEL (Data)
 // ------------------------------------------------------------
 // Parses one row from GET /api/admin/reports/discount
+//
+// `id` = invoice / discount row.
+// `patient_id` = Patient PK for View → GET patient/{id}/full-view
+// (API Dev will add this field; until then View shows a missing-id message.)
 // ============================================================
 
 class DiscountReportModel extends DiscountReportEntity {
   const DiscountReportModel({
     required super.id,
+    required super.patientId,
     required super.patientName,
     required super.patientCnic,
     required super.patientPhone,
@@ -29,6 +34,7 @@ class DiscountReportModel extends DiscountReportEntity {
   factory DiscountReportModel.fromJson(Map<String, dynamic> json) {
     return DiscountReportModel(
       id: json['id']?.toString() ?? '',
+      patientId: json['patient_id']?.toString() ?? '',
       patientName: _text(json['patient_name']),
       patientCnic: _text(json['patient_cnic']),
       patientPhone: _text(json['patient_phone']),
@@ -52,6 +58,7 @@ class DiscountReportModel extends DiscountReportEntity {
 
   DiscountReportEntity toEntity() => DiscountReportEntity(
         id: id,
+        patientId: patientId,
         patientName: patientName,
         patientCnic: patientCnic,
         patientPhone: patientPhone,

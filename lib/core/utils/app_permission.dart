@@ -194,7 +194,10 @@ class AppPermission {
         location == AppRoutes.therapySessions ||
         location == AppRoutes.invoices ||
         location == AppRoutes.clinicalHistory ||
-        location == AppRoutes.consultantDetails) {
+        location == AppRoutes.consultantDetails ||
+        location == AppRoutes.reconsultationHistory ||
+        location == AppRoutes.reconsultationHistoryReport ||
+        location == AppRoutes.nfcCard) {
       return canViewPatients;
     }
 

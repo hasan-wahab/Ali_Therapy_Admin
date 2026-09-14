@@ -57,6 +57,7 @@ class DiscountReportCardList extends StatelessWidget {
         final row = rows[index];
         return DiscountReportCard(
           initiallyExpanded: index == 0,
+          patientId: row.patientId,
           patientName: row.patientName,
           phone: row.patientPhone,
           cnic: row.patientCnic,

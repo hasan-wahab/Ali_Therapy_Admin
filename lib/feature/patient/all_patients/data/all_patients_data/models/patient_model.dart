@@ -32,7 +32,7 @@ class PatientModel extends PatientEntity {
 
   factory PatientModel.fromJson(Map<String, dynamic> json) {
     return PatientModel(
-      id: PatientJsonHelpers.text(json['id']),
+      id: PatientJsonHelpers.text(json['patient_id'] ?? json['id']),
       name: PatientJsonHelpers.text(json['name']),
       cnic: PatientJsonHelpers.text(json['cnic']),
       problems: PatientJsonHelpers.stringList(json['problems']),

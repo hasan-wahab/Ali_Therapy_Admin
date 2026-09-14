@@ -26,6 +26,9 @@ import 'package:ali_therapy_admin/feature/patient/consultant_details/presentatio
 import 'package:ali_therapy_admin/feature/patient/invoices/presentation/pages/invoices/invoices_page.dart';
 import 'package:ali_therapy_admin/feature/patient/patient_detail/presentation/pages/patient_detail/patient_detail_page.dart';
 import 'package:ali_therapy_admin/feature/patient/patient_registration/presentation/pages/patient_registration/patient_registration_page.dart';
+import 'package:ali_therapy_admin/feature/patient/nfc_card/presentation/pages/nfc_card/nfc_card_page.dart';
+import 'package:ali_therapy_admin/feature/patient/reconsultation_history/presentation/pages/reconsultation_history/reconsultation_history_page.dart';
+import 'package:ali_therapy_admin/feature/patient/reconsultation_history/presentation/pages/reconsultation_history/reconsultation_report_page.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/domain/profile_domain/entities/profile_entity.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/presentation/pages/add_document/add_document_page.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/presentation/pages/add_education/add_education_page.dart';
@@ -349,6 +352,24 @@ class AppRouter {
             name: 'consultantDetails',
             pageBuilder: (context, state) =>
                 AppPage.slide(state, const ConsultantDetailsPage()),
+          ),
+          GoRoute(
+            path: AppRoutes.reconsultationHistory,
+            name: 'reconsultationHistory',
+            pageBuilder: (context, state) =>
+                AppPage.slide(state, const ReconsultationHistoryPage()),
+          ),
+          GoRoute(
+            path: AppRoutes.reconsultationHistoryReport,
+            name: 'reconsultationHistoryReport',
+            pageBuilder: (context, state) =>
+                AppPage.slide(state, const ReconsultationHistoryReportPage()),
+          ),
+          GoRoute(
+            path: AppRoutes.nfcCard,
+            name: 'nfcCard',
+            pageBuilder: (context, state) =>
+                AppPage.slide(state, const NfcCardPage()),
           ),
           GoRoute(
             path: AppRoutes.editEmployee,

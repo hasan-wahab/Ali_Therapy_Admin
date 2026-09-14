@@ -63,7 +63,10 @@ class PatientDetailRecordsGrid extends StatelessWidget {
       PatientDetailRecordGridItem(
         title: 'Reconsultations',
         icon: Icons.note_add_outlined,
-        onTap: () => _comingSoon(context, 'Reconsultations'),
+        onTap: () => AppNavigation.openReconsultationHistory(
+          context,
+          detail: detail,
+        ),
       ),
       PatientDetailRecordGridItem(
         title: 'Full Report',
@@ -73,7 +76,7 @@ class PatientDetailRecordsGrid extends StatelessWidget {
       PatientDetailRecordGridItem(
         title: 'NFC Card',
         icon: Icons.credit_card_outlined,
-        onTap: () => _comingSoon(context, 'NFC Card'),
+        onTap: () => AppNavigation.openNfcCard(context, detail: detail),
       ),
       PatientDetailRecordGridItem(
         title: 'Patient Files',

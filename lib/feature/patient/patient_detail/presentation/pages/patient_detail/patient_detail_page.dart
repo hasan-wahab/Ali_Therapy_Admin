@@ -4,15 +4,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
-import 'package:ali_therapy_admin/core/theme/app_text_styles.dart';
 import 'package:ali_therapy_admin/core/utils/app_device.dart';
 import 'package:ali_therapy_admin/core/utils/app_permission.dart';
-import 'package:ali_therapy_admin/core/utils/app_snackbar.dart';
 import 'package:ali_therapy_admin/core/widgets/app_pull_refresh.dart';
 import 'package:ali_therapy_admin/core/widgets/app_shimmer.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/form/form_back_app_bar.dart';
 import 'package:ali_therapy_admin/feature/patient/patient_detail/domain/patient_detail_domain/entities/patient_detail_entity.dart';
 import 'package:ali_therapy_admin/feature/patient/patient_detail/presentation/bloc/patient_detail_bloc/patient_detail_bloc.dart';
+import 'package:ali_therapy_admin/feature/patient/patient_detail/presentation/widgets/other/patient_detail_error_body.dart';
 import 'package:ali_therapy_admin/feature/patient/patient_detail/presentation/widgets/other/patient_detail_skeleton.dart';
 import 'package:ali_therapy_admin/feature/patient/patient_detail/presentation/widgets/other/patient_detail_tab.dart';
 import 'package:ali_therapy_admin/feature/patient/patient_detail/presentation/widgets/other/patient_detail_tab_bar.dart';
@@ -123,32 +122,17 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
         return bloc;
       },
       child: patientId == null
-          ? Scaffold(
+          ? const Scaffold(
               backgroundColor: AppColors.background,
-              appBar: const FormBackAppBar(title: 'Detail'),
+              appBar: FormBackAppBar(title: 'Detail'),
               body: SafeArea(
-                child: Center(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24.w),
-                    child: Text(
-                      'Open a patient from All Patients → View.',
-                      textAlign: TextAlign.center,
-                      style: AppTextStyles.body,
-                    ),
-                  ),
+                child: PatientDetailErrorBody(
+                  title: 'Missing Id',
+                  message: 'Patient details not found.',
                 ),
               ),
             )
-          : BlocConsumer<PatientDetailBloc, PatientDetailState>(
-              listener: (context, state) {
-                if (state is PatientDetailError) {
-                  AppSnackbar.error(
-                    context,
-                    state.message,
-                    title: state.title,
-                  );
-                }
-              },
+          : BlocBuilder<PatientDetailBloc, PatientDetailState>(
               builder: (context, state) {
                 final isRefreshing = _isRefreshing(state);
                 final isFirstLoad = state is PatientDetailLoading ||
@@ -160,8 +144,16 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
                   scrollChild = const AppShimmer(
                     child: PatientDetailSkeleton(),
                   );
+                } else if (state is PatientDetailError && detail == null) {
+                  scrollChild = PatientDetailErrorBody(
+                    title: state.title,
+                    message: state.message,
+                  );
                 } else if (detail == null) {
-                  scrollChild = const SizedBox(height: 1);
+                  scrollChild = const PatientDetailErrorBody(
+                    title: 'Not Found',
+                    message: 'Patient details not found.',
+                  );
                 } else {
                   scrollChild = Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,

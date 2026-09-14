@@ -20,6 +20,7 @@ import 'package:ali_therapy_admin/feature/reports/presentation/widgets/other/pat
 class DiscountReportCard extends StatelessWidget {
   const DiscountReportCard({
     super.key,
+    required this.patientId,
     required this.patientName,
     required this.phone,
     required this.cnic,
@@ -34,6 +35,7 @@ class DiscountReportCard extends StatelessWidget {
     this.initiallyExpanded = false,
   });
 
+  final String patientId;
   final String patientName;
   final String phone;
   final String cnic;
@@ -52,6 +54,14 @@ class DiscountReportCard extends StatelessWidget {
   static String pkr(double value) => 'PKR ${_money.format(value)}';
 
   bool get _isHighDiscount => discountPercent >= 50;
+
+  void _openPatient(BuildContext context) {
+    final id = patientId.trim();
+    AppNavigation.openPatientDetail(
+      context,
+      patientId: (id.isEmpty || id == '_') ? null : id,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +91,7 @@ class DiscountReportCard extends StatelessWidget {
                   SizedBox(
                     height: 32.h,
                     child: ElevatedButton.icon(
-                      onPressed: () => AppNavigation.openPatientDetail(context),
+                      onPressed: () => _openPatient(context),
                     icon: Icon(
                       Icons.visibility_outlined,
                       size: AppSizes.iconSm,

@@ -4,11 +4,13 @@ import 'package:equatable/equatable.dart';
 // DISCOUNT REPORT ENTITY (Domain)
 // ------------------------------------------------------------
 // One row from GET /api/admin/reports/discount
+// View uses patientId (API field: patient_id), not invoice id.
 // ============================================================
 
 class DiscountReportEntity extends Equatable {
   const DiscountReportEntity({
     required this.id,
+    required this.patientId,
     required this.patientName,
     required this.patientCnic,
     required this.patientPhone,
@@ -25,6 +27,7 @@ class DiscountReportEntity extends Equatable {
   });
 
   final String id;
+  final String patientId;
   final String patientName;
   final String patientCnic;
   final String patientPhone;
@@ -55,6 +58,7 @@ class DiscountReportEntity extends Equatable {
   @override
   List<Object?> get props => [
         id,
+        patientId,
         patientName,
         patientCnic,
         patientPhone,

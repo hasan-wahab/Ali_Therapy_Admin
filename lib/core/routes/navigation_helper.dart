@@ -141,6 +141,24 @@ class AppNavigation {
     context.push(AppRoutes.consultantDetails, extra: detail);
   }
 
+  static void openReconsultationHistory(
+    BuildContext context, {
+    PatientDetailEntity? detail,
+  }) {
+    context.push(AppRoutes.reconsultationHistory, extra: detail);
+  }
+
+  static void openReconsultationHistoryReport(BuildContext context) {
+    context.push(AppRoutes.reconsultationHistoryReport);
+  }
+
+  static void openNfcCard(
+    BuildContext context, {
+    PatientDetailEntity? detail,
+  }) {
+    context.push(AppRoutes.nfcCard, extra: detail);
+  }
+
   static void openEditEmployee(
     BuildContext context, {
     required String employeeId,

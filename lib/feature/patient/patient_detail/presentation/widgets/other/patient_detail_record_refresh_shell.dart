@@ -3,12 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:ali_therapy_admin/core/theme/app_colors.dart';
-import 'package:ali_therapy_admin/core/utils/app_snackbar.dart';
 import 'package:ali_therapy_admin/core/widgets/app_pull_refresh.dart';
 import 'package:ali_therapy_admin/core/widgets/app_tablet_safe_area.dart';
 import 'package:ali_therapy_admin/feature/employee/profile/presentation/widgets/form/form_back_app_bar.dart';
 import 'package:ali_therapy_admin/feature/patient/patient_detail/domain/patient_detail_domain/entities/patient_detail_entity.dart';
 import 'package:ali_therapy_admin/feature/patient/patient_detail/presentation/bloc/patient_detail_bloc/patient_detail_bloc.dart';
+import 'package:ali_therapy_admin/feature/patient/patient_detail/presentation/widgets/other/patient_detail_error_body.dart';
 import 'package:ali_therapy_admin/injection.dart';
 
 // ============================================================
@@ -68,20 +68,14 @@ class PatientDetailRecordRefreshShell extends StatelessWidget {
         }
         return bloc;
       },
-      child: BlocConsumer<PatientDetailBloc, PatientDetailState>(
-        listener: (context, state) {
-          if (state is PatientDetailError) {
-            AppSnackbar.error(
-              context,
-              state.message,
-              title: state.title,
-            );
-          }
-        },
+      child: BlocBuilder<PatientDetailBloc, PatientDetailState>(
         builder: (context, state) {
           final isRefreshing =
               state is PatientDetailLoaded && state.isRefreshing;
-          final detail = _detailOf(state, seed) ?? const PatientDetailEntity();
+          final detail = _detailOf(state, seed);
+          final error = (state is PatientDetailError && detail == null)
+              ? state
+              : null;
 
           return Scaffold(
             backgroundColor: AppColors.background,
@@ -95,7 +89,15 @@ class PatientDetailRecordRefreshShell extends StatelessWidget {
                 showTopLoader: false,
                 onRefresh: () =>
                     context.read<PatientDetailBloc>().pullRefresh(),
-                child: builder(context, detail),
+                child: error != null
+                    ? PatientDetailErrorBody(
+                        title: error.title,
+                        message: error.message,
+                      )
+                    : builder(
+                        context,
+                        detail ?? const PatientDetailEntity(),
+                      ),
               ),
             ),
           );

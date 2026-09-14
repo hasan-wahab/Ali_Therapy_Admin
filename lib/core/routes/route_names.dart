@@ -53,6 +53,10 @@ class AppRoutes {
   static const String invoices = '/invoices';
   static const String clinicalHistory = '/clinical-history';
   static const String consultantDetails = '/consultant-details';
+  static const String reconsultationHistory = '/reconsultation-history';
+  static const String reconsultationHistoryReport =
+      '/reconsultation-history/report';
+  static const String nfcCard = '/nfc-card';
 
   // Edit Employee
   static const String editEmployee = '/edit-employee';

@@ -16,6 +16,12 @@ class AppConstants {
   /// In-app clinic logo (red splash mark, transparent background).
   static const String appLogo = 'assets/images/app_logo.png';
 
+  /// NFC card clinic logo (same file as doctor-app).
+  static const String nfcCardLogo = 'assets/images/main_logo.png';
+
+  /// NFC card EMV chip image (same file as doctor-app).
+  static const String nfcCardChip = 'assets/images/sim_chip.png';
+
   /// Native splash — Figma 651:2 center clinic logo.
   static const String nativeSplashLogo =
       'assets/images/native_splash_logo.png';

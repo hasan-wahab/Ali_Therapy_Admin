@@ -156,9 +156,7 @@ class PatientsRemoteDataSourceImpl implements PatientsRemoteDataSource {
   /// Official edit payload: { success, data: { patient, form_options } }.
   Future<PatientEditFormModel?> _tryLoadPatientEdit(String patientId) async {
     try {
-      final response = await dioClient.get(
-        ApiConstants.patientEdit(patientId),
-      );
+      final response = await dioClient.get(ApiConstants.patientEdit(patientId));
       final model = _parsePatientEdit(response.data);
       if (model.name.isNotEmpty ||
           model.fatherHusbandName.isNotEmpty ||
@@ -331,9 +329,7 @@ class PatientsRemoteDataSourceImpl implements PatientsRemoteDataSource {
   }
 
   @override
-  Future<DeletePatientModel> deletePatient({
-    required String patientId,
-  }) async {
+  Future<DeletePatientModel> deletePatient({required String patientId}) async {
     try {
       final response = await dioClient.delete(
         ApiConstants.patientsDelete(patientId),
